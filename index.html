@@ -218,7 +218,11 @@
             // Filter buttons
             $('.button').on('click', function() {
                 var filterValue = $(this).attr('data-filter');
-                $grid.isotope({ filter: filterValue });
+                if (filterValue === '*') {
+                    $grid.isotope({ filter: '*' });
+                } else {
+                    $grid.isotope({ filter: '.' + filterValue });
+                }
 
                 // Update active button
                 $('.button').removeClass('active');
