@@ -481,28 +481,45 @@ body.dark-theme #footer {
   top: 20px;
   right: 20px;
   background: none;
-  border: none;
+  border: 2px solid #a0a8b0;
   cursor: pointer;
   font-size: 1.5em;
   color: #a0a8b0;
-  z-index: 1000;
+  z-index: 10000;
   padding: 10px;
   border-radius: 50%;
   transition: all 0.3s ease;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .theme-toggle:hover {
   color: #150c21;
   background-color: rgba(0, 0, 0, 0.1);
+  border-color: #150c21;
+}
+
+.theme-toggle:focus {
+  outline: 2px solid #146ebe;
+  outline-offset: 2px;
 }
 
 body.dark-theme .theme-toggle {
   color: #b0b0b0;
+  border-color: #b0b0b0;
 }
 
 body.dark-theme .theme-toggle:hover {
   color: #ffffff;
   background-color: rgba(255, 255, 255, 0.1);
+  border-color: #ffffff;
+}
+
+body.dark-theme .theme-toggle:focus {
+  outline-color: #4a9eff;
 }
 
 /* Smooth transitions for theme switching */

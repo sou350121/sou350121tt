@@ -358,33 +358,61 @@
     </div>
 
     <script>
-      // Theme Toggle Functionality
-      const themeToggle = document.getElementById('theme-toggle');
-      const themeIcon = document.getElementById('theme-icon');
-      const body = document.body;
+      // Wait for DOM to be fully loaded
+      document.addEventListener('DOMContentLoaded', function() {
+        // Theme Toggle Functionality
+        const themeToggle = document.getElementById('theme-toggle');
+        const themeIcon = document.getElementById('theme-icon');
+        const body = document.body;
 
-      // Check for saved theme preference or default to light mode
-      const currentTheme = localStorage.getItem('theme') || 'light';
-
-      function setTheme(theme) {
-        if (theme === 'dark') {
-          body.classList.add('dark-theme');
-          themeIcon.textContent = '☀️';
-          localStorage.setItem('theme', 'dark');
-        } else {
-          body.classList.remove('dark-theme');
-          themeIcon.textContent = '🌙';
-          localStorage.setItem('theme', 'light');
+        // Debug: Check if elements exist
+        if (!themeToggle) {
+          console.error('Theme toggle button not found');
+          return;
         }
-      }
+        if (!themeIcon) {
+          console.error('Theme icon not found');
+          return;
+        }
+        if (!body) {
+          console.error('Body element not found');
+          return;
+        }
 
-      // Set initial theme
-      setTheme(currentTheme);
+        console.log('Theme toggle elements found successfully');
 
-      // Theme toggle event listener
-      themeToggle.addEventListener('click', () => {
-        const newTheme = body.classList.contains('dark-theme') ? 'light' : 'dark';
-        setTheme(newTheme);
+        // Check for saved theme preference or default to light mode
+        const currentTheme = localStorage.getItem('theme') || 'light';
+        console.log('Initial theme:', currentTheme);
+
+        function setTheme(theme) {
+          console.log('Setting theme to:', theme);
+          if (theme === 'dark') {
+            body.classList.add('dark-theme');
+            themeIcon.textContent = '☀️';
+            localStorage.setItem('theme', 'dark');
+            console.log('Dark theme applied');
+          } else {
+            body.classList.remove('dark-theme');
+            themeIcon.textContent = '🌙';
+            localStorage.setItem('theme', 'light');
+            console.log('Light theme applied');
+          }
+        }
+
+        // Set initial theme
+        setTheme(currentTheme);
+
+        // Theme toggle event listener
+        themeToggle.addEventListener('click', function(e) {
+          e.preventDefault();
+          console.log('Theme toggle clicked');
+          const newTheme = body.classList.contains('dark-theme') ? 'light' : 'dark';
+          console.log('Switching to theme:', newTheme);
+          setTheme(newTheme);
+        });
+
+        console.log('Theme toggle functionality initialized');
       });
 
       // Isotope grid.
