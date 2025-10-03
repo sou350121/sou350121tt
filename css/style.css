@@ -1,447 +1,377 @@
-/* Reset and Base Styles */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+/* CSS Reset: http://meyerweb.com/eric/tools/css/reset */
 
-html {
-    scroll-behavior: smooth;
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed,
+figure, figcaption, footer, header, hgroup,
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  font: inherit;
+  vertical-align: baseline;
 }
-
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure,
+footer, header, hgroup, menu, nav, section {
+  display: block;
+}
 body {
-    font-family: 'Asap', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    font-weight: 400;
-    line-height: 1.6;
-    color: #150c21;
-    background-color: #fff;
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 20px;
+  line-height: 1;
+}
+ol, ul {
+  list-style: none;
+}
+blockquote, q {
+  quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+  content: '';
+  content: none;
+}
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
 }
 
-/* Typography */
-h1, h2, h3, h4, h5, h6 {
-    font-family: 'Asap', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    font-weight: 600;
-    line-height: 1.3;
-    margin-bottom: 1rem;
+/**************************************************/
+
+#body{
+  font-family: 'Asap', roboto, sans-serif;
+  font-size: 1em;
+  line-height: 1.5em;
+  color: #150c21;
 }
 
-h1 {
-    font-size: 2.5rem;
-    color: #150c21;
-    margin-bottom: 1.5rem;
-}
-
-h2 {
-    font-size: 1.8rem;
-    color: #150c21;
-    margin-bottom: 1.5rem;
-    border-bottom: 2px solid #a0a8b0;
-    padding-bottom: 0.5rem;
-}
-
-h3 {
-    font-size: 1.3rem;
-    color: #150c21;
-    margin-bottom: 1rem;
-}
-
-h4 {
-    font-size: 1.1rem;
-    color: #150c21;
-    margin-bottom: 0.8rem;
-}
-
-p {
-    margin-bottom: 1rem;
-    color: #333;
+#main {
+  width: 54em;
+  margin: 0px auto;
+  position: relative;
+  min-height: 100vh;
 }
 
 a {
-    color: #146ebe;
-    text-decoration: none;
-    transition: color 0.2s ease;
+  text-decoration: none;
+  color: rgb(20, 110, 190);
 }
 
 a:hover {
-    color: #0d4a8a;
-    text-decoration: underline;
+  text-decoration: none;
+  border-bottom: 1px solid rgb(20, 110, 190);
 }
 
-/* Header Styles */
-header {
-    margin-bottom: 3rem;
-    text-align: center;
+i {
+  font-style: italic;
 }
 
-header h1 {
-    margin-bottom: 1rem;
+b {
+  font-weight: 700;
 }
+
+h1 {
+  font-size: 2.4em;
+  line-height: 2.4em;
+  font-weight: 500;
+}
+
+/**************************************************/
+/* Profile image and description. */
 
 #intro {
-    max-width: 600px;
-    margin: 0 auto;
+  padding-top: 6em;
+  display: flex;
 }
 
-#intro p {
-    margin-bottom: 1.5rem;
-    font-size: 1.1rem;
-    line-height: 1.7;
+#intro-text {
+  width: 40em;
+  float: left;
 }
 
-.contact-links {
-    margin-top: 2rem;
-    font-size: 1rem;
+#intro-image {
+  margin: 2.7em 0 0 2em;
+  width: 12em;
+  height: 12em;
+  float: left;
+  overflow: hidden;
+  border-radius: 1em;
 }
 
-.contact-links a {
-    margin: 0 0.5rem;
-    color: #146ebe;
+#intro-image img {
+  width: 12em;
 }
 
-/* Navigation */
-.filter-nav {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 2rem;
-    flex-wrap: wrap;
-    gap: 0.5rem;
+/**************************************************/
+/* Section buttons. */
+
+#menu {
+  display: flex;
+}
+
+.menu-item {
+  float: left;
+  margin-right: 2em;
+}
+
+h2 {
+  font-size: 1.6em;
+  line-height: 2.4em;
+  margin-top: 0.5em;
+  color: #a0a8b0;
+}
+
+.selected h2 {
+  color: #150c21;
 }
 
 .button {
-    background: transparent;
-    border: 2px solid #a0a8b0;
-    color: #150c21;
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    font-family: 'Asap', sans-serif;
-    font-size: 0.9rem;
-    font-weight: 500;
+  display: inline-block;
+  cursor: pointer;
+  border: none;
+  background: none;
+  color: #a0a8b0;
+  font-size: 1.6em;
+  line-height: 2.4em;
+  margin-top: 0.5em;
+  margin-right: 1em;
+  float: left;
+  padding: 0;
 }
 
 .button:hover {
-    background: #a0a8b0;
-    color: #fff;
+  color: #150c21;
 }
 
-.button.active {
-    background: #146ebe;
-    border-color: #146ebe;
-    color: #fff;
+.button:active,
+.button.is-checked {
+  color: #150c21;
 }
 
-/* Main Content */
-#main {
-    margin-bottom: 3rem;
+.button-group:after {
+  content: '';
+  display: block;
+  clear: both;
 }
+
+/**************************************************/
+/* Isotope grid list of items. */
 
 .grid {
-    display: grid;
-    gap: 2rem;
+  padding-bottom: 6em;
 }
 
-.grid-item {
-    background: #fff;
-    padding: 2rem;
-    border: 1px solid #e0e0e0;
-    border-radius: 8px;
-    margin-bottom: 2rem;
+/* clear fix */
+.grid:after {
+  content: '';
+  display: block;
+  clear: both;
 }
 
-/* News Styles */
-.news-list {
-    margin-top: 1rem;
+.description {
+  margin-bottom: 1em;
 }
 
-.news-item {
-    display: flex;
-    margin-bottom: 1rem;
-    padding-bottom: 1rem;
-    border-bottom: 1px solid #f0f0f0;
+.list-item {
+  width: 100%;
+  line-height: 1em;
+  margin-top: 1em;
 }
 
-.news-item:last-child {
-    border-bottom: none;
+.list-item p.date {
+  display: inline-block;
+  width: 3em;
+  color: #a0a8b0;
 }
 
-.news-date {
-    min-width: 80px;
-    font-weight: 600;
-    color: #146ebe;
-    margin-right: 1rem;
+
+/**************************************************/
+/* Gallery of 3 preview videos. */
+
+.previews {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  grid-auto-rows: minmax(100px, auto);
+  height: 12.5em;
 }
 
-.news-content {
-    flex: 1;
-    color: #333;
+.previews video {
+  border-radius: 5px;
 }
 
-/* Publications */
-.publication-list {
-    margin-top: 1rem;
+.previews a:hover {
+  border: none;
 }
 
-.publication-item {
-    margin-bottom: 2rem;
-    padding-bottom: 1rem;
-    border-bottom: 1px solid #f0f0f0;
+.preview1 {
+  grid-column: 1;
+  width: 100%;
+}
+.preview2 {
+  grid-column: 2;
+  width: 100%;
+}
+.preview3 {
+  grid-column: 3;
+  width: 100%;
 }
 
-.publication-item:last-child {
-    border-bottom: none;
+/* .list-item.hobby {
+  line-height: 1.8em;
+  margin-bottom: 10px;
+  /* width: 80%;
+} */
+
+.rank, .inst {
+  font-style: italic;
+  color: #555;
+  margin-left: 0.3em;
 }
 
-.publication-item h3 {
-    font-size: 1.1rem;
-    margin-bottom: 0.5rem;
-    color: #150c21;
+/**************************************************/
+/* Buttons for showing more or less highlights. */
+
+.toggle-button {
+  margin-top: 1em;
 }
 
-.authors {
-    color: #146ebe;
-    font-weight: 500;
-    margin-bottom: 0.3rem;
+.toggle-button a {
+  color: #a0a8b0;
 }
 
-.venue {
-    color: #666;
-    font-style: italic;
-    font-size: 0.9rem;
+.toggle-button a:hover {
+  color: rgb(20, 110, 190);
 }
 
-.patent-item {
-    margin-top: 1rem;
-    padding: 1rem;
-    background: #f8f9fa;
-    border-radius: 4px;
+/**************************************************/
+/* Publication details (thumbnail media, title, and description). */
+
+.thumbnail {
+/*  width: 21%;*/
+  width: 18%;
+  float: left;
+  margin-right: 2%;
 }
 
-.patent-item h3 {
-    font-size: 1.1rem;
-    margin-bottom: 0.5rem;
+.thumbnail:hover {
+  border-bottom: none;
 }
 
-.patent-status {
-    color: #666;
-    font-size: 0.9rem;
+.thumbnail img {
+  margin-top: 0.4em;
+  border-radius: 5px;
+  width: 100%;
+  height: 100%;
 }
 
-/* Projects */
-.project-item {
-    margin-bottom: 2rem;
-    padding: 1.5rem;
-    background: #f8f9fa;
-    border-radius: 8px;
-    border-left: 4px solid #146ebe;
+.thumbnail video {
+  margin-top: 0.4em;
+  border-radius: 5px;
+  width: 100%;
+  height: 100%;
 }
 
-.project-item h3 {
-    color: #150c21;
-    margin-bottom: 1rem;
+h3 {
+  font-size: 1em;
+  line-height: 1.5em;
 }
 
-.project-item p {
-    margin-bottom: 0.8rem;
+h3 a {
+  color: #150c21;
 }
 
-.project-item p strong {
-    color: #150c21;
+h3 a:hover {
+  color: rgb(20, 110, 190);
 }
 
-/* Education */
-.education-item {
-    margin-bottom: 1.5rem;
+.publication {
+  margin-bottom: 0.5em;
 }
 
-.education-item h3 {
-    color: #150c21;
-    margin-bottom: 0.5rem;
+.publication strong {
+  font-weight: 500;
+  color: #000;   /* 或者用更深的颜色，突出显示 */
+  text-decoration: underline; /* 下划线 */
+  text-underline-offset: 2px;
 }
 
-.education-item p {
-    margin-bottom: 0.3rem;
+.publication p {
+  font-size: 1em;
+  line-height: 1.5em;
+  color: #a0a8b0;
 }
 
-.period {
-    color: #666;
-    font-style: italic;
+.project-description {
+  width: 80%;
+  float: left;
 }
 
-/* Awards */
-.awards p {
-    color: #666;
-    font-style: italic;
+/**************************************************/
+/* Subtle footer at the bottom of the page. */
+
+#footer {
+  color: #a0a8b0;
+  position: absolute;
+  bottom: 0;
+  line-height: 2.5em;
 }
 
-/* Research Areas */
-.research-areas {
-    margin-top: 1rem;
+/* Custom styles for Ken's website */
+.edu-list, .honor-list, .award-list, .hobby {
+  margin-top: 1em;
 }
 
-.research-area {
-    margin-bottom: 1.5rem;
-    padding: 1rem;
-    background: #f8f9fa;
-    border-radius: 4px;
+.edu-item {
+  display: flex;
+  align-items: center;
+  padding: 4px 20px;
+  border-bottom: 1px solid #f0f0f0;
 }
 
-.research-area h3 {
-    color: #146ebe;
-    margin-bottom: 0.5rem;
+.edu-item img {
+  width: 80%;
+  max-width: 100px;
 }
 
-/* Teaching */
-.teaching ul {
-    list-style: none;
-    padding-left: 0;
+.news-item, .project-item, .education-item, .research-area {
+  margin-bottom: 1em;
+  padding: 1em 0;
+  border-bottom: 1px solid #f0f0f0;
 }
 
-.teaching li {
-    margin-bottom: 0.8rem;
-    padding-left: 1.5rem;
-    position: relative;
-}
-
-.teaching li::before {
-    content: '•';
-    position: absolute;
-    left: 0;
-    color: #146ebe;
-    font-weight: bold;
-}
-
-/* Skills */
-.skill-categories {
-    margin-top: 1rem;
+.news-item:last-child, .project-item:last-child, .education-item:last-child, .research-area:last-child {
+  border-bottom: none;
 }
 
 .skill-category {
-    margin-bottom: 1.5rem;
-    padding: 1rem;
-    background: #f8f9fa;
-    border-radius: 4px;
+  margin-bottom: 1em;
+  padding: 1em 0;
 }
 
-.skill-category h3 {
-    color: #146ebe;
-    margin-bottom: 0.5rem;
+.teaching ul {
+  list-style: none;
+  padding-left: 0;
 }
 
-/* Footer */
-footer {
-    text-align: center;
-    padding: 2rem 0;
-    border-top: 1px solid #e0e0e0;
-    margin-top: 3rem;
-    color: #666;
+.teaching li {
+  margin-bottom: 0.8em;
+  padding-left: 1.5rem;
+  position: relative;
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
-    body {
-        padding: 15px;
-    }
-
-    h1 {
-        font-size: 2rem;
-    }
-
-    h2 {
-        font-size: 1.5rem;
-    }
-
-    .filter-nav {
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .button {
-        width: 100%;
-        max-width: 200px;
-    }
-
-    .news-item {
-        flex-direction: column;
-    }
-
-    .news-date {
-        margin-bottom: 0.5rem;
-        margin-right: 0;
-    }
-
-    .grid-item {
-        padding: 1.5rem;
-    }
-
-    .project-item {
-        padding: 1rem;
-    }
-}
-
-@media (max-width: 480px) {
-    body {
-        padding: 10px;
-    }
-
-    h1 {
-        font-size: 1.8rem;
-    }
-
-    h2 {
-        font-size: 1.3rem;
-    }
-
-    .grid-item {
-        padding: 1rem;
-    }
-
-    .project-item {
-        padding: 0.8rem;
-    }
-
-    .contact-links {
-        font-size: 0.9rem;
-    }
-
-    .contact-links a {
-        display: block;
-        margin: 0.5rem 0;
-    }
-}
-
-/* Print Styles */
-@media print {
-    body {
-        font-size: 12pt;
-        line-height: 1.4;
-    }
-
-    .filter-nav {
-        display: none;
-    }
-
-    .grid-item {
-        break-inside: avoid;
-        border: 1px solid #ccc;
-    }
-
-    .project-item {
-        background: white;
-        border: 1px solid #ccc;
-    }
-
-    a {
-        color: #000;
-        text-decoration: none;
-    }
-
-    .contact-links a::after {
-        content: " (" attr(href) ")";
-        font-size: 0.8em;
-        color: #666;
-    }
+.teaching li::before {
+  content: '•';
+  position: absolute;
+  left: 0;
+  color: rgb(20, 110, 190);
+  font-weight: bold;
 }

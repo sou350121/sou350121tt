@@ -1,234 +1,319 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <!-- Title -->
     <title>Sou Kit-Wa (Ken)</title>
-    <meta name="description" content="Ph.D. Candidate specializing in visuotactile sensing and dexterous robotics at Tsinghua-Berkeley Shenzhen Institute">
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Asap:wght@100;200;300;400;500;600;700&display=swap">
-    <link rel="icon" href="favicon.ico">
-</head>
-<body>
-    <header>
-        <h1>Sou Kit-Wa (Ken)</h1>
-        <div id="intro">
-            <p>
-            Ph.D. Candidate, Tsinghua-Berkeley Shenzhen Institute (TBSI)<br>
-            Data Science & Information Technology
-            </p>
-            <p>
-            I design and integrate vision-through tactile sensors and robust manipulation systems for constrained, real-world tasks—combining optical moiré sensing, ultrasound, and mechanoluminescent cues with learning-plus-physics models.
-            </p>
-            <div class="contact-links">
-                <a href="mailto:sou350121@gmail.com">Email</a> &middot;
-                <a href="https://github.com/sou350121">GitHub</a> &middot;
-                <a href="https://scholar.google.com/citations?user=sou350121">Google Scholar</a> &middot;
-                <a href="#">CV</a>
-            </div>
-        </div>
-    </header>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=1000">
 
-    <main id="main">
-        <nav class="filter-nav">
-            <button class="button active" data-filter="*">All</button>
-            <button class="button" data-filter="publications">Publications</button>
-            <button class="button" data-filter="projects">Projects</button>
-            <button class="button" data-filter="education">Education</button>
-            <button class="button" data-filter="awards">Awards</button>
-            <button class="button" data-filter="news">News</button>
-        </nav>
-
-        <div class="grid">
-            <!-- News Items -->
-            <div class="grid-item news">
-                <h2>News</h2>
-                <div class="news-list">
-                    <div class="news-item">
-                        <span class="news-date">2025</span>
-                        <span class="news-content">Finalizing Ph.D. dissertation (visuotactile sensing + variable-stiffness manipulation).</span>
-                    </div>
-                    <div class="news-item">
-                        <span class="news-date">2025</span>
-                        <span class="news-content">Patent on ultrasound-enhanced tactile sensing granted (co-inventor).</span>
-                    </div>
-                    <div class="news-item">
-                        <span class="news-date">2025</span>
-                        <span class="news-content">System demos and code cleanup for visuotactile stack.</span>
-                    </div>
-                    <div class="news-item">
-                        <span class="news-date">2024-2025</span>
-                        <span class="news-content">Platform upgrades for mechano-luminescent tactile experiments.</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Publications -->
-            <div class="grid-item publications">
-                <h2>Publications</h2>
-                <div class="publication-list">
-                    <div class="publication-item">
-                        <h3>Visuotactile sensing with moiré amplification for 6-DoF contact estimation.</h3>
-                        <p class="authors">[Authors]</p>
-                        <p class="venue">[Venue, Year]</p>
-                    </div>
-                    <div class="publication-item">
-                        <h3>Ultrasound-tactile fusion for state-aware manipulation.</h3>
-                        <p class="authors">[Authors]</p>
-                        <p class="venue">[Venue, Year]</p>
-                    </div>
-                    <div class="publication-item">
-                        <h3>Event/mechano-luminescent tactile interfaces for low-power, on-sensor signaling.</h3>
-                        <p class="authors">[Authors]</p>
-                        <p class="venue">[Venue, Year]</p>
-                    </div>
-                    <div class="publication-item">
-                        <h3>Hybrid wind-and-raindrop energy harvesting for edge devices.</h3>
-                        <p class="authors">[Authors]</p>
-                        <p class="venue">[Venue, Year]</p>
-                    </div>
-                </div>
-
-                <h3>Patents</h3>
-                <div class="patent-item">
-                    <h3>Ultrasound-enhanced tactile sensing system</h3>
-                    <p class="patent-status">Granted, co-inventor.</p>
-                </div>
-            </div>
-
-            <!-- Projects -->
-            <div class="grid-item projects">
-                <h2>Selected Projects</h2>
-                <div class="project-item">
-                    <h3>MoiréTac — Vision-Through Visuotactile Sensor</h3>
-                    <p><strong>Problem:</strong> Many tactile skins block vision; tasks like cap removal need line-of-sight + torque + slip/tilt simultaneously.</p>
-                    <p><strong>Approach:</strong> Dual-grating optics produce moiré patterns; frequency-domain features + optical flow + physics priors estimate Fz/Tz and contact pose.</p>
-                    <p><strong>Result:</strong> Real-time force/torque cues with maintained visual access to the target.</p>
-                </div>
-
-                <div class="project-item">
-                    <h3>UltraTac — Ultrasound-Enhanced Tactile</h3>
-                    <p><strong>Problem:</strong> Pure tactile struggles on soft/transparent objects and liquid containers.</p>
-                    <p><strong>Approach:</strong> Fuse ultrasound ranging/reflectance with tactile images; temporal features and simple reflectance models.</p>
-                    <p><strong>Result:</strong> More reliable material/state classification and steadier manipulation policies.</p>
-                </div>
-
-                <div class="project-item">
-                    <h3>LED Waveguide Skin — Self-Explaining Tactile</h3>
-                    <p><strong>Idea:</strong> Embedded LEDs + light-guide for on-sensor status visualization (illumination, contact "hot spots", ROI guides) and easier alignment/debug.</p>
-                    <p><strong>Notes:</strong> Brightness uniformity tuning; synchronized prompts with tactile capture.</p>
-                </div>
-
-                <div class="project-item">
-                    <h3>FlexLock — Variable-Stiffness Arm</h3>
-                    <p><strong>Goal:</strong> Reversible soft↔rigid switching for tight spaces and human-shared environments.</p>
-                    <p><strong>Method:</strong> SMA springs + distributed heating with particle damping; stiffness-trajectory planning with dual-sensor feedback.</p>
-                    <p><strong>Demos:</strong> Impact absorption in soft mode; heavy pick/hold after stiffening.</p>
-                </div>
-            </div>
-
-            <!-- Education -->
-            <div class="grid-item education">
-                <h2>Education</h2>
-                <div class="education-item">
-                    <h3>Ph.D. in Data Science & Information Technology</h3>
-                    <p><strong>Tsinghua-Berkeley Shenzhen Institute (TBSI)</strong></p>
-                    <p class="period">2020 - Present (Expected)</p>
-                </div>
-            </div>
-
-            <!-- Awards -->
-            <div class="grid-item awards">
-                <h2>Awards</h2>
-                <p>Scholarships and competition awards across undergraduate and graduate stages.</p>
-            </div>
-
-            <!-- Research Focus -->
-            <div class="grid-item research">
-                <h2>Research Focus</h2>
-                <div class="research-areas">
-                    <div class="research-area">
-                        <h3>Visuotactile Sensing</h3>
-                        <p>Moiré amplification with dual gratings; vision-through contact; ultrasound-tactile fusion; event/mechanoluminescent tactile skins.</p>
-                    </div>
-                    <div class="research-area">
-                        <h3>Forces & Contact Semantics</h3>
-                        <p>Real-time 6-DoF force/torque estimation; preload (Fz), twist (Tz), slip/tilt cues; contact-state recognition.</p>
-                    </div>
-                    <div class="research-area">
-                        <h3>Dexterous & Safe Manipulation</h3>
-                        <p>Variable-stiffness actuation (e.g., SMA, particle jamming), human-robot shared spaces, trajectory and compliance control.</p>
-                    </div>
-                    <div class="research-area">
-                        <h3>Perception-to-Action</h3>
-                        <p>Fused physics-guided + learning models; calibration toolchains; robust, repeatable evaluation.</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Teaching & Service -->
-            <div class="grid-item teaching">
-                <h2>Teaching & Service</h2>
-                <ul>
-                    <li>Teaching assistant (graduate courses related to sensing/robotics).</li>
-                    <li>Reviewer for HCI/ubiquitous/robotics venues.</li>
-                </ul>
-            </div>
-
-            <!-- Skills -->
-            <div class="grid-item skills">
-                <h2>Skills</h2>
-                <div class="skill-categories">
-                    <div class="skill-category">
-                        <h3>Engineering</h3>
-                        <p>Sensor design & integration (optical/ultrasound/flexible), mechanical design & rapid prototyping, robot arms & end-effectors.</p>
-                    </div>
-                    <div class="skill-category">
-                        <h3>Software</h3>
-                        <p>Python, PyTorch, ROS, Linux; signal processing pipelines; evaluation tooling.</p>
-                    </div>
-                    <div class="skill-category">
-                        <h3>Modeling/Sim</h3>
-                        <p>Frequency-domain analysis; optical/thermal considerations; calibration & ROI tooling.</p>
-                    </div>
-                    <div class="skill-category">
-                        <h3>Communication</h3>
-                        <p>Technical writing, figure/data storytelling, demo-driven validation.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </main>
-
-    <footer>
-        <p>&copy; 2025 Sou Kit-Wa (Ken). All rights reserved.</p>
-    </footer>
-
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Isotope JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.2/jquery-ui.min.js"></script>
     <script src="https://unpkg.com/isotope-layout@3/dist/isotope.pkgd.min.js"></script>
+
+    <!-- Custom Style -->
+    <link rel="stylesheet" href="css/style.css">
+
+    <!-- Google Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Asap:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Asap:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap');
+    </style>
+  </head>
+
+  <body id="body">
+
+    <div id="main">
+      <div id="intro">
+        <div id="intro-text">
+          <h1>Sou Kit-Wa (Ken)</h1>
+          <p>
+            Ph.D. Candidate, <a href="https://www.sigs.tsinghua.edu.cn/en/">Tsinghua-Berkeley Shenzhen Institute (TBSI)</a><br>
+            Data Science & Information Technology<br><br>
+            I design and integrate vision-through tactile sensors and robust manipulation systems for constrained, real-world tasks—combining optical moiré sensing, ultrasound, and mechanoluminescent cues with learning-plus-physics models. <br><br>
+            <a href="mailto:sou350121@gmail.com">Email</a>&nbsp;&nbsp;&nbsp;&nbsp;
+            <a href="https://github.com/sou350121">GitHub</a>&nbsp;&nbsp;&nbsp;&nbsp;
+            <a href="https://scholar.google.com/citations?user=sou350121">Google Scholar</a>&nbsp;&nbsp;&nbsp;&nbsp;
+            <a href="#">CV</a>
+          </p>
+        </div>
+        <div id="intro-image">
+          <!-- Profile image placeholder -->
+          <div style="width: 12em; height: 12em; background-color: #f0f0f0; border-radius: 1em; display: flex; align-items: center; justify-content: center; color: #a0a8b0; font-size: 3em;">
+            Ken
+          </div>
+        </div>
+      </div>
+
+      <div id="filters" class="button-group">
+        <button class="button is-checked" data-filter=".publication">Research</button>
+        <button class="button" data-filter=".education">Education</button>
+        <button class="button" data-filter=".award">Awards</button>
+        <button class="button" data-filter=".news">News</button>
+        <button class="button" data-filter=".teaching">Teaching</button>
+        <button class="button" data-filter=".skills">Skills</button>
+      </div>
+
+      <div class="grid">
+
+        <!-- Research/Publications -->
+        <div class="list-item publication" data-category="publication">
+          <div class="project-description">
+            <h3>Visuotactile sensing with moiré amplification for 6-DoF contact estimation</h3>
+            <p>
+              [Authors]<br>
+              <i>[Venue, Year]</i><br>
+              Dual-grating optics produce moiré patterns; frequency-domain features + optical flow + physics priors estimate Fz/Tz and contact pose.
+            </p>
+          </div>
+        </div>
+
+        <div class="list-item publication" data-category="publication">
+          <div class="project-description">
+            <h3>Ultrasound-tactile fusion for state-aware manipulation</h3>
+            <p>
+              [Authors]<br>
+              <i>[Venue, Year]</i><br>
+              Fuse ultrasound ranging/reflectance with tactile images; temporal features and simple reflectance models for reliable material/state classification.
+            </p>
+          </div>
+        </div>
+
+        <div class="list-item publication" data-category="publication">
+          <div class="project-description">
+            <h3>Event/mechano-luminescent tactile interfaces for low-power, on-sensor signaling</h3>
+            <p>
+              [Authors]<br>
+              <i>[Venue, Year]</i><br>
+              Embedded LEDs + light-guide for on-sensor status visualization and easier alignment/debug.
+            </p>
+          </div>
+        </div>
+
+        <div class="list-item publication" data-category="publication">
+          <div class="project-description">
+            <h3>Hybrid wind-and-raindrop energy harvesting for edge devices</h3>
+            <p>
+              [Authors]<br>
+              <i>[Venue, Year]</i><br>
+              Sustainable energy solutions for sensor networks and edge computing devices.
+            </p>
+          </div>
+        </div>
+
+        <!-- Patents -->
+        <div class="list-item publication" data-category="publication">
+          <div class="project-description">
+            <h3>Ultrasound-enhanced tactile sensing system</h3>
+            <p>
+              <strong>Patent</strong><br>
+              Granted, co-inventor.<br>
+              Enhanced tactile sensing through ultrasound integration for improved material and state detection.
+            </p>
+          </div>
+        </div>
+
+        <!-- Projects -->
+        <div class="list-item publication" data-category="publication">
+          <div class="project-description">
+            <h3>MoiréTac — Vision-Through Visuotactile Sensor</h3>
+            <p>
+              <strong>Problem:</strong> Many tactile skins block vision; tasks like cap removal need line-of-sight + torque + slip/tilt simultaneously.<br>
+              <strong>Approach:</strong> Dual-grating optics produce moiré patterns; frequency-domain features + optical flow + physics priors estimate Fz/Tz and contact pose.<br>
+              <strong>Result:</strong> Real-time force/torque cues with maintained visual access to the target.
+            </p>
+          </div>
+        </div>
+
+        <div class="list-item publication" data-category="publication">
+          <div class="project-description">
+            <h3>UltraTac — Ultrasound-Enhanced Tactile</h3>
+            <p>
+              <strong>Problem:</strong> Pure tactile struggles on soft/transparent objects and liquid containers.<br>
+              <strong>Approach:</strong> Fuse ultrasound ranging/reflectance with tactile images; temporal features and simple reflectance models.<br>
+              <strong>Result:</strong> More reliable material/state classification and steadier manipulation policies.
+            </p>
+          </div>
+        </div>
+
+        <div class="list-item publication" data-category="publication">
+          <div class="project-description">
+            <h3>LED Waveguide Skin — Self-Explaining Tactile</h3>
+            <p>
+              <strong>Idea:</strong> Embedded LEDs + light-guide for on-sensor status visualization (illumination, contact "hot spots", ROI guides) and easier alignment/debug.<br>
+              <strong>Notes:</strong> Brightness uniformity tuning; synchronized prompts with tactile capture.
+            </p>
+          </div>
+        </div>
+
+        <div class="list-item publication" data-category="publication">
+          <div class="project-description">
+            <h3>FlexLock — Variable-Stiffness Arm</h3>
+            <p>
+              <strong>Goal:</strong> Reversible soft↔rigid switching for tight spaces and human-shared environments.<br>
+              <strong>Method:</strong> SMA springs + distributed heating with particle damping; stiffness-trajectory planning with dual-sensor feedback.<br>
+              <strong>Demos:</strong> Impact absorption in soft mode; heavy pick/hold after stiffening.
+            </p>
+          </div>
+        </div>
+
+        <!-- Education -->
+        <div class="edu-list">
+          <div class="list-item talk edu-item" data-category="education">
+            <div style="display:flex; align-items:center; padding:4px 20px;">
+              <div style="flex:0 0 20%;">
+                <div style="width: 80px; height: 80px; background-color: #f0f0f0; border-radius: 5px; display: flex; align-items: center; justify-content: center; color: #a0a8b0;">
+                  TBSI
+                </div>
+              </div>
+              <div style="flex:1; height:140px; display:flex; flex-direction:column; justify-content:center;line-height:1.6em;">
+                <p><b>Tsinghua-Berkeley Shenzhen Institute</b>, China</p>
+                <p>2020 – Present</p>
+                <p>Ph.D. Student in Data Science and Information Technology</p>
+                <p>Expected graduation: 2025</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Awards -->
+        <div class="award-list">
+          <div class="list-item award" data-category="award">
+            <p class="date">2025</p>
+            Patent granted for ultrasound-enhanced tactile sensing system <span class="inst">Co-inventor</span>
+          </div>
+          <div class="list-item award" data-category="award">
+            <p class="date">2024-2025</p>
+            Platform upgrades for mechano-luminescent tactile experiments <span class="inst">Research funding</span>
+          </div>
+          <div class="list-item award" data-category="award">
+            <p class="date">2020-2025</p>
+            Graduate scholarships and research awards <span class="inst">Tsinghua University</span>
+          </div>
+        </div>
+
+        <!-- News -->
+        <div class="list-item news" data-category="news">
+          <p class="date">2025</p>
+          Finalizing Ph.D. dissertation (visuotactile sensing + variable-stiffness manipulation)
+        </div>
+        <div class="list-item news" data-category="news">
+          <p class="date">2025</p>
+          Patent on ultrasound-enhanced tactile sensing granted (co-inventor)
+        </div>
+        <div class="list-item news" data-category="news">
+          <p class="date">2025</p>
+          System demos and code cleanup for visuotactile stack
+        </div>
+        <div class="list-item news" data-category="news">
+          <p class="date">2024-2025</p>
+          Platform upgrades for mechano-luminescent tactile experiments
+        </div>
+
+        <!-- Teaching -->
+        <div class="list-item teaching" data-category="teaching">
+          <div class="project-description">
+            <h3>Teaching Assistant</h3>
+            <ul>
+              <li>Graduate courses related to sensing and robotics</li>
+              <li>Reviewer for HCI/ubiquitous/robotics venues</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Skills -->
+        <div class="list-item skills" data-category="skills">
+          <div class="project-description">
+            <h3>Engineering</h3>
+            <p>Sensor design & integration (optical/ultrasound/flexible), mechanical design & rapid prototyping, robot arms & end-effectors</p>
+          </div>
+        </div>
+        <div class="list-item skills" data-category="skills">
+          <div class="project-description">
+            <h3>Software</h3>
+            <p>Python, PyTorch, ROS, Linux; signal processing pipelines; evaluation tooling</p>
+          </div>
+        </div>
+        <div class="list-item skills" data-category="skills">
+          <div class="project-description">
+            <h3>Modeling/Sim</h3>
+            <p>Frequency-domain analysis; optical/thermal considerations; calibration & ROI tooling</p>
+          </div>
+        </div>
+        <div class="list-item skills" data-category="skills">
+          <div class="project-description">
+            <h3>Communication</h3>
+            <p>Technical writing, figure/data storytelling, demo-driven validation</p>
+          </div>
+        </div>
+
+      </div>
+
+      <div id="footer" style="display:flex; justify-content:flex-start; align-items:center;">
+        <div>
+          &copy; 2025 Sou Kit-Wa (Ken). All rights reserved.
+        </div>
+      </div>
+
+    </div>
+
     <script>
-        $(document).ready(function() {
-            // Initialize Isotope
-            var $grid = $('.grid').isotope({
-                itemSelector: '.grid-item',
-                layoutMode: 'fitRows',
-                filter: '*'
-            });
+      // Isotope grid.
+      var $grid = $('.grid').isotope({
+        itemSelector: '.list-item',
+        layoutMode: 'fitRows',
+        transitionDuration: 0,
+        stagger: 10,
+        initLayout: false,
+        getSortData: {
+          name: '.name',
+          symbol: '.symbol',
+          number: '.number parseInt',
+          category: '[data-category]',
+          weight: function( itemElem ) {
+            var weight = $( itemElem ).find('.weight').text();
+            return parseFloat( weight.replace( /[\(\)]/g, '') );
+          }
+        }
+      });
 
-            // Filter buttons
-            $('.button').on('click', function() {
-                var filterValue = $(this).attr('data-filter');
-                if (filterValue === '*') {
-                    $grid.isotope({ filter: '*' });
-                } else {
-                    $grid.isotope({ filter: '.' + filterValue });
-                }
+      // Bind filter button click.
+      $('#filters').on( 'click', 'button', function() {
+        var filterValue = $( this ).attr('data-filter');
+        localStorage.setItem('filterValue', filterValue);
+        $grid.isotope({ filter: filterValue });
+      });
 
-                // Update active button
-                $('.button').removeClass('active');
-                $(this).addClass('active');
-            });
+      // Change is-checked class on buttons.
+      $('.button-group').each( function( i, buttonGroup ) {
+        var $buttonGroup = $( buttonGroup );
+        $buttonGroup.on( 'click', 'button', function() {
+          $buttonGroup.find('.is-checked').removeClass('is-checked');
+          $( this ).addClass('is-checked');
         });
+      });
+
+      function update_isotope() {
+        // Retrieve cached button click.
+        var defaultFilterValue = localStorage.getItem('filterValue');
+        if (defaultFilterValue == null) {
+          defaultFilterValue = ".publication"
+        }
+        $grid.isotope({ filter: defaultFilterValue });
+        var buttons = document.getElementsByClassName("button");
+        for (var currButton of buttons) {
+          if (currButton.getAttribute('data-filter') == defaultFilterValue) {
+            currButton.classList.add('is-checked');
+          } else {
+            currButton.classList.remove('is-checked');
+          }
+        }
+      }
+
+      update_isotope();
+
     </script>
-</body>
+  </body>
 </html>
