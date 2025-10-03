@@ -25,6 +25,11 @@
 
   <body id="body">
 
+    <!-- Theme Toggle Button -->
+    <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">
+      <span id="theme-icon">🌙</span>
+    </button>
+
     <div id="main">
       <div id="intro">
         <div id="intro-text">
@@ -260,6 +265,35 @@
     </div>
 
     <script>
+      // Theme Toggle Functionality
+      const themeToggle = document.getElementById('theme-toggle');
+      const themeIcon = document.getElementById('theme-icon');
+      const body = document.body;
+
+      // Check for saved theme preference or default to light mode
+      const currentTheme = localStorage.getItem('theme') || 'light';
+
+      function setTheme(theme) {
+        if (theme === 'dark') {
+          body.classList.add('dark-theme');
+          themeIcon.textContent = '☀️';
+          localStorage.setItem('theme', 'dark');
+        } else {
+          body.classList.remove('dark-theme');
+          themeIcon.textContent = '🌙';
+          localStorage.setItem('theme', 'light');
+        }
+      }
+
+      // Set initial theme
+      setTheme(currentTheme);
+
+      // Theme toggle event listener
+      themeToggle.addEventListener('click', () => {
+        const newTheme = body.classList.contains('dark-theme') ? 'light' : 'dark';
+        setTheme(newTheme);
+      });
+
       // Isotope grid.
       var $grid = $('.grid').isotope({
         itemSelector: '.list-item',

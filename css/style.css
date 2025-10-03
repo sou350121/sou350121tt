@@ -375,3 +375,150 @@ h3 a:hover {
   color: rgb(20, 110, 190);
   font-weight: bold;
 }
+
+/**************************************************/
+/* Dark Theme Styles */
+
+body.dark-theme {
+  background-color: #1a1a1a;
+  color: #e0e0e0;
+}
+
+body.dark-theme #body {
+  color: #e0e0e0;
+}
+
+body.dark-theme #main {
+  background-color: #1a1a1a;
+}
+
+body.dark-theme h1,
+body.dark-theme h2,
+body.dark-theme h3 {
+  color: #ffffff;
+}
+
+body.dark-theme h2 {
+  color: #b0b0b0;
+}
+
+body.dark-theme .selected h2 {
+  color: #ffffff;
+}
+
+body.dark-theme a {
+  color: #4a9eff;
+}
+
+body.dark-theme a:hover {
+  border-bottom: 1px solid #4a9eff;
+}
+
+body.dark-theme h3 a {
+  color: #ffffff;
+}
+
+body.dark-theme h3 a:hover {
+  color: #4a9eff;
+}
+
+body.dark-theme .button {
+  color: #b0b0b0;
+}
+
+body.dark-theme .button:hover {
+  color: #ffffff;
+}
+
+body.dark-theme .button:active,
+body.dark-theme .button.is-checked {
+  color: #ffffff;
+}
+
+body.dark-theme .list-item {
+  border-bottom: 1px solid #333333;
+}
+
+body.dark-theme .edu-item {
+  border-bottom: 1px solid #333333;
+}
+
+body.dark-theme .news-item,
+body.dark-theme .project-item,
+body.dark-theme .education-item,
+body.dark-theme .research-area {
+  border-bottom: 1px solid #333333;
+}
+
+body.dark-theme .publication p {
+  color: #b0b0b0;
+}
+
+body.dark-theme .list-item p.date {
+  color: #b0b0b0;
+}
+
+body.dark-theme .rank,
+body.dark-theme .inst {
+  color: #888888;
+}
+
+body.dark-theme .toggle-button a {
+  color: #b0b0b0;
+}
+
+body.dark-theme .toggle-button a:hover {
+  color: #4a9eff;
+}
+
+body.dark-theme #footer {
+  color: #b0b0b0;
+}
+
+/* Theme toggle button */
+.theme-toggle {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.5em;
+  color: #a0a8b0;
+  z-index: 1000;
+  padding: 10px;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+
+.theme-toggle:hover {
+  color: #150c21;
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+body.dark-theme .theme-toggle {
+  color: #b0b0b0;
+}
+
+body.dark-theme .theme-toggle:hover {
+  color: #ffffff;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Smooth transitions for theme switching */
+body,
+body * {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Profile image placeholder in dark theme */
+body.dark-theme #intro-image > div {
+  background-color: #333333 !important;
+  color: #b0b0b0 !important;
+}
+
+/* Education placeholder in dark theme */
+body.dark-theme .edu-item div > div {
+  background-color: #333333 !important;
+  color: #b0b0b0 !important;
+}
