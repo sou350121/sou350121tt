@@ -528,6 +528,65 @@ body.dark-theme .teaching li::before {
   color: #4a9eff;
 }
 
+/* Awards and News specific fixes */
+body.dark-theme .list-item.award {
+  color: #e0e0e0;
+}
+
+body.dark-theme .list-item.news {
+  color: #e0e0e0;
+}
+
+/* All text elements in dark theme */
+body.dark-theme * {
+  color: inherit !important;
+}
+
+/* Override specific elements to ensure they are visible */
+body.dark-theme .list-item {
+  color: #e0e0e0 !important;
+}
+
+body.dark-theme .list-item .date {
+  color: #b0b0b0 !important;
+}
+
+body.dark-theme .list-item .inst {
+  color: #888888 !important;
+}
+
+body.dark-theme .award-list,
+body.dark-theme .award-list * {
+  color: #e0e0e0 !important;
+}
+
+body.dark-theme .award-list .date {
+  color: #b0b0b0 !important;
+}
+
+body.dark-theme .award-list .inst {
+  color: #888888 !important;
+}
+
+body.dark-theme .news-list,
+body.dark-theme .news-list * {
+  color: #e0e0e0 !important;
+}
+
+body.dark-theme .news-list .date {
+  color: #b0b0b0 !important;
+}
+
+/* Education items text */
+body.dark-theme .edu-item p,
+body.dark-theme .edu-item b {
+  color: #e0e0e0 !important;
+}
+
+body.dark-theme .edu-item b {
+  color: #ffffff !important;
+}
+
 /* Theme toggle button */
 .theme-toggle {
   position: fixed;
