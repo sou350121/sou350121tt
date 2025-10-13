@@ -401,6 +401,7 @@ body.dark-theme #main {
   background-color: #1a1a1a;
 }
 
+/* Text colors */
 body.dark-theme h1,
 body.dark-theme h2,
 body.dark-theme h3 {
@@ -412,6 +413,19 @@ body.dark-theme h2 {
 }
 
 body.dark-theme .selected h2 {
+  color: #ffffff;
+}
+
+body.dark-theme p {
+  color: #e0e0e0;
+}
+
+body.dark-theme #intro-text p {
+  color: #e0e0e0;
+}
+
+body.dark-theme strong,
+body.dark-theme b {
   color: #ffffff;
 }
 
@@ -431,6 +445,7 @@ body.dark-theme h3 a:hover {
   color: #4a9eff;
 }
 
+/* Button styles */
 body.dark-theme .button {
   color: #b0b0b0;
 }
@@ -444,6 +459,7 @@ body.dark-theme .button.is-checked {
   color: #ffffff;
 }
 
+/* Border colors */
 body.dark-theme .list-item {
   border-bottom: 1px solid #333333;
 }
@@ -459,8 +475,13 @@ body.dark-theme .research-area {
   border-bottom: 1px solid #333333;
 }
 
+/* Publication styles */
 body.dark-theme .publication p {
-  color: #b0b0b0;
+  color: #e0e0e0;
+}
+
+body.dark-theme .publication strong {
+  color: #ffffff;
 }
 
 body.dark-theme .list-item p.date {
@@ -480,8 +501,31 @@ body.dark-theme .toggle-button a:hover {
   color: #4a9eff;
 }
 
+/* Project descriptions */
+body.dark-theme .project-description p {
+  color: #e0e0e0;
+}
+
+body.dark-theme .project-description strong {
+  color: #ffffff;
+}
+
+/* Footer */
 body.dark-theme #footer {
   color: #b0b0b0;
+}
+
+/* Lists */
+body.dark-theme li {
+  color: #e0e0e0;
+}
+
+body.dark-theme .teaching li {
+  color: #e0e0e0;
+}
+
+body.dark-theme .teaching li::before {
+  color: #4a9eff;
 }
 
 /* Theme toggle button */
