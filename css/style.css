@@ -270,14 +270,17 @@ h2 {
   margin-top: 0.4em;
   border-radius: 5px;
   width: 100%;
-  height: 100%;
+  height: 180px;
+  object-fit: cover;
+  aspect-ratio: 4/3;
 }
 
 .thumbnail video {
   margin-top: 0.4em;
   border-radius: 5px;
   width: 100%;
-  height: 100%;
+  height: 180px;
+  aspect-ratio: 4/3;
 }
 
 h3 {
