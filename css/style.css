@@ -342,6 +342,102 @@ h3 a:hover {
   margin-top: 1em;
 }
 
+/* Enhanced Skills Section */
+.list-item.skills {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-radius: 12px;
+  padding: 1.5em;
+  margin-bottom: 1.2em;
+  border-left: 4px solid #146ebe;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Enhanced Awards Section */
+.list-item.award {
+  background: linear-gradient(135deg, #f1f8e9 0%, #dcedc8 100%);
+  border-radius: 12px;
+  padding: 1.5em;
+  margin-bottom: 1.2em;
+  border-left: 4px solid #689f38;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  display: flex;
+  align-items: center;
+}
+
+.list-item.award:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.list-item.award .date {
+  min-width: 4em;
+  color: #33691e !important;
+  font-weight: 600;
+  font-size: 1.1em;
+  margin-right: 1em;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.7);
+  padding: 0.5em;
+  border-radius: 6px;
+}
+
+.list-item.award .date::after {
+  content: '🏆';
+  display: block;
+  font-size: 1.2em;
+  margin-top: 0.2em;
+}
+
+.list-item.award .award-content {
+  flex: 1;
+  color: #33691e;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.list-item.award .inst {
+  color: #689f38;
+  font-style: normal;
+  background: rgba(255, 255, 255, 0.7);
+  padding: 0.2em 0.4em;
+  border-radius: 4px;
+  font-size: 0.9em;
+  margin-left: 0.5em;
+}
+
+.list-item.skills:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.list-item.skills .project-description h3 {
+  color: #146ebe;
+  font-weight: 600;
+  margin-bottom: 0.8em;
+  font-size: 1.1em;
+  display: flex;
+  align-items: center;
+}
+
+.list-item.skills .project-description h3::before {
+  content: '🔧';
+  margin-right: 0.5em;
+  font-size: 1.1em;
+}
+
+.list-item.skills .project-description p {
+  line-height: 1.6;
+  color: #495057;
+  margin-bottom: 0;
+}
+
+.list-item.skills:nth-child(1) .project-description h3::before { content: '⚙️'; }
+.list-item.skills:nth-child(2) .project-description h3::before { content: '💻'; }
+.list-item.skills:nth-child(3) .project-description h3::before { content: '🤖'; }
+.list-item.skills:nth-child(4) .project-description h3::before { content: '🌐'; }
+
 .edu-item {
   display: flex;
   align-items: center;
@@ -369,23 +465,67 @@ h3 a:hover {
   padding: 1em 0;
 }
 
+/* Enhanced Teaching Section */
+.list-item.teaching {
+  background: linear-gradient(135deg, #fff5e6 0%, #ffe8cc 100%);
+  border-radius: 12px;
+  padding: 1.5em;
+  margin-bottom: 1.2em;
+  border-left: 4px solid #ff9800;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.list-item.teaching:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.list-item.teaching .project-description h3 {
+  color: #e65100;
+  font-weight: 600;
+  margin-bottom: 1em;
+  font-size: 1.2em;
+  display: flex;
+  align-items: center;
+}
+
+.list-item.teaching .project-description h3::before {
+  content: '📚';
+  margin-right: 0.5em;
+  font-size: 1.1em;
+}
+
 .teaching ul {
   list-style: none;
   padding-left: 0;
+  margin: 0;
 }
 
 .teaching li {
   margin-bottom: 0.8em;
   padding-left: 1.5rem;
   position: relative;
+  line-height: 1.5;
+  color: #5d4037;
+  background: rgba(255, 255, 255, 0.5);
+  padding: 0.6em 0.6em 0.6em 1.5rem;
+  border-radius: 6px;
+  transition: background-color 0.2s ease;
+}
+
+.teaching li:hover {
+  background: rgba(255, 255, 255, 0.8);
 }
 
 .teaching li::before {
-  content: '•';
+  content: '▶';
   position: absolute;
-  left: 0;
-  color: rgb(20, 110, 190);
+  left: 0.3em;
+  color: #ff9800;
+  font-size: 0.8em;
   font-weight: bold;
+  top: 0.7em;
 }
 
 /**************************************************/
@@ -528,7 +668,72 @@ body.dark-theme .teaching li {
 }
 
 body.dark-theme .teaching li::before {
+  color: #ff9800;
+}
+
+/* Dark theme for enhanced Skills section */
+body.dark-theme .list-item.skills {
+  background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
+  border-left-color: #4a9eff;
+}
+
+body.dark-theme .list-item.skills:hover {
+  box-shadow: 0 4px 12px rgba(74, 158, 255, 0.2);
+}
+
+body.dark-theme .list-item.skills .project-description h3 {
   color: #4a9eff;
+}
+
+body.dark-theme .list-item.skills .project-description p {
+  color: #e2e8f0;
+}
+
+/* Dark theme for enhanced Teaching section */
+body.dark-theme .list-item.teaching {
+  background: linear-gradient(135deg, #3d2914 0%, #2d1a00 100%);
+  border-left-color: #ff9800;
+}
+
+body.dark-theme .list-item.teaching:hover {
+  box-shadow: 0 4px 12px rgba(255, 152, 0, 0.2);
+}
+
+body.dark-theme .list-item.teaching .project-description h3 {
+  color: #ffb74d;
+}
+
+body.dark-theme .teaching li {
+  color: #d4a574;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+body.dark-theme .teaching li:hover {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+/* Dark theme for enhanced Awards section */
+body.dark-theme .list-item.award {
+  background: linear-gradient(135deg, #1b2f1b 0%, #0d1f0d 100%);
+  border-left-color: #689f38;
+}
+
+body.dark-theme .list-item.award:hover {
+  box-shadow: 0 4px 12px rgba(104, 159, 56, 0.2);
+}
+
+body.dark-theme .list-item.award .date {
+  color: #8bc34a !important;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+body.dark-theme .list-item.award .award-content {
+  color: #a5d6a7;
+}
+
+body.dark-theme .list-item.award .inst {
+  color: #689f38;
+  background: rgba(0, 0, 0, 0.2);
 }
 
 /* Awards and News specific fixes */
