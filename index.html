@@ -89,6 +89,41 @@
         display: inline !important;
       }
       
+      /* Special handling for divs inside edu-list and other containers */
+      body.lang-zh .edu-list .lang-zh,
+      body.lang-zh .award-list .lang-zh,
+      body.lang-zh .project-description .lang-zh,
+      body.lang-zh ul .lang-zh,
+      body.lang-zh li.lang-zh {
+        display: block !important;
+      }
+      
+      body.lang-zh .edu-list .lang-en,
+      body.lang-zh .award-list .lang-en,
+      body.lang-zh .project-description .lang-en,
+      body.lang-zh ul .lang-en,
+      body.lang-zh li.lang-en {
+        display: none !important;
+      }
+      
+      /* Default: hide Chinese list items */
+      li.lang-zh {
+        display: none !important;
+      }
+      
+      /* Default: show English list items */
+      li.lang-en {
+        display: list-item !important;
+      }
+      
+      body.lang-zh li.lang-en {
+        display: none !important;
+      }
+      
+      body.lang-zh li.lang-zh {
+        display: list-item !important;
+      }
+      
       /* Ensure list items with lang classes work correctly */
       body.lang-zh .list-item.lang-en {
         display: none !important;
@@ -96,19 +131,6 @@
       
       body.lang-zh .list-item.lang-zh {
         display: block !important;
-      }
-      
-      /* Special handling for divs inside edu-list and other containers */
-      body.lang-zh .edu-list .lang-zh,
-      body.lang-zh .award-list .lang-zh,
-      body.lang-zh .project-description .lang-zh {
-        display: block !important;
-      }
-      
-      body.lang-zh .edu-list .lang-en,
-      body.lang-zh .award-list .lang-en,
-      body.lang-zh .project-description .lang-en {
-        display: none !important;
       }
       
       /* Ensure elements without lang classes are always visible */
