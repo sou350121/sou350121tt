@@ -21,182 +21,6 @@
     <style>
       @import url('https://fonts.googleapis.com/css2?family=Asap:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap');
       
-      /* Language Switcher Styles */
-      .lang-switcher {
-        display: inline-flex;
-        margin-left: 1.5em;
-        background: #f0f0f0;
-        border-radius: 25px;
-        padding: 4px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        position: relative;
-      }
-      
-      .lang-toggle {
-        display: inline-block;
-        padding: 0.5em 1.2em;
-        border-radius: 20px;
-        cursor: pointer;
-        font-size: 0.9em;
-        font-weight: 500;
-        color: #666;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        position: relative;
-        z-index: 2;
-        white-space: nowrap;
-      }
-      
-      .lang-toggle:hover {
-        color: #146ebe;
-      }
-      
-      .lang-toggle.active {
-        color: white;
-        background: linear-gradient(135deg, #146ebe 0%, #0d4a8a 100%);
-        box-shadow: 0 2px 8px rgba(20, 110, 190, 0.3);
-        transform: scale(1.05);
-      }
-      
-      .lang-toggle:not(.active) {
-        background: transparent;
-      }
-      
-      /* Language Content - Default: show English, hide Chinese */
-      /* Hide Chinese content by default */
-      .lang-zh:not(.list-item):not(.grid):not(.button-group):not(.project-description):not(.edu-list):not(.award-list):not(.lang-zh-inline):not(.lang-toggle) {
-        display: none !important;
-      }
-      
-      .lang-zh-inline {
-        display: none !important;
-      }
-      
-      /* When Chinese is selected: hide English, show Chinese */
-      body.lang-zh .lang-en:not(.list-item):not(.grid):not(.button-group):not(.project-description):not(.edu-list):not(.award-list):not(.lang-en-inline):not(.lang-toggle) {
-        display: none !important;
-      }
-      
-      body.lang-zh .lang-en-inline {
-        display: none !important;
-      }
-      
-      /* Show Chinese content when Chinese is selected */
-      body.lang-zh .lang-zh:not(.list-item):not(.grid):not(.button-group):not(.project-description):not(.edu-list):not(.award-list):not(.lang-zh-inline):not(.lang-toggle) {
-        display: block !important;
-      }
-      
-      body.lang-zh .lang-zh-inline {
-        display: inline !important;
-      }
-      
-      /* Special handling for divs inside edu-list and other containers */
-      body.lang-zh .edu-list .lang-zh,
-      body.lang-zh .award-list .lang-zh,
-      body.lang-zh .project-description .lang-zh,
-      body.lang-zh ul .lang-zh,
-      body.lang-zh li.lang-zh {
-        display: block !important;
-      }
-      
-      body.lang-zh .edu-list .lang-en,
-      body.lang-zh .award-list .lang-en,
-      body.lang-zh .project-description .lang-en,
-      body.lang-zh ul .lang-en,
-      body.lang-zh li.lang-en {
-        display: none !important;
-      }
-      
-      /* Default: hide Chinese list items */
-      li.lang-zh {
-        display: none !important;
-      }
-      
-      /* Default: show English list items (and items without lang class) */
-      li.lang-en,
-      li:not(.lang-zh):not(.lang-en) {
-        display: list-item !important;
-      }
-      
-      body.lang-zh li.lang-en,
-      body.lang-zh li:not(.lang-zh):not(.lang-en) {
-        display: none !important;
-      }
-      
-      body.lang-zh li.lang-zh {
-        display: list-item !important;
-      }
-      
-      /* Ensure list items with lang classes work correctly */
-      body.lang-zh .list-item.lang-en {
-        display: none !important;
-      }
-      
-      body.lang-zh .list-item.lang-zh {
-        display: block !important;
-      }
-      
-      /* Ensure elements without lang classes are always visible */
-      /* Only hide/show elements that explicitly have lang-en or lang-zh classes */
-      body.lang-zh .grid,
-      body.lang-zh .list-item:not(.lang-en):not(.lang-zh),
-      body.lang-zh .button-group,
-      body.lang-zh #intro,
-      body.lang-zh #filters,
-      body.lang-zh #footer,
-      body.lang-zh #main {
-        display: block !important;
-        visibility: visible !important;
-      }
-      
-      /* Ensure all content containers are visible */
-      body.lang-zh .project-description:not(.lang-en):not(.lang-zh),
-      body.lang-zh .thumbnail,
-      body.lang-zh img:not(.lang-en):not(.lang-zh),
-      body.lang-zh .edu-item,
-      body.lang-zh .list-item.talk,
-      body.lang-zh .list-item.edu-item {
-        display: block !important;
-      }
-      
-      /* Ensure paragraphs and other text elements without lang classes remain visible */
-      body.lang-zh p:not(.lang-en):not(.lang-zh),
-      body.lang-zh .edu-item p:not(.lang-en),
-      body.lang-zh .edu-item > div > div p:not(.lang-en) {
-        display: block !important;
-      }
-      
-      /* Ensure inline elements without lang classes remain visible */
-      body.lang-zh span:not(.lang-en):not(.lang-zh):not(.lang-zh-inline):not(.lang-en-inline),
-      body.lang-zh a:not(.lang-en):not(.lang-zh),
-      body.lang-zh .edu-item a,
-      body.lang-zh .edu-item b {
-        display: inline !important;
-      }
-      
-      /* Ensure flex containers maintain their layout */
-      body.lang-zh .edu-item > div[style*="display:flex"] {
-        display: flex !important;
-      }
-      
-      /* Dark theme for language switcher */
-      body.dark-theme .lang-switcher {
-        background: #2d3748;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-      }
-      
-      body.dark-theme .lang-toggle {
-        color: #b0b0b0;
-      }
-      
-      body.dark-theme .lang-toggle:hover {
-        color: #4a9eff;
-      }
-      
-      body.dark-theme .lang-toggle.active {
-        background: linear-gradient(135deg, #4a9eff 0%, #2d5aa0 100%);
-        color: #ffffff;
-        box-shadow: 0 2px 8px rgba(74, 158, 255, 0.4);
-      }
     </style>
   </head>
 
@@ -210,13 +34,7 @@
     <div id="main">
       <div id="intro">
         <div id="intro-text">
-          <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 1em; margin-bottom: 0.5em;">
-            <h1 style="margin: 0;">Kit-Wa Sou <span style="color: #a0a8b0; font-weight: 400;">（苏杰华）</span></h1>
-            <div class="lang-switcher">
-              <span class="lang-toggle active" id="lang-en" onclick="switchLang('en')">EN</span>
-              <span class="lang-toggle" id="lang-zh" onclick="switchLang('zh')">中文</span>
-            </div>
-          </div>
+          <h1 style="margin: 0; margin-bottom: 0.5em;">Kit-Wa Sou</h1>
           <p>
             Ph.D. Candidate, <a href="https://www.sigs.tsinghua.edu.cn/en/">Tsinghua-Berkeley Shenzhen Institute (TBSI)</a><br>
             Data Science & Information Technology (0812J3) · Expected Graduation: Dec 2025<br><br>
@@ -251,16 +69,12 @@
           <div class="project-description" style="width: 100%;">
             <h3 style="margin-bottom: 0.8em;">
               <a href="research-details.html" style="color: #146ebe; font-size: 1.3em; text-decoration: none;">
-                📚 Research Work Details <span class="lang-zh-inline">/ 论文工作介绍</span>
+                📚 Research Work Details
               </a>
             </h3>
             <p style="color: #495057; line-height: 1.6;">
               Detailed introduction to my research work including MoiréTac, UltraTac, Mechanoluminescent Sensor, and FlexLock projects. 
               <a href="research-details.html" style="color: #146ebe;">View details →</a>
-            </p>
-            <p class="lang-zh" style="color: #666; line-height: 1.6; margin-top: 0.5em; font-size: 0.95em;">
-              详细介绍我的研究工作，包括 MoiréTac、UltraTac、机械发光传感器和 FlexLock 项目。
-              <a href="research-details.html" style="color: #146ebe;">查看详情 →</a>
             </p>
           </div>
         </div>
@@ -387,18 +201,11 @@
                 <p>2021 – 2025</p>
                 <p><b>Ph.D. in Data Science & Information Technology</b></p>
                 <p>Advisor: Prof. Wenbo Ding (<a href="https://ssr-group.net/">ssr-group.net</a>)</p>
-                <p class="lang-en" style="margin-top:0.5em; color:#a0a8b0; font-size:0.95em;"><strong>Research Focus:</strong> Multimodal robotic perception, visuotactile sensing, hardware-software integration</p>
-                <p class="lang-en" style="color:#a0a8b0; font-size:0.95em;">Research focuses on combining vision and tactile sensing to enhance perception accuracy and responsiveness in complex environments, particularly in dynamic human-robot collaboration tasks. Multimodal sensor fusion enables more sensitive perception of environmental changes, enhancing autonomy and task accuracy.</p>
-                <p class="lang-en" style="color:#a0a8b0; font-size:0.95em; margin-top:0.5em;"><strong>Rigorous experimental and data science background:</strong> Doctoral research emphasizes multimodal perception and signal processing (FFT/filtering/estimation), directly transferable to time-series modeling and feature engineering.</p>
-                <p class="lang-en" style="color:#a0a8b0; font-size:0.95em;"><strong>Hardware-software integration and engineering deployment:</strong> From sensor development to closed-loop robot control, with optimization and reliability engineering capabilities, sensitive to end-to-end implementation of live trading systems.</p>
-                <p class="lang-en" style="color:#a0a8b0; font-size:0.95em;"><strong>Toolchain:</strong> Python, PyTorch, OpenCV, Linux/SSH, Git/GitHub, Docker, MATLAB; extensible to backtesting hosting, low-latency execution, and risk control services.</p>
-                <div class="lang-zh" style="margin-top:0.8em; color:#666; font-size:0.9em; border-top:1px solid #e0e0e0; padding-top:0.8em;"><strong>清华大学 清华-伯克利深圳学院</strong> · 数据科学和信息技术 · 博士</div>
-                <div class="lang-zh" style="color:#666; font-size:0.9em;">导师：丁文伯教授 (<a href="https://ssr-group.net/">ssr-group.net</a>)</div>
-                <div class="lang-zh" style="color:#666; font-size:0.9em;"><strong>研究方向：</strong>机器人多模态感知，视触觉传感，软硬件一体化</div>
-                <div class="lang-zh" style="color:#666; font-size:0.9em;">在机器人多模态感知领域，研究聚焦于结合视觉触觉等感知模式，提升机器人在复杂环境中的感知精度和响应能力，特别是在动态人机协作任务中的应用。多传感融合使其更敏锐感知外界变化，增强自主性与任务准确度。</div>
-                <div class="lang-zh" style="color:#666; font-size:0.9em; margin-top:0.5em;"><strong>严谨的实验与数据学科背景：</strong>博士阶段聚焦多模态感知与信号处理（FFT/滤波/估计），可直接迁移到时序建模、因子工程。</div>
-                <div class="lang-zh" style="color:#666; font-size:0.9em;"><strong>软硬件一体化与工程落地：</strong>从传感器到机器人闭环控制，具备优化与可靠性工程能力，对实盘交易系统的端到端实现敏感。</div>
-                <div class="lang-zh" style="color:#666; font-size:0.9em;"><strong>工具链：</strong>Python、PyTorch、OpenCV、Linux/SSH、Git/GitHub、Docker、MATLAB；可延展到 backtesting 托管、低延迟执行与风控服务。</div>
+                <p style="margin-top:0.5em; color:#a0a8b0; font-size:0.95em;"><strong>Research Focus:</strong> Multimodal robotic perception, visuotactile sensing, hardware-software integration</p>
+                <p style="color:#a0a8b0; font-size:0.95em;">Research focuses on combining vision and tactile sensing to enhance perception accuracy and responsiveness in complex environments, particularly in dynamic human-robot collaboration tasks. Multimodal sensor fusion enables more sensitive perception of environmental changes, enhancing autonomy and task accuracy.</p>
+                <p style="color:#a0a8b0; font-size:0.95em; margin-top:0.5em;"><strong>Rigorous experimental and data science background:</strong> Doctoral research emphasizes multimodal perception and signal processing (FFT/filtering/estimation), directly transferable to time-series modeling and feature engineering.</p>
+                <p style="color:#a0a8b0; font-size:0.95em;"><strong>Hardware-software integration and engineering deployment:</strong> From sensor development to closed-loop robot control, with optimization and reliability engineering capabilities, sensitive to end-to-end implementation of live trading systems.</p>
+                <p style="color:#a0a8b0; font-size:0.95em;"><strong>Toolchain:</strong> Python, PyTorch, OpenCV, Linux/SSH, Git/GitHub, Docker, MATLAB; extensible to backtesting hosting, low-latency execution, and risk control services.</p>
               </div>
             </div>
           </div>
@@ -415,14 +222,9 @@
                 <p>2018 – 2021</p>
                 <p><b>M.S. in Data Science & Information Technology</b></p>
                 <p>Advisor: Prof. Xiaohui Wang</p>
-                <p class="lang-en" style="margin-top:0.5em; color:#a0a8b0; font-size:0.95em;"><strong>Research Focus:</strong> Sensing systems</p>
-                <p class="lang-en" style="color:#a0a8b0; font-size:0.95em;">Completed application and completion of the Macao Science and Technology Development Fund project: Three-Dimensional E-Bike Automatic Parking System.</p>
-                <p class="lang-en" style="color:#a0a8b0; font-size:0.95em;">Recipient of Macao SAR Higher Education Fund Graduate Scholarship and Tsinghua University Graduate Scholarship for Hong Kong, Macao, and Taiwan Students (Second Prize) throughout master's studies.</p>
-                <div class="lang-zh" style="margin-top:0.8em; color:#666; font-size:0.9em; border-top:1px solid #e0e0e0; padding-top:0.8em;"><strong>清华大学 清华-伯克利深圳学院</strong> · 数据科学和信息技术 · 硕士</div>
-                <div class="lang-zh" style="color:#666; font-size:0.9em;">导师：王晓浩教授</div>
-                <div class="lang-zh" style="color:#666; font-size:0.9em;"><strong>研究方向：</strong>传感系统</div>
-                <div class="lang-zh" style="color:#666; font-size:0.9em;">在学期间完成澳门科学技术发展基金澳门立体式电单车自动停泊系统的申请和结题。</div>
-                <div class="lang-zh" style="color:#666; font-size:0.9em;">硕士期间均获得澳门特别行政区奖学金；清华大学研究生港澳台奖学金二等奖。</div>
+                <p style="margin-top:0.5em; color:#a0a8b0; font-size:0.95em;"><strong>Research Focus:</strong> Sensing systems</p>
+                <p style="color:#a0a8b0; font-size:0.95em;">Completed application and completion of the Macao Science and Technology Development Fund project: Three-Dimensional E-Bike Automatic Parking System.</p>
+                <p style="color:#a0a8b0; font-size:0.95em;">Recipient of Macao SAR Higher Education Fund Graduate Scholarship and Tsinghua University Graduate Scholarship for Hong Kong, Macao, and Taiwan Students (Second Prize) throughout master's studies.</p>
               </div>
             </div>
           </div>
@@ -439,8 +241,6 @@
                 <p>2014 – 2018</p>
                 <p><b>B.S. in Photonics</b></p>
                 <p>Average: 92.47/100 | GPA: 4.21/4.30 | Rank: 1/40</p>
-                <div class="lang-zh" style="margin-top:0.8em; color:#666; font-size:0.9em; border-top:1px solid #e0e0e0; padding-top:0.8em;"><strong>台湾交通大学</strong> · 光电工程学系 · 学士</div>
-                <div class="lang-zh" style="color:#666; font-size:0.9em;">平均分: 92.47/100 | GPA: 4.21/4.30 | 排名(累计): 1/40</div>
               </div>
             </div>
           </div>
@@ -457,8 +257,6 @@
                 <p>Exchange Student Program</p>
                 <p><b>Department of Electrical Engineering</b></p>
                 <p>Recipient of Chu Shun-I Zyxel Academic Excellence Scholarship (Top scholarship, 10 recipients university-wide annually)</p>
-                <div class="lang-zh" style="margin-top:0.8em; color:#666; font-size:0.9em; border-top:1px solid #e0e0e0; padding-top:0.8em;"><strong>新加坡南洋理工大学</strong> · 电机工程学系 · 交换生项目</div>
-                <div class="lang-zh" style="color:#666; font-size:0.9em;">获朱顺一合勤学业优异奖学金（校内最高额奖学金，全校每年10位）</div>
               </div>
             </div>
           </div>
@@ -521,20 +319,18 @@
         <!-- Teaching & Service -->
         <div class="list-item teaching-service experience-all" data-category="experience-all">
           <div class="project-description">
-            <h3>Teaching Assistant <span class="lang-zh-inline">/ 教学助理</span></h3>
+            <h3>Teaching Assistant </h3>
             <ul>
               <li>MEMS and Applications; Microsensors; Graduate English (Spring/Fall), Tsinghua University</li>
-              <li class="lang-zh">MEMS与应用；微传感器；研究生英语（春/秋季），清华大学</li>
             </ul>
           </div>
         </div>
 
         <div class="list-item teaching-service experience-all" data-category="experience-all">
           <div class="project-description">
-            <h3>Reviewer <span class="lang-zh-inline">/ 审稿人</span></h3>
+            <h3>Reviewer </h3>
             <ul>
               <li>UbiComp 2024/2025; Journal of Mechanical Engineering Science 2025; Chemical Engineering Journal</li>
-              <li class="lang-zh">UbiComp 2024/2025；机械工程科学期刊 2025；化学工程期刊</li>
             </ul>
           </div>
         </div>
@@ -542,26 +338,22 @@
         <!-- Experience / 工作经历 -->
         <div class="list-item experience experience-all" data-category="experience-all">
           <div class="project-description">
-            <h3>Tencent — CSIG Cloud & Smart Industries <span class="lang-zh-inline">/ 腾讯 — CSIG 云与智慧产业</span></h3>
-            <p><strong>Cloud Solutions (Intern) <span class="lang-zh-inline">/ 云解决方案（实习生）</span></strong> · 2020.07–2021.01</p>
+            <h3>Tencent — CSIG Cloud & Smart Industries </h3>
+            <p><strong>Cloud Solutions (Intern) </strong> · 2020.07–2021.01</p>
             <ul>
               <li>Cloud architecture for smart-education scenarios, remote collaboration, and data platforms; industry–academia collaboration</li>
-              <li class="lang-zh">智能教育场景、远程协作和数据平台的云架构；产学研合作</li>
               <li>Tencent Cloud TCP / Ops TCA certifications</li>
-              <li class="lang-zh">腾讯云 TCP / Ops TCA 认证</li>
             </ul>
           </div>
         </div>
 
         <div class="list-item experience experience-all" data-category="experience-all">
           <div class="project-description">
-            <h3>Ping An Group — Data Analytics <span class="lang-zh-inline">/ 平安集团 — 数据分析</span></h3>
-            <p><strong>Project Analytics Intern <span class="lang-zh-inline">/ 项目分析实习生</span></strong> · 2019.08–2019.11</p>
+            <h3>Ping An Group — Data Analytics </h3>
+            <p><strong>Project Analytics Intern </strong> · 2019.08–2019.11</p>
             <ul>
               <li>Data cleaning/modeling/visualization on thousands of participants; authored quantitative evaluation reports for program optimization</li>
-              <li class="lang-zh">对数千名参与者进行数据清洗/建模/可视化；撰写定量评估报告以优化项目</li>
               <li>Supported STEM education CSR program (won 2020 CSR China Education Award)</li>
-              <li class="lang-zh">支持 STEM 教育 CSR 项目（获得 2020 年 CSR 中国教育奖）</li>
             </ul>
           </div>
         </div>
@@ -569,19 +361,17 @@
         <!-- Projects / 项目经历 -->
         <div class="list-item projects experience-all" data-category="experience-all">
           <div class="project-description">
-            <h3>Three-Dimensional E-Bike Automatic Parking System <span class="lang-zh-inline">/ 三维电单车自动停泊系统</span></h3>
-            <p><strong>Macao FDCT · 2019–2021 · PI <span class="lang-zh-inline">/ 澳门科学技术发展基金 · 2019–2021 · 项目负责人</span></strong></p>
+            <h3>Three-Dimensional E-Bike Automatic Parking System </h3>
+            <p><strong>Macao FDCT · 2019–2021 · PI </strong></p>
             <p>"Lift + lateral transfer" structure with multi-sensor fusion (vision/tactile/position), scheduling control, and remote monitoring; verified tight-space alignment, anti-drop safeguards, and human–vehicle isolation; delivered a high-density, small-footprint automated storage solution.</p>
-            <p class="lang-zh" style="margin-top: 0.5em; color: #666;">"升降 + 横向转移"结构，采用多传感器融合（视觉/触觉/位置）、调度控制和远程监控；验证了紧密空间对齐、防跌落安全措施和人车隔离；交付了高密度、小占地面积的自动化存储解决方案。</p>
           </div>
         </div>
 
         <div class="list-item projects experience-all" data-category="experience-all">
           <div class="project-description">
-            <h3>High-Resolution Multimodal Tactile Sensing Beyond Human Perception <span class="lang-zh-inline">/ 超越人类感知的高分辨率多模态触觉传感</span></h3>
-            <p><strong>SZSTI · 2023 · Core Contributor <span class="lang-zh-inline">/ 深圳市科技创新委员会 · 2023 · 核心贡献者</span></strong></p>
+            <h3>High-Resolution Multimodal Tactile Sensing Beyond Human Perception </h3>
+            <p><strong>SZSTI · 2023 · Core Contributor </strong></p>
             <p>System design and optimization for visuotactile sensors, targeting key challenges in robotic perception and HRI; advanced multimodal sensing and feedback for deployable applications.</p>
-            <p class="lang-zh" style="margin-top: 0.5em; color: #666;">视触觉传感器的系统设计和优化，针对机器人感知和人机交互的关键挑战；为可部署应用提供先进的多模态传感和反馈。</p>
           </div>
         </div>
 
@@ -625,16 +415,15 @@
         <!-- Gallery / Photography & Life -->
         <div class="list-item gallery" data-category="gallery" style="margin-top: 2em;">
           <div class="project-description" style="width: 100%;">
-            <h3 style="font-size: 1.5em; margin-bottom: 1em; color: #146ebe;">📷 Gallery <span class="lang-zh-inline">/ 摄影与生活</span></h3>
+            <h3 style="font-size: 1.5em; margin-bottom: 1em; color: #146ebe;">📷 Gallery </h3>
             <p style="color: #a0a8b0; margin-bottom: 1.5em; line-height: 1.8;">
               A collection of photography and life moments capturing research journey and daily life.<br>
-              <span class="lang-zh">记录研究历程和日常生活的摄影作品与生活片段。</span>
             </p>
             <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1.5em; margin-top: 1.5em;">
               <div class="gallery-photo-item" style="position: relative; overflow: hidden; border-radius: 8px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); transition: transform 0.3s ease; cursor: pointer; aspect-ratio: 4/3;">
                 <img src="assets/images/myself.JPG" alt="Portrait" style="width: 100%; height: 100%; object-fit: cover; display: block;" loading="lazy" onerror="this.style.display='none';">
                 <div class="gallery-caption" style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(0,0,0,0.8), transparent); color: white; padding: 1em; transform: translateY(100%); transition: transform 0.3s ease;">
-                  <strong>Portrait <span class="lang-zh-inline">/ 个人肖像</span></strong><br>
+                  <strong>Portrait </strong><br>
                   2025
                 </div>
               </div>
@@ -642,7 +431,6 @@
             </div>
             <p style="margin-top: 1.5em; color: #a0a8b0; font-style: italic; font-size: 0.9em;">
               💡 Tip: Add your photos to <code>assets/images/</code> directory and update this section.<br>
-              <span class="lang-zh">💡 提示：将照片添加到 <code>assets/images/</code> 目录并更新此部分。</span>
             </p>
           </div>
         </div>
@@ -900,11 +688,6 @@
         isInitializing = true;
         
         try {
-          // First, ensure body doesn't have lang-zh class initially (safety measure)
-          if (document.body) {
-            document.body.classList.remove('lang-zh');
-          }
-          
           // Use requestAnimationFrame for better performance
           requestAnimationFrame(function() {
             try {
@@ -922,29 +705,9 @@
                 });
               }
               
-              // Initialize language LAST, after everything else is ready
-              requestAnimationFrame(function() {
-                try {
-                  const savedLang = localStorage.getItem('language') || 'en';
-                  const enBtn = document.getElementById('lang-en');
-                  const zhBtn = document.getElementById('lang-zh');
-                  if (enBtn && zhBtn) {
-                    switchLang(savedLang);
-                  } else {
-                    if (document.body) {
-                      document.body.classList.remove('lang-zh');
-                    }
-                  }
-                  initComplete = true;
-                  isInitializing = false;
-                } catch (error) {
-                  console.error('Error in language initialization:', error);
-                  if (document.body) {
-                    document.body.classList.remove('lang-zh');
-                  }
-                  isInitializing = false;
-                }
-              });
+              // Mark initialization as complete
+              initComplete = true;
+              isInitializing = false;
             } catch (error) {
               console.error('Error in Isotope initialization:', error);
               isInitializing = false;
@@ -952,9 +715,6 @@
           });
         } catch (error) {
           console.error('Error in safeInit:', error);
-          if (document.body) {
-            document.body.classList.remove('lang-zh');
-          }
           isInitializing = false;
         }
       }
@@ -968,41 +728,6 @@
         }
       });
 
-      // Language switching function
-      function switchLang(lang) {
-        try {
-          const enBtn = document.getElementById('lang-en');
-          const zhBtn = document.getElementById('lang-zh');
-          
-          if (!enBtn || !zhBtn) {
-            console.warn('Language toggle buttons not found, skipping language switch');
-            return;
-          }
-          
-          // Remove active class from all buttons
-          enBtn.classList.remove('active');
-          zhBtn.classList.remove('active');
-          
-          // Add active class to selected button
-          if (lang === 'en') {
-            enBtn.classList.add('active');
-            if (document.body) {
-              document.body.classList.remove('lang-zh');
-            }
-            localStorage.setItem('language', 'en');
-          } else {
-            zhBtn.classList.add('active');
-            if (document.body) {
-              document.body.classList.add('lang-zh');
-            }
-            localStorage.setItem('language', 'zh');
-          }
-        } catch (error) {
-          console.error('Error in switchLang:', error);
-        }
-      }
-
-      // Language preference is initialized in $(document).ready above
 
     </script>
   </body>
