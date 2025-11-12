@@ -819,3 +819,13 @@ body.dark-theme .edu-item div > div {
   background-color: #333333 !important;
   color: #b0b0b0 !important;
 }
+
+/* Gallery photo hover effects */
+.gallery-photo-item:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.gallery-photo-item:hover .gallery-caption {
+  transform: translateY(0);
+}

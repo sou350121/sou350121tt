@@ -59,9 +59,29 @@
         <button class="button" data-filter=".news">News</button>
         <button class="button" data-filter=".teaching">Teaching</button>
         <button class="button" data-filter=".skills">Skills</button>
+        <button class="button" data-filter=".gallery">Gallery</button>
       </div>
 
       <div class="grid">
+
+        <!-- Research Details Link -->
+        <div class="list-item publication" data-category="publication" style="margin-bottom: 2em; padding: 1.5em; background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%); border-radius: 12px; border-left: 4px solid #146ebe;">
+          <div class="project-description" style="width: 100%;">
+            <h3 style="margin-bottom: 0.8em;">
+              <a href="research-details.html" style="color: #146ebe; font-size: 1.3em; text-decoration: none;">
+                📚 Research Work Details / 论文工作介绍
+              </a>
+            </h3>
+            <p style="color: #495057; line-height: 1.6;">
+              Detailed introduction to my research work including MoiréTac, UltraTac, Mechanoluminescent Sensor, and FlexLock projects. 
+              <a href="research-details.html" style="color: #146ebe;">View details →</a>
+            </p>
+            <p style="color: #666; line-height: 1.6; margin-top: 0.5em; font-size: 0.95em;">
+              详细介绍我的研究工作，包括 MoiréTac、UltraTac、机械发光传感器和 FlexLock 项目。
+              <a href="research-details.html" style="color: #146ebe;">查看详情 →</a>
+            </p>
+          </div>
+        </div>
 
         <!-- Preprints / Under Review -->
         <div class="list-item publication" data-category="publication">
@@ -401,6 +421,31 @@
             <h3>Languages</h3>
             <p>English (working proficiency; IELTS 7.0; GRE 319)<br>
             Cantonese (native), Portuguese (basic), Japanese (basic)</p>
+          </div>
+        </div>
+
+        <!-- Gallery / Photography & Life -->
+        <div class="list-item gallery" data-category="gallery" style="margin-top: 2em;">
+          <div class="project-description" style="width: 100%;">
+            <h3 style="font-size: 1.5em; margin-bottom: 1em; color: #146ebe;">📷 Gallery / 摄影与生活</h3>
+            <p style="color: #a0a8b0; margin-bottom: 1.5em; line-height: 1.8;">
+              A collection of photography and life moments capturing research journey and daily life.<br>
+              记录研究历程和日常生活的摄影作品与生活片段。
+            </p>
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1.5em; margin-top: 1.5em;">
+              <div class="gallery-photo-item" style="position: relative; overflow: hidden; border-radius: 8px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); transition: transform 0.3s ease; cursor: pointer; aspect-ratio: 4/3;">
+                <img src="assets/images/myself.JPG" alt="Portrait" style="width: 100%; height: 100%; object-fit: cover; display: block;">
+                <div class="gallery-caption" style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(0,0,0,0.8), transparent); color: white; padding: 1em; transform: translateY(100%); transition: transform 0.3s ease;">
+                  <strong>Portrait / 个人肖像</strong><br>
+                  2025
+                </div>
+              </div>
+              <!-- Add more photos here -->
+            </div>
+            <p style="margin-top: 1.5em; color: #a0a8b0; font-style: italic; font-size: 0.9em;">
+              💡 Tip: Add your photos to <code>assets/images/</code> directory and update this section.<br>
+              💡 提示：将照片添加到 <code>assets/images/</code> 目录并更新此部分。
+            </p>
           </div>
         </div>
 

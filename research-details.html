@@ -1,0 +1,435 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <!-- Title -->
+    <title>Research Details - Sou Kit-Wa (Ken)</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=1000">
+
+    <!-- Custom Style -->
+    <link rel="stylesheet" href="css/style.css">
+
+    <!-- Google Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Asap:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Asap:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap');
+      
+      .research-section {
+        margin-top: 4em;
+        margin-bottom: 4em;
+      }
+      
+      .section-title {
+        font-size: 2em;
+        font-weight: 600;
+        margin-bottom: 1.5em;
+        color: #150c21;
+        border-bottom: 3px solid #146ebe;
+        padding-bottom: 0.5em;
+      }
+      
+      .work-item {
+        margin-bottom: 3em;
+        padding: 2em;
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        border-radius: 12px;
+        border-left: 4px solid #146ebe;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
+      
+      .work-item:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      }
+      
+      .work-item h3 {
+        font-size: 1.5em;
+        margin-bottom: 0.8em;
+        color: #146ebe;
+      }
+      
+      .work-item .work-meta {
+        color: #a0a8b0;
+        font-size: 0.9em;
+        margin-bottom: 1em;
+      }
+      
+      .work-item .work-description {
+        line-height: 1.8;
+        color: #495057;
+      }
+      
+      .work-item .work-image {
+        margin-top: 1.5em;
+        border-radius: 8px;
+        overflow: hidden;
+      }
+      
+      .work-item .work-image img {
+        width: 100%;
+        height: auto;
+        display: block;
+      }
+      
+      .back-link {
+        display: inline-block;
+        margin-top: 2em;
+        margin-bottom: 2em;
+        color: #146ebe;
+        font-size: 1.1em;
+        text-decoration: none;
+        padding: 0.5em 1em;
+        border: 2px solid #146ebe;
+        border-radius: 6px;
+        transition: all 0.3s ease;
+      }
+      
+      .back-link:hover {
+        background-color: #146ebe;
+        color: white;
+        border-bottom: 2px solid #146ebe;
+      }
+      
+      .lang-toggle {
+        display: inline-block;
+        margin-left: 1em;
+        padding: 0.3em 0.8em;
+        background: #f0f0f0;
+        border: 1px solid #a0a8b0;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 0.9em;
+        color: #150c21;
+        transition: all 0.3s ease;
+      }
+      
+      .lang-toggle:hover {
+        background: #e0e0e0;
+        border-color: #146ebe;
+      }
+      
+      .lang-toggle.active {
+        background: #146ebe;
+        color: white;
+        border-color: #146ebe;
+      }
+      
+      .lang-content {
+        display: none;
+      }
+      
+      .lang-content.active {
+        display: block;
+      }
+      
+      /* Dark theme styles */
+      body.dark-theme .section-title {
+        color: #ffffff;
+        border-bottom-color: #4a9eff;
+      }
+      
+      body.dark-theme .work-item {
+        background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
+        border-left-color: #4a9eff;
+      }
+      
+      body.dark-theme .work-item h3 {
+        color: #4a9eff;
+      }
+      
+      body.dark-theme .work-item .work-description {
+        color: #e2e8f0;
+      }
+      
+      body.dark-theme .back-link {
+        color: #4a9eff;
+        border-color: #4a9eff;
+      }
+      
+      body.dark-theme .back-link:hover {
+        background-color: #4a9eff;
+        color: #1a1a1a;
+      }
+      
+      body.dark-theme .lang-toggle {
+        background: #2d3748;
+        border-color: #4a9eff;
+        color: #e0e0e0;
+      }
+      
+      body.dark-theme .lang-toggle:hover {
+        background: #3d4a5d;
+      }
+      
+      body.dark-theme .lang-toggle.active {
+        background: #4a9eff;
+        color: #1a1a1a;
+      }
+    </style>
+  </head>
+
+  <body id="body">
+
+    <!-- Theme Toggle Button -->
+    <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">
+      <span id="theme-icon">🌙</span>
+    </button>
+
+    <div id="main">
+      <div id="intro" style="padding-top: 3em;">
+        <div id="intro-text">
+          <h1>Research Work Details <span class="lang-toggle active" id="lang-en" onclick="switchLang('en')">EN</span><span class="lang-toggle" id="lang-zh" onclick="switchLang('zh')">中文</span></h1>
+          <p>
+            <a href="index.html" class="back-link">← Back to Home</a>
+          </p>
+        </div>
+      </div>
+
+      <!-- English Content -->
+      <div id="content-en" class="lang-content active">
+        <div class="research-section">
+          <h2 class="section-title">Research Work Introduction</h2>
+          
+          <div class="work-item">
+            <h3>MoiréTac: A Dual-Mode Visuotactile Sensor for Multidimensional Perception Using Moiré Pattern Amplification</h3>
+            <div class="work-meta">
+              <strong>Status:</strong> Under Review | <strong>Year:</strong> 2025 | <strong>arXiv:</strong> 2509.12714
+            </div>
+            <div class="work-description">
+              <p>This research develops a dual-mode visuotactile sensor based on moiré pattern amplification, enabling multidimensional perception. The sensor supports multi-DoF force/pose estimation and pre-grasp cues, providing continuous tactile field perception through vision-through-contact fusion technology.</p>
+              <p><strong>Key Contributions:</strong></p>
+              <ul style="margin-left: 1.5em; margin-top: 0.5em;">
+                <li>Innovatively applied moiré pattern amplification technology to tactile perception</li>
+                <li>Achieved vision-through-contact dual-mode fusion perception</li>
+                <li>Supports multi-DoF force/pose estimation</li>
+                <li>Provides pre-grasp cues to enhance robotic manipulation capabilities</li>
+              </ul>
+            </div>
+            <div class="work-image">
+              <img src="assets/images/moiretac-sensor.jpg" alt="MoiréTac Sensor">
+            </div>
+          </div>
+
+          <div class="work-item">
+            <h3>UltraTac: Integrated Ultrasound-Augmented Visuotactile Sensor for Enhanced Robotic Perception</h3>
+            <div class="work-meta">
+              <strong>Status:</strong> Accepted | <strong>Conference:</strong> IEEE/RSJ IROS 2025
+            </div>
+            <div class="work-description">
+              <p>This research proposes an integrated ultrasound-augmented visuotactile sensor for enhanced robotic perception. The sensor combines vision, tactile, and ultrasound technologies to provide more accurate perception information in complex environments.</p>
+              <p><strong>Technical Highlights:</strong></p>
+              <ul style="margin-left: 1.5em; margin-top: 0.5em;">
+                <li>Multimodal sensor fusion (vision + tactile + ultrasound)</li>
+                <li>Enhanced perception accuracy and robustness</li>
+                <li>Applicable to robotic manipulation in complex environments</li>
+              </ul>
+            </div>
+            <div class="work-image">
+              <img src="assets/images/ultrac-sensor.jpg" alt="UltraTac Sensor">
+            </div>
+          </div>
+
+          <div class="work-item">
+            <h3>A Bio-Inspired Event-Driven Mechanoluminescent Visuotactile Sensor for Intelligent Interactions</h3>
+            <div class="work-meta">
+              <strong>Journal:</strong> Advanced Functional Materials | <strong>Year:</strong> 2024/2025
+            </div>
+            <div class="work-description">
+              <p>This research develops a bio-inspired event-driven mechanoluminescent visuotactile sensor for intelligent interactions. The sensor features low power consumption and strong ambient-light immunity, validated for human-robot interaction applications on a quadruped platform.</p>
+              <p><strong>Innovations:</strong></p>
+              <ul style="margin-left: 1.5em; margin-top: 0.5em;">
+                <li>Event-driven mechanism for reduced power consumption</li>
+                <li>Mechanoluminescent materials for self-illuminated perception</li>
+                <li>Strong ambient-light immunity</li>
+                <li>Validated on quadruped robot platform</li>
+              </ul>
+            </div>
+            <div class="work-image">
+              <img src="assets/images/mechano-sensor.jpg" alt="Mechanoluminescent Sensor">
+            </div>
+          </div>
+
+          <div class="work-item">
+            <h3>FlexLock: Bionic Snake-Inspired Variable-Stiffness Flexible Robotic Arm</h3>
+            <div class="work-meta">
+              <strong>Status:</strong> Under Review | <strong>Journal:</strong> Cyborg and Bionic Systems (SCI Q1)
+            </div>
+            <div class="work-description">
+              <p>This research proposes a snake-inspired variable-stiffness flexible robotic arm, combining shape memory alloy (SMA) and particle jamming technologies for stiffness modulation. The design is suitable for safe human-robot interaction and high-load manipulation scenarios.</p>
+              <p><strong>Design Features:</strong></p>
+              <ul style="margin-left: 1.5em; margin-top: 0.5em;">
+                <li>Bio-inspired design inspired by snakes</li>
+                <li>Stiffness modulation using SMA and particle jamming technology</li>
+                <li>Safe human-robot interaction capabilities</li>
+                <li>High-load manipulation capabilities</li>
+              </ul>
+            </div>
+            <div class="work-image">
+              <img src="assets/images/flexlock-robot-arm.jpg" alt="FlexLock Robotic Arm">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chinese Content -->
+      <div id="content-zh" class="lang-content">
+        <div class="research-section">
+          <h2 class="section-title">论文工作介绍</h2>
+          
+          <div class="work-item">
+            <h3>MoiréTac: 基于莫尔图案放大的双模式视触觉传感器</h3>
+            <div class="work-meta">
+              <strong>状态:</strong> 审稿中 | <strong>年份:</strong> 2025 | <strong>arXiv:</strong> 2509.12714
+            </div>
+            <div class="work-description">
+              <p>本研究开发了一种基于莫尔图案放大的双模式视触觉传感器，能够实现多维感知。该传感器支持多自由度力/姿态估计和预抓取线索，通过视觉-接触融合技术提供连续触觉场感知。</p>
+              <p><strong>主要贡献:</strong></p>
+              <ul style="margin-left: 1.5em; margin-top: 0.5em;">
+                <li>创新性地将莫尔图案放大技术应用于触觉感知</li>
+                <li>实现了视觉-接触双模式融合感知</li>
+                <li>支持多自由度力/姿态估计</li>
+                <li>提供预抓取线索，提升机器人操作能力</li>
+              </ul>
+            </div>
+            <div class="work-image">
+              <img src="assets/images/moiretac-sensor.jpg" alt="MoiréTac Sensor">
+            </div>
+          </div>
+
+          <div class="work-item">
+            <h3>UltraTac: 集成超声增强的视触觉传感器</h3>
+            <div class="work-meta">
+              <strong>状态:</strong> 已接收 | <strong>会议:</strong> IEEE/RSJ IROS 2025
+            </div>
+            <div class="work-description">
+              <p>本研究提出了一种集成超声增强的视触觉传感器，用于增强机器人感知能力。该传感器结合了视觉、触觉和超声技术，能够在复杂环境中提供更准确的感知信息。</p>
+              <p><strong>技术亮点:</strong></p>
+              <ul style="margin-left: 1.5em; margin-top: 0.5em;">
+                <li>多模态传感器融合（视觉+触觉+超声）</li>
+                <li>增强的感知精度和鲁棒性</li>
+                <li>适用于复杂环境下的机器人操作</li>
+              </ul>
+            </div>
+            <div class="work-image">
+              <img src="assets/images/ultrac-sensor.jpg" alt="UltraTac Sensor">
+            </div>
+          </div>
+
+          <div class="work-item">
+            <h3>受生物启发的事件驱动机械发光视触觉传感器</h3>
+            <div class="work-meta">
+              <strong>期刊:</strong> Advanced Functional Materials | <strong>年份:</strong> 2024/2025
+            </div>
+            <div class="work-description">
+              <p>本研究开发了一种受生物启发的事件驱动机械发光视触觉传感器，用于智能交互。该传感器具有低功耗和强环境光抗干扰能力，已在四足机器人平台上验证了人机交互应用。</p>
+              <p><strong>创新点:</strong></p>
+              <ul style="margin-left: 1.5em; margin-top: 0.5em;">
+                <li>事件驱动机制，降低功耗</li>
+                <li>机械发光材料，实现自发光感知</li>
+                <li>强环境光抗干扰能力</li>
+                <li>在四足机器人平台上验证</li>
+              </ul>
+            </div>
+            <div class="work-image">
+              <img src="assets/images/mechano-sensor.jpg" alt="Mechanoluminescent Sensor">
+            </div>
+          </div>
+
+          <div class="work-item">
+            <h3>FlexLock: 受蛇类启发的可变刚度柔性机械臂</h3>
+            <div class="work-meta">
+              <strong>状态:</strong> 审稿中 | <strong>期刊:</strong> Cyborg and Bionic Systems (SCI Q1)
+            </div>
+            <div class="work-description">
+              <p>本研究提出了一种受蛇类启发的可变刚度柔性机械臂，结合了形状记忆合金（SMA）和颗粒阻塞技术，实现刚度调制。该设计适用于安全的人机交互和高负载操作场景。</p>
+              <p><strong>设计特点:</strong></p>
+              <ul style="margin-left: 1.5em; margin-top: 0.5em;">
+                <li>受蛇类生物启发的仿生设计</li>
+                <li>SMA和颗粒阻塞技术实现刚度调制</li>
+                <li>安全的人机交互能力</li>
+                <li>高负载操作能力</li>
+              </ul>
+            </div>
+            <div class="work-image">
+              <img src="assets/images/flexlock-robot-arm.jpg" alt="FlexLock Robotic Arm">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="footer" style="display:flex; justify-content:flex-start; align-items:center; margin-top: 4em;">
+        <div>
+          &copy; 2025 Sou Kit-Wa (Ken). All rights reserved.
+        </div>
+      </div>
+
+    </div>
+
+    <script>
+      // Language switching function
+      function switchLang(lang) {
+        // Hide all content
+        document.getElementById('content-en').classList.remove('active');
+        document.getElementById('content-zh').classList.remove('active');
+        
+        // Remove active class from all buttons
+        document.getElementById('lang-en').classList.remove('active');
+        document.getElementById('lang-zh').classList.remove('active');
+        
+        // Show selected content and activate button
+        if (lang === 'en') {
+          document.getElementById('content-en').classList.add('active');
+          document.getElementById('lang-en').classList.add('active');
+        } else {
+          document.getElementById('content-zh').classList.add('active');
+          document.getElementById('lang-zh').classList.add('active');
+        }
+        
+        // Update back link text
+        const backLink = document.querySelector('.back-link');
+        if (lang === 'en') {
+          backLink.textContent = '← Back to Home';
+        } else {
+          backLink.textContent = '← 返回主页';
+        }
+      }
+
+      // Theme Toggle Functionality
+      document.addEventListener('DOMContentLoaded', function() {
+        const themeToggle = document.getElementById('theme-toggle');
+        const themeIcon = document.getElementById('theme-icon');
+        const body = document.body;
+
+        if (!themeToggle || !themeIcon || !body) {
+          return;
+        }
+
+        const currentTheme = localStorage.getItem('theme') || 'light';
+
+        function setTheme(theme) {
+          if (theme === 'dark') {
+            body.classList.add('dark-theme');
+            themeIcon.textContent = '☀️';
+            localStorage.setItem('theme', 'dark');
+          } else {
+            body.classList.remove('dark-theme');
+            themeIcon.textContent = '🌙';
+            localStorage.setItem('theme', 'light');
+          }
+        }
+
+        setTheme(currentTheme);
+
+        themeToggle.addEventListener('click', function(e) {
+          e.preventDefault();
+          const newTheme = body.classList.contains('dark-theme') ? 'light' : 'dark';
+          setTheme(newTheme);
+        });
+      });
+    </script>
+  </body>
+</html>
+
