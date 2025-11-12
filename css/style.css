@@ -465,8 +465,8 @@ h3 a:hover {
   padding: 1em 0;
 }
 
-/* Enhanced Teaching Section */
-.list-item.teaching {
+/* Enhanced Teaching & Service Section */
+.list-item.teaching-service {
   background: linear-gradient(135deg, #fff5e6 0%, #ffe8cc 100%);
   border-radius: 12px;
   padding: 1.5em;
@@ -476,12 +476,12 @@ h3 a:hover {
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.list-item.teaching:hover {
+.list-item.teaching-service:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-.list-item.teaching .project-description h3 {
+.list-item.teaching-service .project-description h3 {
   color: #e65100;
   font-weight: 600;
   margin-bottom: 1em;
@@ -490,19 +490,19 @@ h3 a:hover {
   align-items: center;
 }
 
-.list-item.teaching .project-description h3::before {
+.list-item.teaching-service .project-description h3::before {
   content: '📚';
   margin-right: 0.5em;
   font-size: 1.1em;
 }
 
-.teaching ul {
+.teaching-service ul {
   list-style: none;
   padding-left: 0;
   margin: 0;
 }
 
-.teaching li {
+.teaching-service li {
   margin-bottom: 0.8em;
   padding-left: 1.5rem;
   position: relative;
@@ -514,11 +514,11 @@ h3 a:hover {
   transition: background-color 0.2s ease;
 }
 
-.teaching li:hover {
+.teaching-service li:hover {
   background: rgba(255, 255, 255, 0.8);
 }
 
-.teaching li::before {
+.teaching-service li::before {
   content: '▶';
   position: absolute;
   left: 0.3em;
@@ -526,6 +526,105 @@ h3 a:hover {
   font-size: 0.8em;
   font-weight: bold;
   top: 0.7em;
+}
+
+/* Enhanced Experience Section */
+.list-item.experience {
+  background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+  border-radius: 12px;
+  padding: 1.5em;
+  margin-bottom: 1.2em;
+  border-left: 4px solid #4caf50;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.list-item.experience:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.list-item.experience .project-description h3 {
+  color: #2e7d32;
+  font-weight: 600;
+  margin-bottom: 1em;
+  font-size: 1.2em;
+  display: flex;
+  align-items: center;
+}
+
+.list-item.experience .project-description h3::before {
+  content: '💼';
+  margin-right: 0.5em;
+  font-size: 1.1em;
+}
+
+.experience ul {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+}
+
+.experience li {
+  margin-bottom: 0.8em;
+  padding-left: 1.5rem;
+  position: relative;
+  line-height: 1.5;
+  color: #1b5e20;
+  background: rgba(255, 255, 255, 0.5);
+  padding: 0.6em 0.6em 0.6em 1.5rem;
+  border-radius: 6px;
+  transition: background-color 0.2s ease;
+}
+
+.experience li:hover {
+  background: rgba(255, 255, 255, 0.8);
+}
+
+.experience li::before {
+  content: '▶';
+  position: absolute;
+  left: 0.3em;
+  color: #4caf50;
+  font-size: 0.8em;
+  font-weight: bold;
+  top: 0.7em;
+}
+
+/* Enhanced Projects Section */
+.list-item.projects {
+  background: linear-gradient(135deg, #e1f5fe 0%, #b3e5fc 100%);
+  border-radius: 12px;
+  padding: 1.5em;
+  margin-bottom: 1.2em;
+  border-left: 4px solid #03a9f4;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.list-item.projects:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.list-item.projects .project-description h3 {
+  color: #0277bd;
+  font-weight: 600;
+  margin-bottom: 1em;
+  font-size: 1.2em;
+  display: flex;
+  align-items: center;
+}
+
+.list-item.projects .project-description h3::before {
+  content: '🚀';
+  margin-right: 0.5em;
+  font-size: 1.1em;
+}
+
+.projects p {
+  line-height: 1.6;
+  color: #01579b;
 }
 
 /**************************************************/
@@ -689,27 +788,68 @@ body.dark-theme .list-item.skills .project-description p {
   color: #e2e8f0;
 }
 
-/* Dark theme for enhanced Teaching section */
-body.dark-theme .list-item.teaching {
+/* Dark theme for enhanced Teaching & Service section */
+body.dark-theme .list-item.teaching-service {
   background: linear-gradient(135deg, #3d2914 0%, #2d1a00 100%);
   border-left-color: #ff9800;
 }
 
-body.dark-theme .list-item.teaching:hover {
+body.dark-theme .list-item.teaching-service:hover {
   box-shadow: 0 4px 12px rgba(255, 152, 0, 0.2);
 }
 
-body.dark-theme .list-item.teaching .project-description h3 {
+body.dark-theme .list-item.teaching-service .project-description h3 {
   color: #ffb74d;
 }
 
-body.dark-theme .teaching li {
+body.dark-theme .teaching-service li {
   color: #d4a574;
   background: rgba(0, 0, 0, 0.2);
 }
 
-body.dark-theme .teaching li:hover {
+body.dark-theme .teaching-service li:hover {
   background: rgba(0, 0, 0, 0.3);
+}
+
+/* Dark theme for enhanced Experience section */
+body.dark-theme .list-item.experience {
+  background: linear-gradient(135deg, #1b2f1b 0%, #0d1f0d 100%);
+  border-left-color: #4caf50;
+}
+
+body.dark-theme .list-item.experience:hover {
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.2);
+}
+
+body.dark-theme .list-item.experience .project-description h3 {
+  color: #81c784;
+}
+
+body.dark-theme .experience li {
+  color: #a5d6a7;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+body.dark-theme .experience li:hover {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+/* Dark theme for enhanced Projects section */
+body.dark-theme .list-item.projects {
+  background: linear-gradient(135deg, #0d2b3d 0%, #051a26 100%);
+  border-left-color: #03a9f4;
+}
+
+body.dark-theme .list-item.projects:hover {
+  box-shadow: 0 4px 12px rgba(3, 169, 244, 0.2);
+}
+
+body.dark-theme .list-item.projects .project-description h3 {
+  color: #4fc3f7;
+}
+
+body.dark-theme .projects p {
+  color: #81d4fa;
 }
 
 /* Dark theme for enhanced Awards section */
