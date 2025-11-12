@@ -94,12 +94,24 @@
       body.lang-zh .button-group,
       body.lang-zh #intro,
       body.lang-zh #filters,
-      body.lang-zh #footer {
+      body.lang-zh #footer,
+      body.lang-zh #main {
+        display: block !important;
+        visibility: visible !important;
+      }
+      
+      /* Ensure all content containers are visible */
+      body.lang-zh .edu-list,
+      body.lang-zh .award-list,
+      body.lang-zh .project-description:not(.lang-en):not(.lang-zh),
+      body.lang-zh .thumbnail,
+      body.lang-zh img:not(.lang-en):not(.lang-zh) {
         display: block !important;
       }
       
       /* Ensure inline elements without lang classes remain visible */
-      body.lang-zh span:not(.lang-en):not(.lang-zh):not(.lang-zh-inline):not(.lang-en-inline) {
+      body.lang-zh span:not(.lang-en):not(.lang-zh):not(.lang-zh-inline):not(.lang-en-inline),
+      body.lang-zh a:not(.lang-en):not(.lang-zh) {
         display: inline !important;
       }
       
