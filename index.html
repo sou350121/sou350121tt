@@ -740,11 +740,7 @@
         }
       }
 
-      // Load saved language preference
-      document.addEventListener('DOMContentLoaded', function() {
-        const savedLang = localStorage.getItem('language') || 'en';
-        switchLang(savedLang);
-      });
+      // Language preference is initialized in $(document).ready above
 
     </script>
   </body>
