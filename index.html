@@ -125,18 +125,33 @@
       }
       
       /* Ensure all content containers are visible */
-      body.lang-zh .edu-list,
-      body.lang-zh .award-list,
       body.lang-zh .project-description:not(.lang-en):not(.lang-zh),
       body.lang-zh .thumbnail,
-      body.lang-zh img:not(.lang-en):not(.lang-zh) {
+      body.lang-zh img:not(.lang-en):not(.lang-zh),
+      body.lang-zh .edu-item,
+      body.lang-zh .list-item.talk,
+      body.lang-zh .list-item.edu-item {
+        display: block !important;
+      }
+      
+      /* Ensure paragraphs and other text elements without lang classes remain visible */
+      body.lang-zh p:not(.lang-en):not(.lang-zh),
+      body.lang-zh .edu-item p:not(.lang-en),
+      body.lang-zh .edu-item > div > div p:not(.lang-en) {
         display: block !important;
       }
       
       /* Ensure inline elements without lang classes remain visible */
       body.lang-zh span:not(.lang-en):not(.lang-zh):not(.lang-zh-inline):not(.lang-en-inline),
-      body.lang-zh a:not(.lang-en):not(.lang-zh) {
+      body.lang-zh a:not(.lang-en):not(.lang-zh),
+      body.lang-zh .edu-item a,
+      body.lang-zh .edu-item b {
         display: inline !important;
+      }
+      
+      /* Ensure flex containers maintain their layout */
+      body.lang-zh .edu-item > div[style*="display:flex"] {
+        display: flex !important;
       }
       
       /* Dark theme for language switcher */
