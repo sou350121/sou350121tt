@@ -231,7 +231,7 @@
           </p>
         </div>
         <div id="intro-image">
-          <img src="assets/images/myself.JPG" alt="Kit-Wa Sou" style="width: 12em; height: 12em; object-fit: cover; border-radius: 1em;">
+          <img src="assets/images/myself.JPG" alt="Kit-Wa Sou" style="width: 12em; height: 12em; object-fit: cover; border-radius: 1em;" loading="lazy" onerror="this.style.display='none';">
         </div>
       </div>
 
@@ -268,7 +268,7 @@
         <!-- Preprints / Under Review -->
         <div class="list-item publication" data-category="publication">
           <a href="https://arxiv.org/abs/2509.12714" class="thumbnail">
-            <img src="assets/images/moiretac-sensor.jpg" alt="">
+            <img src="assets/images/moiretac-sensor.jpg" alt="" loading="lazy" onerror="this.style.display='none';">
           </a>
           <div class="project-description">
             <h3>MoiréTac: A Dual-Mode Visuotactile Sensor for Multidimensional Perception Using Moiré Pattern Amplification</h3>
@@ -283,7 +283,7 @@
 
         <div class="list-item publication" data-category="publication">
           <a href="#" class="thumbnail">
-            <img src="assets/images/flexlock-robot-arm.jpg" alt="">
+            <img src="assets/images/flexlock-robot-arm.jpg" alt="" loading="lazy" onerror="this.style.display='none';">
           </a>
           <div class="project-description">
             <h3>FlexLock: Bionic Snake-Inspired Variable-Stiffness Flexible Robotic Arm</h3>
@@ -298,7 +298,7 @@
         <!-- Journal Articles -->
         <div class="list-item publication" data-category="publication">
           <a href="https://doi.org/10.1002/adfm.202420872" class="thumbnail">
-            <img src="assets/images/mechano-sensor.jpg" alt="">
+            <img src="assets/images/mechano-sensor.jpg" alt="" loading="lazy" onerror="this.style.display='none';">
           </a>
           <div class="project-description">
             <h3>A Bio-Inspired Event-Driven Mechanoluminescent Visuotactile Sensor for Intelligent Interactions</h3>
@@ -314,7 +314,7 @@
         <!-- Conference Papers -->
         <div class="list-item publication" data-category="publication">
           <a href="https://arxiv.org/abs/2508.20982" class="thumbnail">
-            <img src="assets/images/ultrac-sensor.jpg" alt="">
+            <img src="assets/images/ultrac-sensor.jpg" alt="" loading="lazy" onerror="this.style.display='none';">
           </a>
           <div class="project-description">
             <h3>UltraTac: Integrated Ultrasound-Augmented Visuotactile Sensor for Enhanced Robotic Perception</h3>
@@ -328,7 +328,7 @@
 
         <div class="list-item publication" data-category="publication">
           <a href="https://doi.org/10.1016/j.nanoen.2024.109746" class="thumbnail">
-            <img src="assets/images/energy-harvester.jpg" alt="">
+            <img src="assets/images/energy-harvester.jpg" alt="" loading="lazy" onerror="this.style.display='none';">
           </a>
           <div class="project-description">
             <h3>A Hybrid Wind and Raindrop Energy Harvesting Operating on Savonius Turbine</h3>
@@ -632,7 +632,7 @@
             </p>
             <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1.5em; margin-top: 1.5em;">
               <div class="gallery-photo-item" style="position: relative; overflow: hidden; border-radius: 8px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); transition: transform 0.3s ease; cursor: pointer; aspect-ratio: 4/3;">
-                <img src="assets/images/myself.JPG" alt="Portrait" style="width: 100%; height: 100%; object-fit: cover; display: block;">
+                <img src="assets/images/myself.JPG" alt="Portrait" style="width: 100%; height: 100%; object-fit: cover; display: block;" loading="lazy" onerror="this.style.display='none';">
                 <div class="gallery-caption" style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(0,0,0,0.8), transparent); color: white; padding: 1em; transform: translateY(100%); transition: transform 0.3s ease;">
                   <strong>Portrait <span class="lang-zh-inline">/ 个人肖像</span></strong><br>
                   2025
@@ -658,6 +658,22 @@
     </div>
 
     <script>
+      // Global error handlers to prevent crashes
+      window.addEventListener('error', function(e) {
+        console.error('Global error:', e.error);
+        e.preventDefault();
+        return true;
+      });
+      
+      window.addEventListener('unhandledrejection', function(e) {
+        console.error('Unhandled promise rejection:', e.reason);
+        e.preventDefault();
+      });
+      
+      // Prevent infinite loops and memory leaks
+      var initAttempts = 0;
+      var MAX_INIT_ATTEMPTS = 3;
+      
       // Wait for DOM to be fully loaded
       document.addEventListener('DOMContentLoaded', function() {
         // Theme Toggle Functionality
@@ -715,10 +731,16 @@
         console.log('Theme toggle functionality initialized');
       });
 
-      // Isotope grid initialization
+      // Isotope grid initialization - with memory leak prevention
       var $grid;
+      var isotopeInitialized = false;
       
       function initIsotope() {
+        // Prevent re-initialization
+        if (isotopeInitialized && $grid && $grid.length > 0) {
+          return true;
+        }
+        
         try {
           var $gridElement = $('.grid');
           if ($gridElement.length === 0) {
@@ -730,6 +752,15 @@
           if (typeof $.fn.isotope === 'undefined') {
             console.error('Isotope plugin not loaded');
             return false;
+          }
+          
+          // Destroy existing instance if any
+          if ($grid && $grid.data('isotope')) {
+            try {
+              $grid.isotope('destroy');
+            } catch (e) {
+              console.warn('Error destroying existing Isotope instance:', e);
+            }
           }
           
           $grid = $gridElement.isotope({
@@ -744,26 +775,42 @@
               number: '.number parseInt',
               category: '[data-category]',
               weight: function( itemElem ) {
-                var weight = $( itemElem ).find('.weight').text();
-                return parseFloat( weight.replace( /[\(\)]/g, '') );
+                try {
+                  var weight = $( itemElem ).find('.weight').text();
+                  return parseFloat( weight.replace( /[\(\)]/g, '') ) || 0;
+                } catch (e) {
+                  return 0;
+                }
               }
             }
           });
           
+          isotopeInitialized = true;
           return true;
         } catch (error) {
           console.error('Error initializing Isotope:', error);
+          isotopeInitialized = false;
           return false;
         }
       }
 
-      // Bind filter button click.
+      // Bind filter button click with debouncing to prevent rapid clicks
+      var filterTimeout;
       $('#filters').on( 'click', 'button', function() {
-        var filterValue = $( this ).attr('data-filter');
-        localStorage.setItem('filterValue', filterValue);
-        if ($grid && $grid.length > 0) {
-          $grid.isotope({ filter: filterValue });
-        }
+        clearTimeout(filterTimeout);
+        filterTimeout = setTimeout(function() {
+          try {
+            var filterValue = $(this).attr('data-filter');
+            if (filterValue) {
+              localStorage.setItem('filterValue', filterValue);
+              if ($grid && $grid.length > 0 && typeof $grid.isotope === 'function') {
+                $grid.isotope({ filter: filterValue });
+              }
+            }
+          } catch (e) {
+            console.error('Error in filter click:', e);
+          }
+        }.bind(this), 50);
       });
 
       // Change is-checked class on buttons.
@@ -797,13 +844,18 @@
             $grid.isotope({ filter: defaultFilterValue });
             
             // Safety check: if no items are visible after filtering, show all
-            setTimeout(function() {
-              var visibleItems = $grid.find('.list-item:visible');
-              if (visibleItems.length === 0) {
-                console.warn('No items visible after filter, showing all items');
-                $grid.isotope({ filter: '*' });
+            // Use requestAnimationFrame instead of setTimeout for better performance
+            requestAnimationFrame(function() {
+              try {
+                var visibleItems = $grid.find('.list-item:visible');
+                if (visibleItems.length === 0) {
+                  console.warn('No items visible after filter, showing all items');
+                  $grid.isotope({ filter: '*' });
+                }
+              } catch (e) {
+                console.error('Error in safety check:', e);
               }
-            }, 100);
+            });
           }
           
           // Update button states
@@ -828,65 +880,89 @@
         }
       }
 
-      // Initialize everything on page load
-      $(document).ready(function() {
+      // Initialize everything on page load - optimized to prevent crashes
+      var isInitializing = false;
+      var initComplete = false;
+      
+      function safeInit() {
+        if (isInitializing || initComplete) {
+          return;
+        }
+        
+        if (initAttempts >= MAX_INIT_ATTEMPTS) {
+          console.warn('Max initialization attempts reached, skipping');
+          return;
+        }
+        
+        initAttempts++;
+        isInitializing = true;
+        
         try {
           // First, ensure body doesn't have lang-zh class initially (safety measure)
           if (document.body) {
             document.body.classList.remove('lang-zh');
           }
           
-          // Initialize isotope first
-          var isotopeInitialized = false;
-          setTimeout(function() {
+          // Use requestAnimationFrame for better performance
+          requestAnimationFrame(function() {
             try {
-              isotopeInitialized = initIsotope();
+              // Initialize isotope first
+              var isotopeInitialized = initIsotope();
               
               if (isotopeInitialized) {
-                // Then update filter to show Research by default
-                setTimeout(function() {
+                // Use requestAnimationFrame instead of setTimeout
+                requestAnimationFrame(function() {
                   try {
                     update_isotope();
                   } catch (error) {
                     console.error('Error in update_isotope:', error);
                   }
-                }, 100);
+                });
               }
-            } catch (error) {
-              console.error('Error initializing Isotope:', error);
-            }
-          }, 100);
-          
-          // Initialize language LAST, after everything else is ready
-          // This ensures content is visible first, then language is applied
-          setTimeout(function() {
-            try {
-              const savedLang = localStorage.getItem('language') || 'en';
-              // Only switch if we have valid buttons
-              const enBtn = document.getElementById('lang-en');
-              const zhBtn = document.getElementById('lang-zh');
-              if (enBtn && zhBtn) {
-                switchLang(savedLang);
-              } else {
-                // Fallback: ensure English is shown
-                if (document.body) {
-                  document.body.classList.remove('lang-zh');
+              
+              // Initialize language LAST, after everything else is ready
+              requestAnimationFrame(function() {
+                try {
+                  const savedLang = localStorage.getItem('language') || 'en';
+                  const enBtn = document.getElementById('lang-en');
+                  const zhBtn = document.getElementById('lang-zh');
+                  if (enBtn && zhBtn) {
+                    switchLang(savedLang);
+                  } else {
+                    if (document.body) {
+                      document.body.classList.remove('lang-zh');
+                    }
+                  }
+                  initComplete = true;
+                  isInitializing = false;
+                } catch (error) {
+                  console.error('Error in language initialization:', error);
+                  if (document.body) {
+                    document.body.classList.remove('lang-zh');
+                  }
+                  isInitializing = false;
                 }
-              }
+              });
             } catch (error) {
-              console.error('Error in language initialization:', error);
-              // Fallback: ensure English is shown
-              if (document.body) {
-                document.body.classList.remove('lang-zh');
-              }
+              console.error('Error in Isotope initialization:', error);
+              isInitializing = false;
             }
-          }, 500);
+          });
         } catch (error) {
-          console.error('Error in page initialization:', error);
-          // Ultimate fallback: ensure English is shown
+          console.error('Error in safeInit:', error);
           if (document.body) {
             document.body.classList.remove('lang-zh');
           }
+          isInitializing = false;
+        }
+      }
+      
+      $(document).ready(function() {
+        // Delay initialization slightly to ensure DOM is fully ready
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', safeInit);
+        } else {
+          safeInit();
         }
       });
 
