@@ -342,6 +342,16 @@ h3 a:hover {
   margin-top: 1em;
 }
 
+/* Academic category (Education + Awards) */
+.list-item.academic {
+  /* Inherits styles from .edu-item and .award */
+}
+
+/* Experience-all category (Teaching & Service + Experience + Projects) */
+.list-item.experience-all {
+  /* Inherits styles from .teaching-service, .experience, .projects */
+}
+
 /* Enhanced Skills Section */
 .list-item.skills {
   background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
