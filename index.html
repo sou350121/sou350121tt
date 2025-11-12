@@ -62,7 +62,10 @@
       }
       
       /* Language Content - Default: show English, hide Chinese */
-      .lang-zh {
+      /* Only hide elements that are ONLY lang-zh (not combined with structural classes) */
+      div.lang-zh:not(.list-item):not(.grid):not(.button-group):not(.project-description):not(.edu-list):not(.award-list),
+      span.lang-zh:not(.lang-zh-inline):not(.lang-toggle),
+      p.lang-zh {
         display: none !important;
       }
       
@@ -71,7 +74,9 @@
       }
       
       /* When Chinese is selected: hide English, show Chinese */
-      body.lang-zh .lang-en {
+      body.lang-zh div.lang-en:not(.list-item):not(.grid):not(.button-group):not(.project-description):not(.edu-list):not(.award-list),
+      body.lang-zh span.lang-en:not(.lang-en-inline):not(.lang-toggle),
+      body.lang-zh p.lang-en {
         display: none !important;
       }
       
@@ -79,12 +84,23 @@
         display: none !important;
       }
       
-      body.lang-zh .lang-zh {
+      body.lang-zh div.lang-zh:not(.list-item):not(.grid):not(.button-group):not(.project-description):not(.edu-list):not(.award-list),
+      body.lang-zh span.lang-zh:not(.lang-zh-inline):not(.lang-toggle),
+      body.lang-zh p.lang-zh {
         display: block !important;
       }
       
       body.lang-zh .lang-zh-inline {
         display: inline !important;
+      }
+      
+      /* Ensure list items with lang classes work correctly */
+      body.lang-zh .list-item.lang-en {
+        display: none !important;
+      }
+      
+      body.lang-zh .list-item.lang-zh {
+        display: block !important;
       }
       
       /* Ensure elements without lang classes are always visible */
@@ -743,23 +759,48 @@
       // Initialize everything on page load
       $(document).ready(function() {
         try {
-          // Initialize isotope first
-          initIsotope();
+          // First, ensure body doesn't have lang-zh class initially (safety measure)
+          if (document.body) {
+            document.body.classList.remove('lang-zh');
+          }
           
-          // Then update filter to show Research by default
+          // Initialize isotope first
+          var isotopeInitialized = false;
           setTimeout(function() {
             try {
-              update_isotope();
+              isotopeInitialized = initIsotope();
+              
+              if (isotopeInitialized) {
+                // Then update filter to show Research by default
+                setTimeout(function() {
+                  try {
+                    update_isotope();
+                  } catch (error) {
+                    console.error('Error in update_isotope:', error);
+                  }
+                }, 100);
+              }
             } catch (error) {
-              console.error('Error in update_isotope:', error);
+              console.error('Error initializing Isotope:', error);
             }
-          }, 200);
+          }, 100);
           
-          // Initialize language (default to English)
+          // Initialize language LAST, after everything else is ready
+          // This ensures content is visible first, then language is applied
           setTimeout(function() {
             try {
               const savedLang = localStorage.getItem('language') || 'en';
-              switchLang(savedLang);
+              // Only switch if we have valid buttons
+              const enBtn = document.getElementById('lang-en');
+              const zhBtn = document.getElementById('lang-zh');
+              if (enBtn && zhBtn) {
+                switchLang(savedLang);
+              } else {
+                // Fallback: ensure English is shown
+                if (document.body) {
+                  document.body.classList.remove('lang-zh');
+                }
+              }
             } catch (error) {
               console.error('Error in language initialization:', error);
               // Fallback: ensure English is shown
@@ -767,9 +808,13 @@
                 document.body.classList.remove('lang-zh');
               }
             }
-          }, 300);
+          }, 500);
         } catch (error) {
           console.error('Error in page initialization:', error);
+          // Ultimate fallback: ensure English is shown
+          if (document.body) {
+            document.body.classList.remove('lang-zh');
+          }
         }
       });
 
