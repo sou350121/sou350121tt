@@ -640,30 +640,36 @@
         console.log('Theme toggle functionality initialized');
       });
 
-      // Isotope grid.
-      var $grid = $('.grid').isotope({
-        itemSelector: '.list-item',
-        layoutMode: 'fitRows',
-        transitionDuration: 0,
-        stagger: 10,
-        initLayout: false,
-        getSortData: {
-          name: '.name',
-          symbol: '.symbol',
-          number: '.number parseInt',
-          category: '[data-category]',
-          weight: function( itemElem ) {
-            var weight = $( itemElem ).find('.weight').text();
-            return parseFloat( weight.replace( /[\(\)]/g, '') );
+      // Isotope grid initialization
+      var $grid;
+      
+      function initIsotope() {
+        $grid = $('.grid').isotope({
+          itemSelector: '.list-item',
+          layoutMode: 'fitRows',
+          transitionDuration: 0,
+          stagger: 10,
+          initLayout: false,
+          getSortData: {
+            name: '.name',
+            symbol: '.symbol',
+            number: '.number parseInt',
+            category: '[data-category]',
+            weight: function( itemElem ) {
+              var weight = $( itemElem ).find('.weight').text();
+              return parseFloat( weight.replace( /[\(\)]/g, '') );
+            }
           }
-        }
-      });
+        });
+      }
 
       // Bind filter button click.
       $('#filters').on( 'click', 'button', function() {
         var filterValue = $( this ).attr('data-filter');
         localStorage.setItem('filterValue', filterValue);
-        $grid.isotope({ filter: filterValue });
+        if ($grid && $grid.length > 0) {
+          $grid.isotope({ filter: filterValue });
+        }
       });
 
       // Change is-checked class on buttons.
@@ -676,12 +682,19 @@
       });
 
       function update_isotope() {
-        // Retrieve cached button click.
+        // Retrieve cached button click, default to Research (.publication)
         var defaultFilterValue = localStorage.getItem('filterValue');
-        if (defaultFilterValue == null) {
-          defaultFilterValue = ".publication"
+        if (defaultFilterValue == null || defaultFilterValue === '') {
+          defaultFilterValue = ".publication";
+          localStorage.setItem('filterValue', defaultFilterValue);
         }
-        $grid.isotope({ filter: defaultFilterValue });
+        
+        // Apply filter
+        if ($grid && $grid.length > 0) {
+          $grid.isotope({ filter: defaultFilterValue });
+        }
+        
+        // Update button states
         var buttons = document.getElementsByClassName("button");
         for (var currButton of buttons) {
           if (currButton.getAttribute('data-filter') == defaultFilterValue) {
@@ -692,7 +705,22 @@
         }
       }
 
-      update_isotope();
+      // Initialize everything on page load
+      $(document).ready(function() {
+        // Initialize isotope first
+        initIsotope();
+        
+        // Then update filter to show Research by default
+        setTimeout(function() {
+          update_isotope();
+        }, 100);
+        
+        // Initialize language (default to English)
+        const savedLang = localStorage.getItem('language') || 'en';
+        setTimeout(function() {
+          switchLang(savedLang);
+        }, 150);
+      });
 
       // Language switching function
       function switchLang(lang) {
