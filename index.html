@@ -707,36 +707,68 @@
 
       // Initialize everything on page load
       $(document).ready(function() {
-        // Initialize isotope first
-        initIsotope();
-        
-        // Then update filter to show Research by default
-        setTimeout(function() {
-          update_isotope();
-        }, 100);
-        
-        // Initialize language (default to English)
-        const savedLang = localStorage.getItem('language') || 'en';
-        setTimeout(function() {
-          switchLang(savedLang);
-        }, 150);
+        try {
+          // Initialize isotope first
+          initIsotope();
+          
+          // Then update filter to show Research by default
+          setTimeout(function() {
+            try {
+              update_isotope();
+            } catch (error) {
+              console.error('Error in update_isotope:', error);
+            }
+          }, 200);
+          
+          // Initialize language (default to English)
+          setTimeout(function() {
+            try {
+              const savedLang = localStorage.getItem('language') || 'en';
+              switchLang(savedLang);
+            } catch (error) {
+              console.error('Error in language initialization:', error);
+              // Fallback: ensure English is shown
+              if (document.body) {
+                document.body.classList.remove('lang-zh');
+              }
+            }
+          }, 300);
+        } catch (error) {
+          console.error('Error in page initialization:', error);
+        }
       });
 
       // Language switching function
       function switchLang(lang) {
-        // Remove active class from all buttons
-        document.getElementById('lang-en').classList.remove('active');
-        document.getElementById('lang-zh').classList.remove('active');
-        
-        // Add active class to selected button
-        if (lang === 'en') {
-          document.getElementById('lang-en').classList.add('active');
-          document.body.classList.remove('lang-zh');
-          localStorage.setItem('language', 'en');
-        } else {
-          document.getElementById('lang-zh').classList.add('active');
-          document.body.classList.add('lang-zh');
-          localStorage.setItem('language', 'zh');
+        try {
+          const enBtn = document.getElementById('lang-en');
+          const zhBtn = document.getElementById('lang-zh');
+          
+          if (!enBtn || !zhBtn) {
+            console.warn('Language toggle buttons not found, skipping language switch');
+            return;
+          }
+          
+          // Remove active class from all buttons
+          enBtn.classList.remove('active');
+          zhBtn.classList.remove('active');
+          
+          // Add active class to selected button
+          if (lang === 'en') {
+            enBtn.classList.add('active');
+            if (document.body) {
+              document.body.classList.remove('lang-zh');
+            }
+            localStorage.setItem('language', 'en');
+          } else {
+            zhBtn.classList.add('active');
+            if (document.body) {
+              document.body.classList.add('lang-zh');
+            }
+            localStorage.setItem('language', 'zh');
+          }
+        } catch (error) {
+          console.error('Error in switchLang:', error);
         }
       }
 
