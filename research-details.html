@@ -93,28 +93,43 @@
         border-bottom: 2px solid #146ebe;
       }
       
+      .lang-switcher {
+        display: inline-flex;
+        margin-left: 1.5em;
+        background: #f0f0f0;
+        border-radius: 25px;
+        padding: 4px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        position: relative;
+      }
+      
       .lang-toggle {
         display: inline-block;
-        margin-left: 1em;
-        padding: 0.3em 0.8em;
-        background: #f0f0f0;
-        border: 1px solid #a0a8b0;
-        border-radius: 4px;
+        padding: 0.5em 1.2em;
+        border-radius: 20px;
         cursor: pointer;
         font-size: 0.9em;
-        color: #150c21;
-        transition: all 0.3s ease;
+        font-weight: 500;
+        color: #666;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        z-index: 2;
+        white-space: nowrap;
       }
       
       .lang-toggle:hover {
-        background: #e0e0e0;
-        border-color: #146ebe;
+        color: #146ebe;
       }
       
       .lang-toggle.active {
-        background: #146ebe;
         color: white;
-        border-color: #146ebe;
+        background: linear-gradient(135deg, #146ebe 0%, #0d4a8a 100%);
+        box-shadow: 0 2px 8px rgba(20, 110, 190, 0.3);
+        transform: scale(1.05);
+      }
+      
+      .lang-toggle:not(.active) {
+        background: transparent;
       }
       
       .lang-content {
@@ -154,19 +169,23 @@
         color: #1a1a1a;
       }
       
-      body.dark-theme .lang-toggle {
+      body.dark-theme .lang-switcher {
         background: #2d3748;
-        border-color: #4a9eff;
-        color: #e0e0e0;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+      }
+      
+      body.dark-theme .lang-toggle {
+        color: #b0b0b0;
       }
       
       body.dark-theme .lang-toggle:hover {
-        background: #3d4a5d;
+        color: #4a9eff;
       }
       
       body.dark-theme .lang-toggle.active {
-        background: #4a9eff;
-        color: #1a1a1a;
+        background: linear-gradient(135deg, #4a9eff 0%, #2d5aa0 100%);
+        color: #ffffff;
+        box-shadow: 0 2px 8px rgba(74, 158, 255, 0.4);
       }
     </style>
   </head>
@@ -181,8 +200,14 @@
     <div id="main">
       <div id="intro" style="padding-top: 3em;">
         <div id="intro-text">
-          <h1>Research Work Details <span class="lang-toggle active" id="lang-en" onclick="switchLang('en')">EN</span><span class="lang-toggle" id="lang-zh" onclick="switchLang('zh')">中文</span></h1>
-          <p>
+          <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 1em;">
+            <h1 style="margin: 0;">Research Work Details</h1>
+            <div class="lang-switcher">
+              <span class="lang-toggle active" id="lang-en" onclick="switchLang('en')">EN</span>
+              <span class="lang-toggle" id="lang-zh" onclick="switchLang('zh')">中文</span>
+            </div>
+          </div>
+          <p style="margin-top: 1em;">
             <a href="index.html" class="back-link">← Back to Home</a>
           </p>
         </div>
