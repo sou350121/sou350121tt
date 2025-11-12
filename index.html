@@ -796,11 +796,13 @@
 
       // Bind filter button click with debouncing to prevent rapid clicks
       var filterTimeout;
-      $('#filters').on( 'click', 'button', function() {
+      $('#filters').on( 'click', 'button', function(e) {
+        e.preventDefault();
+        var button = this;
         clearTimeout(filterTimeout);
         filterTimeout = setTimeout(function() {
           try {
-            var filterValue = $(this).attr('data-filter');
+            var filterValue = $(button).attr('data-filter');
             if (filterValue) {
               localStorage.setItem('filterValue', filterValue);
               if ($grid && $grid.length > 0 && typeof $grid.isotope === 'function') {
@@ -810,7 +812,7 @@
           } catch (e) {
             console.error('Error in filter click:', e);
           }
-        }.bind(this), 50);
+        }, 50);
       });
 
       // Change is-checked class on buttons.
