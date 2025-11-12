@@ -111,12 +111,14 @@
         display: none !important;
       }
       
-      /* Default: show English list items */
-      li.lang-en {
+      /* Default: show English list items (and items without lang class) */
+      li.lang-en,
+      li:not(.lang-zh):not(.lang-en) {
         display: list-item !important;
       }
       
-      body.lang-zh li.lang-en {
+      body.lang-zh li.lang-en,
+      body.lang-zh li:not(.lang-zh):not(.lang-en) {
         display: none !important;
       }
       
