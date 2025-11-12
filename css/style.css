@@ -967,8 +967,31 @@ body.dark-theme #intro-image > div {
 
 /* Education placeholder in dark theme */
 body.dark-theme .edu-item div > div {
-  background-color: #333333 !important;
-  color: #b0b0b0 !important;
+  background-color: transparent !important;
+  color: #e0e0e0 !important;
+}
+
+/* Dark theme: beautify university logos */
+body.dark-theme .edu-item img {
+  filter: brightness(1.1) contrast(1.05);
+  transition: filter 0.3s ease;
+}
+
+body.dark-theme .edu-item img:hover {
+  filter: brightness(1.2) contrast(1.1);
+}
+
+/* Dark theme: logo container styling */
+body.dark-theme .edu-item > div > div {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+}
+
+body.dark-theme .edu-item > div > div:hover {
+  background-color: rgba(255, 255, 255, 0.08) !important;
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 /* Gallery photo hover effects */
