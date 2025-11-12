@@ -656,23 +656,42 @@
       var $grid;
       
       function initIsotope() {
-        $grid = $('.grid').isotope({
-          itemSelector: '.list-item',
-          layoutMode: 'fitRows',
-          transitionDuration: 0,
-          stagger: 10,
-          initLayout: false,
-          getSortData: {
-            name: '.name',
-            symbol: '.symbol',
-            number: '.number parseInt',
-            category: '[data-category]',
-            weight: function( itemElem ) {
-              var weight = $( itemElem ).find('.weight').text();
-              return parseFloat( weight.replace( /[\(\)]/g, '') );
-            }
+        try {
+          var $gridElement = $('.grid');
+          if ($gridElement.length === 0) {
+            console.warn('Grid element not found, skipping Isotope initialization');
+            return false;
           }
-        });
+          
+          // Check if Isotope is available
+          if (typeof $.fn.isotope === 'undefined') {
+            console.error('Isotope plugin not loaded');
+            return false;
+          }
+          
+          $grid = $gridElement.isotope({
+            itemSelector: '.list-item',
+            layoutMode: 'fitRows',
+            transitionDuration: 0,
+            stagger: 10,
+            initLayout: false,
+            getSortData: {
+              name: '.name',
+              symbol: '.symbol',
+              number: '.number parseInt',
+              category: '[data-category]',
+              weight: function( itemElem ) {
+                var weight = $( itemElem ).find('.weight').text();
+                return parseFloat( weight.replace( /[\(\)]/g, '') );
+              }
+            }
+          });
+          
+          return true;
+        } catch (error) {
+          console.error('Error initializing Isotope:', error);
+          return false;
+        }
       }
 
       // Bind filter button click.
@@ -694,26 +713,30 @@
       });
 
       function update_isotope() {
-        // Retrieve cached button click, default to Research (.publication)
-        var defaultFilterValue = localStorage.getItem('filterValue');
-        if (defaultFilterValue == null || defaultFilterValue === '') {
-          defaultFilterValue = ".publication";
-          localStorage.setItem('filterValue', defaultFilterValue);
-        }
-        
-        // Apply filter
-        if ($grid && $grid.length > 0) {
-          $grid.isotope({ filter: defaultFilterValue });
-        }
-        
-        // Update button states
-        var buttons = document.getElementsByClassName("button");
-        for (var currButton of buttons) {
-          if (currButton.getAttribute('data-filter') == defaultFilterValue) {
-            currButton.classList.add('is-checked');
-          } else {
-            currButton.classList.remove('is-checked');
+        try {
+          // Retrieve cached button click, default to Research (.publication)
+          var defaultFilterValue = localStorage.getItem('filterValue');
+          if (defaultFilterValue == null || defaultFilterValue === '') {
+            defaultFilterValue = ".publication";
+            localStorage.setItem('filterValue', defaultFilterValue);
           }
+          
+          // Apply filter
+          if ($grid && $grid.length > 0 && typeof $grid.isotope === 'function') {
+            $grid.isotope({ filter: defaultFilterValue });
+          }
+          
+          // Update button states
+          var buttons = document.getElementsByClassName("button");
+          for (var currButton of buttons) {
+            if (currButton.getAttribute('data-filter') == defaultFilterValue) {
+              currButton.classList.add('is-checked');
+            } else {
+              currButton.classList.remove('is-checked');
+            }
+          }
+        } catch (error) {
+          console.error('Error in update_isotope:', error);
         }
       }
 
