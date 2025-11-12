@@ -61,7 +61,7 @@
         background: transparent;
       }
       
-      /* Language Content */
+      /* Language Content - Default: show English, hide Chinese */
       .lang-zh {
         display: none !important;
       }
@@ -70,6 +70,7 @@
         display: none !important;
       }
       
+      /* When Chinese is selected: hide English, show Chinese */
       body.lang-zh .lang-en {
         display: none !important;
       }
@@ -83,6 +84,27 @@
       }
       
       body.lang-zh .lang-zh-inline {
+        display: inline !important;
+      }
+      
+      /* Ensure elements without lang classes are always visible */
+      body.lang-zh .list-item:not(.lang-en):not(.lang-zh) {
+        display: block !important;
+      }
+      
+      body.lang-zh p:not(.lang-en):not(.lang-zh),
+      body.lang-zh div:not(.lang-en):not(.lang-zh),
+      body.lang-zh h1:not(.lang-en):not(.lang-zh),
+      body.lang-zh h2:not(.lang-en):not(.lang-zh),
+      body.lang-zh h3:not(.lang-en):not(.lang-zh),
+      body.lang-zh ul:not(.lang-en):not(.lang-zh),
+      body.lang-zh li:not(.lang-en):not(.lang-zh),
+      body.lang-zh a:not(.lang-en):not(.lang-zh),
+      body.lang-zh span:not(.lang-en):not(.lang-zh):not(.lang-zh-inline) {
+        display: block !important;
+      }
+      
+      body.lang-zh span:not(.lang-en):not(.lang-zh):not(.lang-zh-inline):not(.lang-en-inline) {
         display: inline !important;
       }
       
