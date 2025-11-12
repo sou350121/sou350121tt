@@ -893,6 +893,95 @@ body.dark-theme .list-item.news {
   color: #e0e0e0 !important;
 }
 
+/* Dark theme: Academic section - transparent background */
+body.dark-theme .list-item.academic {
+  background: transparent !important;
+}
+
+body.dark-theme .list-item.academic .edu-item {
+  background: transparent !important;
+}
+
+body.dark-theme .list-item.academic .project-description {
+  background: transparent !important;
+}
+
+body.dark-theme .list-item.academic .project-description p,
+body.dark-theme .list-item.academic .project-description div,
+body.dark-theme .list-item.academic .project-description ul,
+body.dark-theme .list-item.academic .project-description li {
+  background: transparent !important;
+  color: #e0e0e0 !important;
+}
+
+body.dark-theme .list-item.academic .project-description b,
+body.dark-theme .list-item.academic .project-description strong {
+  color: #e0e0e0 !important;
+}
+
+body.dark-theme .list-item.academic .project-description a {
+  color: #4a9eff !important;
+}
+
+/* Dark theme: Hobbies/Gallery section */
+body.dark-theme .list-item.gallery {
+  background: transparent !important;
+}
+
+body.dark-theme .list-item.gallery .project-description {
+  background: transparent !important;
+}
+
+body.dark-theme .list-item.gallery .project-description h3,
+body.dark-theme .list-item.gallery .project-description h4 {
+  color: #4a9eff !important;
+}
+
+body.dark-theme .list-item.gallery .project-description p {
+  color: #e0e0e0 !important;
+  background: transparent !important;
+}
+
+body.dark-theme .list-item.gallery .project-description p[style*="color"] {
+  color: #e0e0e0 !important;
+}
+
+body.dark-theme .list-item.gallery .project-description div {
+  background: transparent !important;
+  border-top-color: #444444 !important;
+}
+
+body.dark-theme .list-item.gallery .project-description div[style*="border-top"] {
+  border-top-color: #444444 !important;
+}
+
+body.dark-theme .list-item.gallery .gallery-photo-item {
+  background: #2a2a2a !important;
+  color: #a0a0a0 !important;
+}
+
+/* Dark theme: Override inline styles in Academic section */
+body.dark-theme .list-item.academic div[style*="color"],
+body.dark-theme .list-item.academic div[style*="color:"] {
+  color: #e0e0e0 !important;
+}
+
+body.dark-theme .list-item.academic p[style*="color"],
+body.dark-theme .list-item.academic p[style*="color:"] {
+  color: #e0e0e0 !important;
+}
+
+body.dark-theme .list-item.academic div[style*="background"],
+body.dark-theme .list-item.academic div[style*="background-color"] {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+body.dark-theme .list-item.academic .edu-item > div > div {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
 /* Education items text */
 body.dark-theme .edu-item p,
 body.dark-theme .edu-item b {
@@ -970,25 +1059,28 @@ body.dark-theme .edu-item div > div {
 
 /* Dark theme: beautify university logos */
 body.dark-theme .edu-item img {
-  filter: brightness(1.1) contrast(1.05);
-  transition: filter 0.3s ease;
+  filter: brightness(1.15) contrast(1.1) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+  transition: all 0.3s ease;
 }
 
 body.dark-theme .edu-item img:hover {
-  filter: brightness(1.2) contrast(1.1);
+  filter: brightness(1.3) contrast(1.15) drop-shadow(0 4px 8px rgba(0, 0, 0, 0.4));
+  transform: scale(1.05);
 }
 
-/* Dark theme: logo container styling */
+/* Dark theme: logo container styling - subtle glow effect */
 body.dark-theme .edu-item > div > div {
-  background-color: rgba(255, 255, 255, 0.05) !important;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.08) 100%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
   transition: all 0.3s ease;
 }
 
 body.dark-theme .edu-item > div > div:hover {
-  background-color: rgba(255, 255, 255, 0.08) !important;
-  border-color: rgba(255, 255, 255, 0.2);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.12) 100%) !important;
+  border-color: rgba(255, 255, 255, 0.25);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3), 0 0 20px rgba(74, 158, 255, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px);
 }
 
 /* Gallery photo hover effects */
