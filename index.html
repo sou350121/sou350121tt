@@ -88,22 +88,17 @@
       }
       
       /* Ensure elements without lang classes are always visible */
-      body.lang-zh .list-item:not(.lang-en):not(.lang-zh) {
+      /* Only hide/show elements that explicitly have lang-en or lang-zh classes */
+      body.lang-zh .grid,
+      body.lang-zh .list-item:not(.lang-en):not(.lang-zh),
+      body.lang-zh .button-group,
+      body.lang-zh #intro,
+      body.lang-zh #filters,
+      body.lang-zh #footer {
         display: block !important;
       }
       
-      body.lang-zh p:not(.lang-en):not(.lang-zh),
-      body.lang-zh div:not(.lang-en):not(.lang-zh),
-      body.lang-zh h1:not(.lang-en):not(.lang-zh),
-      body.lang-zh h2:not(.lang-en):not(.lang-zh),
-      body.lang-zh h3:not(.lang-en):not(.lang-zh),
-      body.lang-zh ul:not(.lang-en):not(.lang-zh),
-      body.lang-zh li:not(.lang-en):not(.lang-zh),
-      body.lang-zh a:not(.lang-en):not(.lang-zh),
-      body.lang-zh span:not(.lang-en):not(.lang-zh):not(.lang-zh-inline) {
-        display: block !important;
-      }
-      
+      /* Ensure inline elements without lang classes remain visible */
       body.lang-zh span:not(.lang-en):not(.lang-zh):not(.lang-zh-inline):not(.lang-en-inline) {
         display: inline !important;
       }
