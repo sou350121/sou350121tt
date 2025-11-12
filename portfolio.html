@@ -1,0 +1,458 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <!-- Title -->
+    <title>Portfolio - Sou Kit-Wa (Ken)</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=1000">
+
+    <!-- Custom Style -->
+    <link rel="stylesheet" href="css/style.css">
+
+    <!-- Google Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Asap:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Asap:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap');
+      
+      /* Portfolio specific styles */
+      .portfolio-section {
+        margin-top: 4em;
+        margin-bottom: 4em;
+      }
+      
+      .section-title {
+        font-size: 2em;
+        font-weight: 600;
+        margin-bottom: 1.5em;
+        color: #150c21;
+        border-bottom: 3px solid #146ebe;
+        padding-bottom: 0.5em;
+      }
+      
+      .work-item {
+        margin-bottom: 3em;
+        padding: 2em;
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        border-radius: 12px;
+        border-left: 4px solid #146ebe;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
+      
+      .work-item:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      }
+      
+      .work-item h3 {
+        font-size: 1.5em;
+        margin-bottom: 0.8em;
+        color: #146ebe;
+      }
+      
+      .work-item .work-meta {
+        color: #a0a8b0;
+        font-size: 0.9em;
+        margin-bottom: 1em;
+      }
+      
+      .work-item .work-description {
+        line-height: 1.8;
+        color: #495057;
+      }
+      
+      .work-item .work-image {
+        margin-top: 1.5em;
+        border-radius: 8px;
+        overflow: hidden;
+      }
+      
+      .work-item .work-image img {
+        width: 100%;
+        height: auto;
+        display: block;
+      }
+      
+      /* Photo Gallery */
+      .photo-gallery {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 1.5em;
+        margin-top: 2em;
+      }
+      
+      .photo-item {
+        position: relative;
+        overflow: hidden;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        cursor: pointer;
+        aspect-ratio: 4/3;
+      }
+      
+      .photo-item:hover {
+        transform: scale(1.05);
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+      }
+      
+      .photo-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+      
+      .photo-caption {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+        color: white;
+        padding: 1em;
+        transform: translateY(100%);
+        transition: transform 0.3s ease;
+      }
+      
+      .photo-item:hover .photo-caption {
+        transform: translateY(0);
+      }
+      
+      /* Vlog Section */
+      .vlog-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 2em;
+        margin-top: 2em;
+      }
+      
+      .vlog-item {
+        background: linear-gradient(135deg, #fff5e6 0%, #ffe8cc 100%);
+        border-radius: 12px;
+        padding: 1.5em;
+        border-left: 4px solid #ff9800;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
+      
+      .vlog-item:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      }
+      
+      .vlog-item h4 {
+        font-size: 1.2em;
+        margin-bottom: 0.8em;
+        color: #e65100;
+      }
+      
+      .vlog-item .vlog-video {
+        width: 100%;
+        border-radius: 8px;
+        margin-top: 1em;
+        aspect-ratio: 16/9;
+      }
+      
+      .vlog-item .vlog-description {
+        margin-top: 1em;
+        color: #5d4037;
+        line-height: 1.6;
+      }
+      
+      .back-link {
+        display: inline-block;
+        margin-top: 2em;
+        margin-bottom: 2em;
+        color: #146ebe;
+        font-size: 1.1em;
+        text-decoration: none;
+        padding: 0.5em 1em;
+        border: 2px solid #146ebe;
+        border-radius: 6px;
+        transition: all 0.3s ease;
+      }
+      
+      .back-link:hover {
+        background-color: #146ebe;
+        color: white;
+        border-bottom: 2px solid #146ebe;
+      }
+      
+      /* Dark theme styles for portfolio */
+      body.dark-theme .section-title {
+        color: #ffffff;
+        border-bottom-color: #4a9eff;
+      }
+      
+      body.dark-theme .work-item {
+        background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
+        border-left-color: #4a9eff;
+      }
+      
+      body.dark-theme .work-item h3 {
+        color: #4a9eff;
+      }
+      
+      body.dark-theme .work-item .work-description {
+        color: #e2e8f0;
+      }
+      
+      body.dark-theme .vlog-item {
+        background: linear-gradient(135deg, #3d2914 0%, #2d1a00 100%);
+        border-left-color: #ff9800;
+      }
+      
+      body.dark-theme .vlog-item h4 {
+        color: #ffb74d;
+      }
+      
+      body.dark-theme .vlog-item .vlog-description {
+        color: #d4a574;
+      }
+      
+      body.dark-theme .back-link {
+        color: #4a9eff;
+        border-color: #4a9eff;
+      }
+      
+      body.dark-theme .back-link:hover {
+        background-color: #4a9eff;
+        color: #1a1a1a;
+      }
+    </style>
+  </head>
+
+  <body id="body">
+
+    <!-- Theme Toggle Button -->
+    <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">
+      <span id="theme-icon">🌙</span>
+    </button>
+
+    <div id="main">
+      <div id="intro" style="padding-top: 3em;">
+        <div id="intro-text">
+          <h1>Portfolio</h1>
+          <p>
+            <a href="index.html" class="back-link">← 返回主页</a>
+          </p>
+        </div>
+      </div>
+
+      <!-- 论文工作介绍 -->
+      <div class="portfolio-section">
+        <h2 class="section-title">📚 论文工作介绍</h2>
+        
+        <div class="work-item">
+          <h3>MoiréTac: A Dual-Mode Visuotactile Sensor</h3>
+          <div class="work-meta">
+            <strong>状态:</strong> 审稿中 | <strong>年份:</strong> 2025 | <strong>arXiv:</strong> 2509.12714
+          </div>
+          <div class="work-description">
+            <p>本研究开发了一种基于莫尔图案放大的双模式视触觉传感器，能够实现多维感知。该传感器支持多自由度力/姿态估计和预抓取线索，通过视觉-接触融合技术提供连续触觉场感知。</p>
+            <p><strong>主要贡献:</strong></p>
+            <ul style="margin-left: 1.5em; margin-top: 0.5em;">
+              <li>创新性地将莫尔图案放大技术应用于触觉感知</li>
+              <li>实现了视觉-接触双模式融合感知</li>
+              <li>支持多自由度力/姿态估计</li>
+              <li>提供预抓取线索，提升机器人操作能力</li>
+            </ul>
+          </div>
+          <div class="work-image">
+            <img src="assets/images/moiretac-sensor.jpg" alt="MoiréTac Sensor">
+          </div>
+        </div>
+
+        <div class="work-item">
+          <h3>UltraTac: Integrated Ultrasound-Augmented Visuotactile Sensor</h3>
+          <div class="work-meta">
+            <strong>状态:</strong> 已接收 | <strong>会议:</strong> IEEE/RSJ IROS 2025
+          </div>
+          <div class="work-description">
+            <p>本研究提出了一种集成超声增强的视触觉传感器，用于增强机器人感知能力。该传感器结合了视觉、触觉和超声技术，能够在复杂环境中提供更准确的感知信息。</p>
+            <p><strong>技术亮点:</strong></p>
+            <ul style="margin-left: 1.5em; margin-top: 0.5em;">
+              <li>多模态传感器融合（视觉+触觉+超声）</li>
+              <li>增强的感知精度和鲁棒性</li>
+              <li>适用于复杂环境下的机器人操作</li>
+            </ul>
+          </div>
+          <div class="work-image">
+            <img src="assets/images/ultrac-sensor.jpg" alt="UltraTac Sensor">
+          </div>
+        </div>
+
+        <div class="work-item">
+          <h3>A Bio-Inspired Event-Driven Mechanoluminescent Visuotactile Sensor</h3>
+          <div class="work-meta">
+            <strong>期刊:</strong> Advanced Functional Materials | <strong>年份:</strong> 2024/2025
+          </div>
+          <div class="work-description">
+            <p>本研究开发了一种受生物启发的事件驱动机械发光视触觉传感器，用于智能交互。该传感器具有低功耗和强环境光抗干扰能力，已在四足机器人平台上验证了人机交互应用。</p>
+            <p><strong>创新点:</strong></p>
+            <ul style="margin-left: 1.5em; margin-top: 0.5em;">
+              <li>事件驱动机制，降低功耗</li>
+              <li>机械发光材料，实现自发光感知</li>
+              <li>强环境光抗干扰能力</li>
+              <li>在四足机器人平台上验证</li>
+            </ul>
+          </div>
+          <div class="work-image">
+            <img src="assets/images/mechano-sensor.jpg" alt="Mechanoluminescent Sensor">
+          </div>
+        </div>
+
+        <div class="work-item">
+          <h3>FlexLock: Bionic Snake-Inspired Variable-Stiffness Flexible Robotic Arm</h3>
+          <div class="work-meta">
+            <strong>状态:</strong> 审稿中 | <strong>期刊:</strong> Cyborg and Bionic Systems (SCI Q1)
+          </div>
+          <div class="work-description">
+            <p>本研究提出了一种受蛇类启发的可变刚度柔性机械臂，结合了形状记忆合金（SMA）和颗粒阻塞技术，实现刚度调制。该设计适用于安全的人机交互和高负载操作场景。</p>
+            <p><strong>设计特点:</strong></p>
+            <ul style="margin-left: 1.5em; margin-top: 0.5em;">
+              <li>受蛇类生物启发的仿生设计</li>
+              <li>SMA和颗粒阻塞技术实现刚度调制</li>
+              <li>安全的人机交互能力</li>
+              <li>高负载操作能力</li>
+            </ul>
+          </div>
+          <div class="work-image">
+            <img src="assets/images/flexlock-robot-arm.jpg" alt="FlexLock Robotic Arm">
+          </div>
+        </div>
+      </div>
+
+      <!-- 摄影作品 -->
+      <div class="portfolio-section">
+        <h2 class="section-title">📷 摄影作品</h2>
+        <p style="margin-bottom: 2em; color: #a0a8b0; line-height: 1.8;">
+          以下是我的一些摄影作品，记录了研究过程中的精彩瞬间和生活中的美好时刻。
+        </p>
+        
+        <div class="photo-gallery">
+          <!-- 示例照片 - 您可以替换为实际照片 -->
+          <div class="photo-item">
+            <img src="assets/images/myself.JPG" alt="摄影作品 1">
+            <div class="photo-caption">
+              <strong>个人肖像</strong><br>
+              2025
+            </div>
+          </div>
+          
+          <!-- 您可以继续添加更多照片 -->
+          <!-- 
+          <div class="photo-item">
+            <img src="assets/images/photo2.jpg" alt="摄影作品 2">
+            <div class="photo-caption">
+              <strong>作品标题</strong><br>
+              描述信息
+            </div>
+          </div>
+          -->
+        </div>
+        
+        <p style="margin-top: 2em; color: #a0a8b0; font-style: italic;">
+          💡 提示：将您的摄影作品放在 <code>assets/images/</code> 目录下，然后在此处添加对应的图片元素。
+        </p>
+      </div>
+
+      <!-- Vlog 视频 -->
+      <div class="portfolio-section">
+        <h2 class="section-title">🎬 Vlog</h2>
+        <p style="margin-bottom: 2em; color: #a0a8b0; line-height: 1.8;">
+          这里分享一些关于研究、生活和旅行的视频记录。
+        </p>
+        
+        <div class="vlog-grid">
+          <!-- 示例 Vlog - 您可以替换为实际视频 -->
+          <div class="vlog-item">
+            <h4>研究日常</h4>
+            <div class="vlog-description">
+              <p>记录在实验室的日常工作，包括传感器开发、实验测试等过程。</p>
+            </div>
+            <!-- 使用 iframe 嵌入 YouTube 或其他视频平台 -->
+            <!-- 
+            <iframe 
+              class="vlog-video"
+              src="https://www.youtube.com/embed/YOUR_VIDEO_ID" 
+              frameborder="0" 
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+              allowfullscreen>
+            </iframe>
+            -->
+            <div class="vlog-video" style="background: #f0f0f0; display: flex; align-items: center; justify-content: center; color: #a0a8b0;">
+              <p>视频占位符<br>请添加视频链接</p>
+            </div>
+          </div>
+          
+          <!-- 您可以继续添加更多 Vlog -->
+          <!-- 
+          <div class="vlog-item">
+            <h4>Vlog 标题</h4>
+            <div class="vlog-description">
+              <p>视频描述</p>
+            </div>
+            <iframe 
+              class="vlog-video"
+              src="YOUR_VIDEO_URL" 
+              frameborder="0" 
+              allowfullscreen>
+            </iframe>
+          </div>
+          -->
+        </div>
+        
+        <p style="margin-top: 2em; color: #a0a8b0; font-style: italic;">
+          💡 提示：您可以使用 YouTube、Bilibili 或其他视频平台的嵌入代码来添加视频。将 iframe 代码替换上面的占位符即可。
+        </p>
+      </div>
+
+      <div id="footer" style="display:flex; justify-content:flex-start; align-items:center; margin-top: 4em;">
+        <div>
+          &copy; 2025 Sou Kit-Wa (Ken). All rights reserved.
+        </div>
+      </div>
+
+    </div>
+
+    <script>
+      // Theme Toggle Functionality
+      document.addEventListener('DOMContentLoaded', function() {
+        const themeToggle = document.getElementById('theme-toggle');
+        const themeIcon = document.getElementById('theme-icon');
+        const body = document.body;
+
+        if (!themeToggle || !themeIcon || !body) {
+          return;
+        }
+
+        const currentTheme = localStorage.getItem('theme') || 'light';
+
+        function setTheme(theme) {
+          if (theme === 'dark') {
+            body.classList.add('dark-theme');
+            themeIcon.textContent = '☀️';
+            localStorage.setItem('theme', 'dark');
+          } else {
+            body.classList.remove('dark-theme');
+            themeIcon.textContent = '🌙';
+            localStorage.setItem('theme', 'light');
+          }
+        }
+
+        setTheme(currentTheme);
+
+        themeToggle.addEventListener('click', function(e) {
+          e.preventDefault();
+          const newTheme = body.classList.contains('dark-theme') ? 'light' : 'dark';
+          setTheme(newTheme);
+        });
+      });
+    </script>
+  </body>
+</html>
+
