@@ -865,31 +865,28 @@ body.dark-theme .projects p {
 
 /* Dark theme for enhanced Awards section */
 body.dark-theme .list-item.award {
-  background: linear-gradient(135deg, #1b2f1b 0%, #0d1f0d 100%);
+  background: transparent !important;
   border-left-color: #689f38;
+  color: #e0e0e0 !important;
 }
 
 body.dark-theme .list-item.award:hover {
   box-shadow: 0 4px 12px rgba(104, 159, 56, 0.2);
+  background: rgba(104, 159, 56, 0.05) !important;
 }
 
 body.dark-theme .list-item.award .date {
   color: #8bc34a !important;
-  background: rgba(0, 0, 0, 0.2);
+  background: transparent !important;
 }
 
 body.dark-theme .list-item.award .award-content {
-  color: #a5d6a7;
+  color: #e0e0e0;
 }
 
 body.dark-theme .list-item.award .inst {
-  color: #689f38;
-  background: rgba(0, 0, 0, 0.2);
-}
-
-/* Awards and News specific fixes */
-body.dark-theme .list-item.award {
-  color: #e0e0e0 !important;
+  color: #8bc34a;
+  background: rgba(104, 159, 56, 0.2) !important;
 }
 
 body.dark-theme .list-item.news {
