@@ -737,9 +737,26 @@
             localStorage.setItem('filterValue', defaultFilterValue);
           }
           
+          // Validate filter value exists in the page
+          var filterElements = document.querySelectorAll(defaultFilterValue);
+          if (filterElements.length === 0) {
+            console.warn('Filter selector returned no elements, using default .publication');
+            defaultFilterValue = ".publication";
+            localStorage.setItem('filterValue', defaultFilterValue);
+          }
+          
           // Apply filter
           if ($grid && $grid.length > 0 && typeof $grid.isotope === 'function') {
             $grid.isotope({ filter: defaultFilterValue });
+            
+            // Safety check: if no items are visible after filtering, show all
+            setTimeout(function() {
+              var visibleItems = $grid.find('.list-item:visible');
+              if (visibleItems.length === 0) {
+                console.warn('No items visible after filter, showing all items');
+                $grid.isotope({ filter: '*' });
+              }
+            }, 100);
           }
           
           // Update button states
@@ -753,6 +770,14 @@
           }
         } catch (error) {
           console.error('Error in update_isotope:', error);
+          // Fallback: show all items if filtering fails
+          if ($grid && $grid.length > 0 && typeof $grid.isotope === 'function') {
+            try {
+              $grid.isotope({ filter: '*' });
+            } catch (e) {
+              console.error('Error showing all items:', e);
+            }
+          }
         }
       }
 
