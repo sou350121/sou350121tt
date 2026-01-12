@@ -1,0 +1,392 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title>DexHand Sensing System - Sou Kit-Wa (Ken)</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=1000">
+
+    <link rel="stylesheet" href="css/style.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Asap:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
+
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Asap:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap');
+
+      .page-section {
+        margin-top: 3.5em;
+        margin-bottom: 3.5em;
+      }
+
+      .section-title {
+        font-size: 2em;
+        font-weight: 600;
+        margin-bottom: 1.2em;
+        color: #150c21;
+        border-bottom: 3px solid #146ebe;
+        padding-bottom: 0.5em;
+      }
+
+      .card {
+        margin-bottom: 1.5em;
+        padding: 1.5em 1.8em;
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        border-radius: 12px;
+        border-left: 4px solid #146ebe;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      }
+
+      .card h3 {
+        font-size: 1.25em;
+        margin-bottom: 0.6em;
+        color: #146ebe;
+      }
+
+      .card p, .card li {
+        color: #495057;
+        line-height: 1.8;
+      }
+
+      .ascii-diagram {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+        font-size: 0.92em;
+        line-height: 1.45;
+        background: #0b1220;
+        color: #e5e7eb;
+        border-radius: 10px;
+        padding: 1em 1.2em;
+        overflow: auto;
+        border: 1px solid rgba(20, 110, 190, 0.35);
+      }
+
+      .pill {
+        display: inline-block;
+        padding: 0.2em 0.7em;
+        border-radius: 999px;
+        background: rgba(20, 110, 190, 0.12);
+        color: #0d4a8a;
+        font-weight: 600;
+        font-size: 0.9em;
+        margin-right: 0.5em;
+        margin-bottom: 0.5em;
+      }
+
+      .back-link {
+        display: inline-block;
+        margin-top: 1.2em;
+        margin-bottom: 1.2em;
+        color: #146ebe;
+        font-size: 1.05em;
+        text-decoration: none;
+        padding: 0.5em 1em;
+        border: 2px solid #146ebe;
+        border-radius: 6px;
+        transition: all 0.3s ease;
+      }
+
+      .back-link:hover {
+        background-color: #146ebe;
+        color: white;
+        border-bottom: 2px solid #146ebe;
+      }
+
+      .lang-switcher {
+        display: inline-flex;
+        margin-left: 1.2em;
+        background: #f0f0f0;
+        border-radius: 25px;
+        padding: 4px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        position: relative;
+      }
+
+      .lang-toggle {
+        display: inline-block;
+        padding: 0.5em 1.2em;
+        border-radius: 20px;
+        cursor: pointer;
+        font-size: 0.9em;
+        font-weight: 500;
+        color: #666;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        z-index: 2;
+        white-space: nowrap;
+      }
+
+      .lang-toggle.active {
+        color: white;
+        background: linear-gradient(135deg, #146ebe 0%, #0d4a8a 100%);
+        box-shadow: 0 2px 8px rgba(20, 110, 190, 0.3);
+        transform: scale(1.05);
+      }
+
+      .lang-content {
+        display: none;
+      }
+
+      .lang-content.active {
+        display: block;
+      }
+
+      /* Dark theme overrides */
+      body.dark-theme .section-title { color: #ffffff; border-bottom-color: #4a9eff; }
+      body.dark-theme .card { background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%); border-left-color: #4a9eff; }
+      body.dark-theme .card h3 { color: #4a9eff; }
+      body.dark-theme .card p, body.dark-theme .card li { color: #e2e8f0; }
+      body.dark-theme .pill { background: rgba(74, 158, 255, 0.14); color: #cfe8ff; }
+      body.dark-theme .back-link { color: #4a9eff; border-color: #4a9eff; }
+      body.dark-theme .back-link:hover { background-color: #4a9eff; color: #1a1a1a; }
+      body.dark-theme .lang-switcher { background: #2d3748; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3); }
+      body.dark-theme .lang-toggle { color: #b0b0b0; }
+      body.dark-theme .lang-toggle.active { background: linear-gradient(135deg, #4a9eff 0%, #2d5aa0 100%); color: #ffffff; }
+    </style>
+  </head>
+
+  <body id="body">
+    <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">
+      <span id="theme-icon">🌙</span>
+    </button>
+
+    <div id="main">
+      <div id="intro" style="padding-top: 3em;">
+        <div id="intro-text">
+          <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 1em;">
+            <h1 style="margin: 0;">DexHand Sensing System</h1>
+            <div class="lang-switcher">
+              <span class="lang-toggle active" id="lang-en" onclick="switchLang('en')">EN</span>
+              <span class="lang-toggle" id="lang-zh" onclick="switchLang('zh')">中文</span>
+            </div>
+          </div>
+          <p style="margin-top: 0.9em;">
+            <a href="index.html" class="back-link">← Back to Home</a>
+            <a href="research-details.html" class="back-link" style="margin-left: 0.8em;">← Research Details</a>
+          </p>
+        </div>
+      </div>
+
+      <!-- English -->
+      <div id="content-en" class="lang-content active">
+        <div class="page-section">
+          <h2 class="section-title">System Concept (DexHand × Sensing × Learning)</h2>
+
+          <div class="card">
+            <h3>What problem should the sensing system solve?</h3>
+            <p>
+              Dexterous manipulation fails less because the robot “can’t see”, and more because contact is nonlinear:
+              friction is unknown, occlusion is common, tabletop collisions are real, and small geometry errors amplify.
+              A DexHand sensing system should be designed to make contact <b>measurable</b>, <b>controllable</b>, and <b>replayable</b>.
+            </p>
+            <div style="margin-top: 0.8em;">
+              <span class="pill">Contact</span>
+              <span class="pill">Wrench/Friction</span>
+              <span class="pill">Slip/Pre-slip</span>
+              <span class="pill">Replayability</span>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3>Sensor stack (from minimum viable to “robot skin”)</h3>
+            <ul>
+              <li><b>Level-0 (default)</b>: joint encoders (q/dq), motor current/voltage, temperature/power.</li>
+              <li><b>Level-1 (stable grasp)</b>: fingertip normal force, optional wrist 6D F/T, tactile array CoP/contact area.</li>
+              <li><b>Level-2 (micro-manipulation)</b>: shear/slip cues (direct or inferred), pre-slip detection.</li>
+              <li><b>Level-3 (high information density)</b>: visuotactile or dynamic tactile arrays (learn contact geometry).</li>
+              <li><b>Level-4 (future)</b>: palm-scale skin, nail/edge sensing for prying/insertion, near-field proximity.</li>
+            </ul>
+          </div>
+
+          <div class="card">
+            <h3>Three-loop architecture (fast reflex / tactile coordination / slow semantics)</h3>
+            <pre class="ascii-diagram">DexHand Sensing/Control: three-layer closed loop
+
+  Slow (5~15 Hz): semantics & planning
+  ┌───────────────────────────────────────────────────────────┐
+  │ VLM/VLA: stage machine, goal selection, recovery policy   │
+  └──────────────────────────────┬────────────────────────────┘
+                                 │ goals + constraints
+                                 ▼
+  Mid (60~200 Hz): tactile coordination
+  ┌───────────────────────────────────────────────────────────┐
+  │ Slip/Force controller: friction margin, Δgrip, micro-move  │
+  └──────────────────────────────┬────────────────────────────┘
+                                 │ impedance/targets
+                                 ▼
+  Fast (500~1000 Hz): on-hand reflex & safety
+  ┌───────────────────────────────────────────────────────────┐
+  │ RT loop: encoder/current control, over-current, thermal    │
+  │ derating, collision detection, emergency stop              │
+  └───────────────────────────────────────────────────────────┘</pre>
+            <p style="margin-top: 0.9em;">
+              This separation makes “hold steady” independent of 30 Hz vision, and makes safety independent of PC scheduling jitter.
+            </p>
+          </div>
+
+          <div class="card">
+            <h3>Time sync & calibration (the system’s foundation)</h3>
+            <ul>
+              <li><b>Timestamp-at-source</b>: tag at the device when data is produced (not when received).</li>
+              <li><b>Unified clock</b>: PTP (IEEE 1588) preferred; hardware trigger as a fallback.</li>
+              <li><b>Alignment</b>: ring buffer + ZOH / linear interpolation to fuse 30 Hz vision with 1 kHz proprioception.</li>
+              <li><b>Tactile calibration</b>: taxel/visuotactile pixels → finger frame; raw signal → force proxy; cross-modal alignment with vision.</li>
+            </ul>
+          </div>
+
+          <div class="card">
+            <h3>Learning-ready data schema (what to log)</h3>
+            <ul>
+              <li><b>Vision</b>: wrist/palm RGB(D) (+ timestamps)</li>
+              <li><b>Proprioception</b>: q/dq/current/temp (+ timestamps)</li>
+              <li><b>Tactile</b>: taxel map / CoP / contact area / slip flag (or visuotactile image)</li>
+              <li><b>Action</b>: Δq/Δx or impedance parameters (what you commanded)</li>
+              <li><b>QC labels</b>: <code>replay_ok</code>, <code>recovery_event</code></li>
+            </ul>
+          </div>
+
+          <div class="card">
+            <h3>Future direction: tactile expectation & recovery as “first-class skills”</h3>
+            <p>
+              The next step is to make tactile not only an input, but a <b>predictable signal</b>:
+              learn a tactile expectation model; when real tactile deviates from predicted tactile, trigger recovery.
+              This aligns with the idea that diverse, messy, fail-retry data is crucial for robust policies:
+              <a href="https://www.spirit-ai.com/en/blog/spirit-v1-5" target="_blank" rel="noopener noreferrer">Spirit-v1.5 Blog</a>.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chinese -->
+      <div id="content-zh" class="lang-content">
+        <div class="page-section">
+          <h2 class="section-title">系统构想（灵巧手 × 传感 × 学习）</h2>
+
+          <div class="card">
+            <h3>传感系统到底要解决什么问题？</h3>
+            <p>
+              灵巧操作失败更常见的原因不是“看不见”，而是<strong>接触的非线性</strong>：
+              摩擦未知、遮挡常态、桌面硬碰撞真实存在，微小几何误差会被放大。
+              因此系统目标应是让接触<strong>可测</strong>、<strong>可控</strong>、<strong>可复现</strong>。
+            </p>
+            <div style="margin-top: 0.8em;">
+              <span class="pill">接触</span>
+              <span class="pill">力/摩擦</span>
+              <span class="pill">防滑/预滑</span>
+              <span class="pill">可复现</span>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3>传感栈（从最小可用到“皮肤”）</h3>
+            <ul>
+              <li><b>Level-0（默认）</b>：编码器 q/dq、电机电流/电压、温度/功耗。</li>
+              <li><b>Level-1（稳定抓取）</b>：指尖法向力、可选腕部 6D F/T、触觉阵列的接触面积/压力中心。</li>
+              <li><b>Level-2（微操）</b>：剪切/滑移线索与预滑检测。</li>
+              <li><b>Level-3（高信息密度）</b>：视触觉或动态触觉阵列（学习接触几何）。</li>
+              <li><b>Level-4（未来）</b>：掌心大面积皮肤、指甲/硬边缘传感、近场接近传感。</li>
+            </ul>
+          </div>
+
+          <div class="card">
+            <h3>三层闭环（快反射 / 触觉协调 / 慢语义）</h3>
+            <pre class="ascii-diagram">DexHand Sensing/Control: three-layer closed loop
+
+  Slow (5~15 Hz): semantics & planning
+  ┌───────────────────────────────────────────────────────────┐
+  │ VLM/VLA: stage machine, goal selection, recovery policy   │
+  └──────────────────────────────┬────────────────────────────┘
+                                 │ goals + constraints
+                                 ▼
+  Mid (60~200 Hz): tactile coordination
+  ┌───────────────────────────────────────────────────────────┐
+  │ Slip/Force controller: friction margin, Δgrip, micro-move  │
+  └──────────────────────────────┬────────────────────────────┘
+                                 │ impedance/targets
+                                 ▼
+  Fast (500~1000 Hz): on-hand reflex & safety
+  ┌───────────────────────────────────────────────────────────┐
+  │ RT loop: encoder/current control, over-current, thermal    │
+  │ derating, collision detection, emergency stop              │
+  └───────────────────────────────────────────────────────────┘</pre>
+            <p style="margin-top: 0.9em;">
+              这种分层能让“拿稳”不依赖 30Hz 视觉，让“安全”不依赖上位机线程调度抖动。
+            </p>
+          </div>
+
+          <div class="card">
+            <h3>同步与标定（系统的生命线）</h3>
+            <ul>
+              <li><b>设备端打戳</b>：采集瞬间打全局时间戳，而不是接收时打戳。</li>
+              <li><b>统一时钟</b>：优先 PTP（IEEE 1588），必要时用硬件触发补偿。</li>
+              <li><b>对齐</b>：环形缓冲 + ZOH/线性插值，把 30Hz 视觉与 1kHz 本体对齐。</li>
+              <li><b>触觉标定</b>：触觉像素/Taxel → 指尖坐标系；原始信号 → 力的代理量；与视觉点云对齐构造监督。</li>
+            </ul>
+          </div>
+
+          <div class="card">
+            <h3>面向学习的数据结构（你应该记录什么）</h3>
+            <ul>
+              <li><b>视觉</b>：wrist/palm RGB(D)（含 source timestamp）</li>
+              <li><b>本体</b>：q/dq/current/temp（含 source timestamp）</li>
+              <li><b>触觉</b>：taxel map/CoP/contact area/slip flag（或视触觉图像）</li>
+              <li><b>动作</b>：Δq/Δx 或阻抗参数（你到底下发了什么）</li>
+              <li><b>质控标签</b>：<code>replay_ok</code>、<code>recovery_event</code></li>
+            </ul>
+          </div>
+
+          <div class="card">
+            <h3>未来：触觉预期与恢复动作成为“第一类技能”</h3>
+            <p>
+              未来触觉不只是输入，而应成为<strong>可预测的信号</strong>：
+              学触觉预期，一旦真实触觉偏离预期就触发恢复。这与“多样化、失败-重试”的数据更利于泛化的观点一致：
+              <a href="https://www.spirit-ai.com/en/blog/spirit-v1-5" target="_blank" rel="noopener noreferrer">Spirit-v1.5 Blog</a>。
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function switchLang(lang) {
+        document.querySelectorAll('.lang-content').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.lang-toggle').forEach(el => el.classList.remove('active'));
+
+        if (lang === 'en') {
+          document.getElementById('content-en').classList.add('active');
+          document.getElementById('lang-en').classList.add('active');
+        } else {
+          document.getElementById('content-zh').classList.add('active');
+          document.getElementById('lang-zh').classList.add('active');
+        }
+      }
+
+      document.addEventListener('DOMContentLoaded', () => {
+        const themeToggle = document.getElementById('theme-toggle');
+        const themeIcon = document.getElementById('theme-icon');
+        const body = document.body;
+
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        if (savedTheme === 'dark') {
+          body.classList.add('dark-theme');
+          themeIcon.textContent = '☀️';
+        } else {
+          body.classList.remove('dark-theme');
+          themeIcon.textContent = '🌙';
+        }
+
+        themeToggle.addEventListener('click', () => {
+          const newTheme = body.classList.contains('dark-theme') ? 'light' : 'dark';
+          if (newTheme === 'dark') {
+            body.classList.add('dark-theme');
+            themeIcon.textContent = '☀️';
+          } else {
+            body.classList.remove('dark-theme');
+            themeIcon.textContent = '🌙';
+          }
+          localStorage.setItem('theme', newTheme);
+        });
+      });
+    </script>
+  </body>
+</html>
+

@@ -305,6 +305,28 @@
       <div id="content-en" class="lang-content active">
         <div class="research-section">
           <h2 class="section-title">Research Work Introduction</h2>
+
+          <div class="work-item">
+            <h3>DexHand Sensing System: A System Concept Note (Sensor Stack × Multi-rate Loops × Learning)</h3>
+            <div class="work-meta">
+              <strong>Type:</strong> System Design Note | <strong>Focus:</strong> Dexterous robotics & visuotactile sensing | <a href="dexhand-sensing.html" style="color: #146ebe; text-decoration: underline;">[Read]</a>
+            </div>
+            <div class="work-description">
+              <p>
+                This note summarizes a structured sensing-system design for dexterous hands: what to sense, how to synchronize and calibrate multimodal streams, and how to build learning-ready data schemas.
+                It emphasizes a three-loop view (fast reflex / mid tactile coordination / slow semantics) to make grasp stability and recovery robust in contact-rich manipulation.
+              </p>
+              <div class="contributions-section">
+                <div class="contributions-title">Highlights</div>
+                <ul class="contributions-list">
+                  <li>Sensor stack from minimum viable proprioception to visuotactile / dynamic tactile arrays</li>
+                  <li>Multi-rate closed loop decomposition: 1 kHz safety/reflex, 60–200 Hz tactile control, 5–15 Hz planning</li>
+                  <li>Timestamp-at-source + ring buffer alignment for replayable data</li>
+                  <li>Learning-ready schema: tactile + proprioception + action + QC labels (replay_ok, recovery_event)</li>
+                </ul>
+              </div>
+            </div>
+          </div>
           
           <div class="work-item">
             <h3>MoiréTac: A Dual-Mode Visuotactile Sensor for Multidimensional Perception Using Moiré Pattern Amplification</h3>
@@ -399,6 +421,28 @@
       <div id="content-zh" class="lang-content">
         <div class="research-section">
           <h2 class="section-title">论文工作介绍</h2>
+
+          <div class="work-item">
+            <h3>灵巧手传感系统构想：传感栈 × 多频闭环 × 学习数据结构</h3>
+            <div class="work-meta">
+              <strong>类型:</strong> 系统设计笔记 | <strong>方向:</strong> 灵巧操作与视触觉 | <a href="dexhand-sensing.html" style="color: #146ebe; text-decoration: underline;">[阅读]</a>
+            </div>
+            <div class="work-description">
+              <p>
+                该笔记总结了灵巧手传感系统的结构化设计：需要感知哪些信号、如何做多模态同步与标定，以及如何把数据组织成面向 VLA/RL 的训练单元。
+                核心是“三层闭环”：快反射/安全（1kHz）、触觉协调（60–200Hz）、慢语义规划（5–15Hz），从而提升接触密集任务中的稳定性与恢复能力。
+              </p>
+              <div class="contributions-section">
+                <div class="contributions-title">要点</div>
+                <ul class="contributions-list">
+                  <li>从最小可用本体感知到视触觉/动态触觉阵列的传感栈</li>
+                  <li>多频闭环拆分：快安全、中触觉、慢语义</li>
+                  <li>设备端打戳 + 环形缓冲对齐，让数据可复现</li>
+                  <li>面向学习的数据 schema：触觉+本体+动作+质控标签（replay_ok / recovery_event）</li>
+                </ul>
+              </div>
+            </div>
+          </div>
           
           <div class="work-item">
             <h3>MoiréTac: 基于莫尔图案放大的双模式视触觉传感器</h3>
