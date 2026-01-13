@@ -31,7 +31,12 @@
         line-height: 1.6em;
       }
 
-      .post {
+      /* Blog list */
+      .post-list {
+        margin-top: 1.4em;
+      }
+
+      .post-card {
         margin-top: 1.2em;
         padding: 1.4em 1.6em;
         border-radius: 12px;
@@ -40,21 +45,80 @@
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
       }
 
-      .post h3 {
-        font-size: 1.2em;
-        margin-bottom: 0.35em;
+      .post-meta {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1em;
+        margin-bottom: 0.7em;
+        flex-wrap: wrap;
+      }
+
+      .post-date {
+        color: #a0a8b0;
+        font-size: 0.95em;
+      }
+
+      .post-tags {
+        display: flex;
+        align-items: center;
+        gap: 0.5em;
+        flex-wrap: wrap;
+      }
+
+      .tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35em;
+        font-size: 0.9em;
+        font-weight: 600;
+        padding: 0.18em 0.65em;
+        border-radius: 999px;
+        border: 1px solid rgba(20, 110, 190, 0.25);
+        background: rgba(20, 110, 190, 0.10);
+        color: #0d4a8a;
+      }
+
+      .tag-dex {
+        border-color: rgba(123, 31, 162, 0.25);
+        background: rgba(123, 31, 162, 0.10);
+        color: #5c1a78;
+      }
+
+      .tag-notes {
+        border-color: rgba(46, 125, 50, 0.25);
+        background: rgba(46, 125, 50, 0.10);
+        color: #1b5e20;
+      }
+
+      .post-title {
+        font-size: 1.25em;
+        margin-bottom: 0.45em;
+        line-height: 1.35em;
         color: #150c21;
       }
 
-      .post .meta {
-        color: #a0a8b0;
-        font-size: 0.95em;
-        margin-bottom: 0.7em;
-      }
-
-      .post p {
+      .post-excerpt {
         color: #495057;
         line-height: 1.7em;
+      }
+
+      .post-actions {
+        margin-top: 0.9em;
+        display: flex;
+        align-items: center;
+        gap: 0.9em;
+        flex-wrap: wrap;
+      }
+
+      .post-read {
+        display: inline-block;
+        font-weight: 600;
+        color: #146ebe;
+      }
+
+      .post-read:hover {
+        border-bottom: 1px solid rgb(20, 110, 190);
       }
 
       .back-link {
@@ -64,14 +128,37 @@
         font-size: 1.05em;
       }
 
-      body.dark-theme .post {
+      body.dark-theme .post-card {
         background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
         border-left-color: #4a9eff;
       }
 
-      body.dark-theme .post h3 { color: #ffffff; }
-      body.dark-theme .post p { color: #e2e8f0; }
-      body.dark-theme .page-subtitle, body.dark-theme .post .meta { color: #b0b0b0; }
+      body.dark-theme .post-title { color: #ffffff; }
+      body.dark-theme .post-excerpt { color: #e2e8f0; }
+      body.dark-theme .page-subtitle,
+      body.dark-theme .post-date { color: #b0b0b0; }
+
+      body.dark-theme .tag {
+        border-color: rgba(74, 158, 255, 0.35);
+        background: rgba(74, 158, 255, 0.12);
+        color: #bfe0ff;
+      }
+
+      body.dark-theme .tag-dex {
+        border-color: rgba(190, 120, 255, 0.35);
+        background: rgba(190, 120, 255, 0.12);
+        color: #e6ccff;
+      }
+
+      body.dark-theme .tag-notes {
+        border-color: rgba(129, 199, 132, 0.35);
+        background: rgba(129, 199, 132, 0.12);
+        color: #d5f5d6;
+      }
+
+      body.dark-theme .post-read {
+        color: #4a9eff;
+      }
     </style>
   </head>
 
@@ -80,154 +167,70 @@
       <div id="header">
         <div class="page-title">Blog</div>
         <div class="page-subtitle">
-          A lightweight space for publishing my ideas (static pages in this repo).
+          A lightweight space for publishing my ideas. Add a new HTML page, then add a new post card below.
         </div>
         <a class="back-link" href="index.html">← Back to Home</a>
       </div>
 
-      <!-- Posts: duplicate a block below to add a new entry -->
-      <div class="post">
-        <div class="meta">Concept Note</div>
-        <h3><a href="dexhand-sensing.html">🤖 DexHand Sensing System</a></h3>
-        <p>
-          Sensor stack, multi-rate loops, time sync, calibration, and a learning-ready data schema for dexterous hands.
-        </p>
-      </div>
+      <div class="post-list">
+        <!-- Posts: duplicate an <article class="post-card"> block below to add a new entry -->
 
-      <div class="post" id="dexhand-sensing-system-design">
-        <div class="meta">Design Doc · 2026</div>
-        <h3>🧩 DexHand Sensing System Design (Deployment × Data × Self-Recovery)</h3>
-        <p>
-          This post is the “system design” version of the DexHand sensing note: task → physical causality → observables → multi-rate loops → RM-in-loop data flywheel.
-          It is written to be practical: what to sense, where to place sensors, what runs at 1kHz vs 100Hz vs 10Hz, and how to make data replayable and self-labeling.
-        </p>
-        <p style="margin-top: 0.6em;">
-          Full HTML page: <a href="dexhand-sensing-system-design.html">dexhand-sensing-system-design.html</a>
-        </p>
-        <p style="margin-top: 0.6em;">
-          Quick link: <a href="dexhand-sensing.html">DexHand Sensing System (Concept Note)</a>.
-        </p>
-
-        <details style="margin-top: 0.8em;">
-          <summary style="cursor:pointer; font-weight:600; color:#146ebe;">
-            Expand full document
-          </summary>
-
-          <div style="margin-top: 1em;">
-            <h4 style="margin: 0.8em 0 0.4em 0;">Table of Contents</h4>
-            <ul style="margin-top: 0.2em; line-height: 1.7;">
-              <li><a href="#dssd-1">1. Goals & KPIs</a></li>
-              <li><a href="#dssd-2">2. Overall architecture</a></li>
-              <li><a href="#dssd-3">3. Sensing stack (MVS → Pro) + best placement</a></li>
-              <li><a href="#dssd-4">4. Multi-rate loops (A/B/C)</a></li>
-              <li><a href="#dssd-5">5. Humanoid view: hand as “physical causality interface”</a></li>
-              <li><a href="#dssd-6">6. RM-in-loop data flywheel</a></li>
-              <li><a href="#dssd-7">7. Time sync & data pipeline</a></li>
-              <li><a href="#dssd-8">8. Calibration, health & maintainability</a></li>
-              <li><a href="#dssd-9">9. Minimal build + roadmap (toward beyond-human)</a></li>
-            </ul>
-
-            <h4 id="dssd-1" style="margin: 1.2em 0 0.4em 0;">1) Goals & KPIs (lock direction)</h4>
-            <ul style="line-height: 1.7;">
-              <li><b>Stability KPI</b>: long-run <code>recover_event</code>, <code>human_intervention</code>, <code>drop</code></li>
-              <li><b>Quality KPI</b>: <b>Replayable</b> trajectories (same command stream → same outcome)</li>
-              <li><b>Throughput KPI</b>: valid episodes per hour (filter non-replayable “waste data”)</li>
-              <li><b>Safety KPI</b>: over-current / over-temp / soft-limit trips</li>
-            </ul>
-            <p>
-              Key intuition: DexHand wins by <b>long-horizon stability + fast recovery + replayable data flywheel</b>, not single-episode success.
-            </p>
-
-            <h4 id="dssd-2" style="margin: 1.2em 0 0.4em 0;">2) Overall architecture</h4>
-            <p>
-              Three things must hold simultaneously: (i) layered sensing, (ii) multi-rate loop decomposition, (iii) RM-in-loop data flywheel.
-            </p>
-            <pre style="white-space: pre-wrap; line-height: 1.5; padding: 0.9em; border-radius: 10px; background: rgba(0,0,0,0.04);">
-Level-C  (5–15Hz):   semantic policy / primitive switching
-Level-B  (60–200Hz): tactile coordination (slip control, grip scheduling, micro-geometry)
-Level-A  (500–1000Hz): safety reflex (current limit, jam detect, backoff)
-
-Side loop: timestamp → alignment → episode segmentation → RM scoring → hard cases → re-train
-            </pre>
-            <p style="margin-top: 0.6em;">
-              Design principles: timestamp-at-source, multi-rate loops, contact observability (current/effort/tactile), maintainability first, start with MVS.
-            </p>
-
-            <h4 id="dssd-3" style="margin: 1.2em 0 0.4em 0;">3) Sensing stack (MVS → Pro) + best placement</h4>
-            <p><b>Level-0 (MVS)</b>: <code>rgb_static</code> + <code>rgb_wrist</code> + joint <code>q</code>/<code>qdot</code> + <code>motor_current</code>/<code>joint_effort</code> + software events (<code>contact_flag</code>, <code>safety_trip</code>).</p>
-            <p><b>Level-1 (tactile)</b>: the best KPI-balanced placement is <b>“2 + 1 + 1”</b>:</p>
-            <ul style="line-height: 1.7;">
-              <li><b>2 fingertips</b> with high-rate shear/pressure arrays (100–200Hz): thumb + index (main slip-control loop)</li>
-              <li><b>1 fingertip</b> with high-information geometry (visuotactile 30–60Hz): thumb or index (contact point/area/edge/micro-slip)</li>
-              <li><b>1 wrist 6D F/T</b> (≥200Hz): push/pull/twist/pry causality (external wrench / constraint reaction)</li>
-            </ul>
-            <p>
-              Why not all visuotactile: cable bandwidth + durability + calibration burden scales poorly and can reduce replayability/uptime.
-            </p>
-
-            <h4 id="dssd-4" style="margin: 1.2em 0 0.4em 0;">4) Multi-rate loops (A/B/C)</h4>
-            <ul style="line-height: 1.7;">
-              <li><b>Level-A (500–1000Hz)</b>: safety reflex (jam/stall detect, current limiting, backoff)</li>
-              <li><b>Level-B (60–200Hz)</b>: slip control + grip scheduling + micro contact geometry adjustment</li>
-              <li><b>Level-C (5–15Hz)</b>: choose force primitives + switch recovery paths; set limits/params for A/B</li>
-            </ul>
-
-            <h4 id="dssd-5" style="margin: 1.2em 0 0.4em 0;">5) Humanoid view: hand as “physical causality interface”</h4>
-            <p>
-              For humanoids, the hand is not “just grasp”. It converts intent into <b>physical causes</b>: force/torque/contact constraints.
-              A minimal task-semantics interface is the 6D wrench:
-            </p>
-            <pre style="white-space: pre-wrap; line-height: 1.5; padding: 0.9em; border-radius: 10px; background: rgba(0,0,0,0.04);">
-w = [Fx, Fy, Fz, Tx, Ty, Tz]^T
-push/pull: tangential force (Fx,Fy)
-press: normal force (Fz)
-twist/pry: torque (T*)
-            </pre>
-            <p>
-              Slip is fundamentally about contact mode + friction budget. A simple boundary is
-              <code>||f_t|| ≤ μ f_n</code>. “Push vs pull” is really choosing a <b>force primitive</b> under constraints.
-            </p>
-
-            <h4 id="dssd-6" style="margin: 1.2em 0 0.4em 0;">6) RM-in-loop data flywheel</h4>
-            <p>
-              RM is a “quality judge” that enables automatic segmentation, hard-case mining, and recovery triggering.
-              Recommended multi-head outputs: <code>progress</code>, <code>quality</code>, <code>recoverability</code>, <code>failure_mode</code>,
-              plus <code>primitive</code>/<code>contact_mode</code>/<code>slip_risk</code> for physical causality.
-            </p>
-
-            <h4 id="dssd-7" style="margin: 1.2em 0 0.4em 0;">7) Time sync & data pipeline</h4>
-            <ul style="line-height: 1.7;">
-              <li><b>PTP + timestamp-at-source</b></li>
-              <li><b>Ring-buffer alignment</b> (vision anchor)</li>
-              <li><b>Log both command stream and execution stream</b> (cmd vs measured) for replayability diagnosis</li>
-            </ul>
-
-            <h4 id="dssd-8" style="margin: 1.2em 0 0.4em 0;">8) Calibration, health & maintainability</h4>
-            <ul style="line-height: 1.7;">
-              <li>Version calibration assets (<code>calib_version</code>, <code>calib_hash</code>)</li>
-              <li>Visuotactile is a consumable: baseline re-zero per shift; mark <code>recalib_required</code> on skin replacement</li>
-              <li>Track <code>sensor_health</code> (drift, aging, cable dropouts)</li>
-            </ul>
-
-            <h4 id="dssd-9" style="margin: 1.2em 0 0.4em 0;">9) Minimal build + roadmap (toward beyond-human)</h4>
-            <p>
-              Start: MVS + replay validation + rule-based RM. Then add 2 shear/pressure fingertips (Level-B), then 1 visuotactile fingertip + 1 wrist F/T.
-              “Beyond-human” is achieved by bandwidth + dynamic range + explainability + self-labeling flywheel + long-run robustness.
-            </p>
-
-            <p style="margin-top: 1.2em;">
-              <a href="#dexhand-sensing-system-design" style="color:#146ebe;">Back to top of this post</a>
-            </p>
+        <article class="post-card">
+          <div class="post-meta">
+            <time class="post-date" datetime="2026-01-13">2026-01-13</time>
+            <div class="post-tags">
+              <span class="tag tag-dex">Dex</span>
+            </div>
           </div>
-        </details>
-      </div>
+          <h3 class="post-title">
+            <a href="dexhand-sensing.html">🤖 DexHand Sensing System</a>
+          </h3>
+          <p class="post-excerpt">
+            Sensor stack, multi-rate loops, time sync, calibration, and a learning-ready data schema for dexterous hands.
+          </p>
+          <div class="post-actions">
+            <a class="post-read" href="dexhand-sensing.html">Read →</a>
+          </div>
+        </article>
 
-      <div class="post">
-        <div class="meta">Notes / Messages (stored locally in your browser)</div>
-        <h3><a href="thinking.html">🧠 Thinking Board</a></h3>
-        <p>
-          A simple local board for collecting thoughts; good for drafts before turning them into publishable posts.
-        </p>
+        <article class="post-card">
+          <div class="post-meta">
+            <time class="post-date" datetime="2026-01-13">2026-01-13</time>
+            <div class="post-tags">
+              <span class="tag tag-dex">Dex</span>
+            </div>
+          </div>
+          <h3 class="post-title">
+            <a href="dexhand-sensing-system-design.html">🧩 DexHand Sensing System Design (Deployment × Data × Self-Recovery)</a>
+          </h3>
+          <p class="post-excerpt">
+            Practical system design: task → physical causality → observables → multi-rate loops → RM-in-loop data flywheel.
+            What to sense, where to place sensors, what runs at 1kHz vs 100Hz vs 10Hz, and how to make data replayable and self-labeling.
+          </p>
+          <div class="post-actions">
+            <a class="post-read" href="dexhand-sensing-system-design.html">Read →</a>
+            <a class="post-read" href="dexhand-sensing.html">Related: Concept Note →</a>
+          </div>
+        </article>
+
+        <article class="post-card">
+          <div class="post-meta">
+            <time class="post-date" datetime="2026-01-13">2026-01-13</time>
+            <div class="post-tags">
+              <span class="tag tag-notes">Notes</span>
+            </div>
+          </div>
+          <h3 class="post-title">
+            <a href="thinking.html">🧠 Thinking Board</a>
+          </h3>
+          <p class="post-excerpt">
+            A simple local board for collecting thoughts; great for drafts before turning them into publishable posts.
+            (Notes are stored in your browser’s local storage.)
+          </p>
+          <div class="post-actions">
+            <a class="post-read" href="thinking.html">Open →</a>
+          </div>
+        </article>
       </div>
 
       <div id="footer" style="display:flex; justify-content:flex-start; align-items:center; gap: 1em; flex-wrap: wrap; padding: 1em 0;">
