@@ -1,0 +1,748 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title>Thinking Board - Sou Kit-Wa (Ken)</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=1000">
+
+    <link rel="stylesheet" href="css/style.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Asap:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
+
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Asap:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap');
+
+      .page-section {
+        margin-top: 3.2em;
+        margin-bottom: 3.2em;
+      }
+
+      .section-title {
+        font-size: 2em;
+        font-weight: 600;
+        margin-bottom: 1.2em;
+        color: #150c21;
+        border-bottom: 3px solid #146ebe;
+        padding-bottom: 0.5em;
+      }
+
+      .card {
+        margin-bottom: 1.5em;
+        padding: 1.5em 1.8em;
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        border-radius: 12px;
+        border-left: 4px solid #146ebe;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      }
+
+      .card h3 {
+        font-size: 1.25em;
+        margin-bottom: 0.6em;
+        color: #146ebe;
+      }
+
+      .card p, .card li, .card label {
+        color: #495057;
+        line-height: 1.8;
+      }
+
+      .muted { color: #6b7280; }
+
+      .pill {
+        display: inline-block;
+        padding: 0.2em 0.7em;
+        border-radius: 999px;
+        background: rgba(20, 110, 190, 0.12);
+        color: #0d4a8a;
+        font-weight: 600;
+        font-size: 0.9em;
+        margin-right: 0.5em;
+        margin-bottom: 0.5em;
+      }
+
+      .grid2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.2em;
+      }
+
+      .form-row {
+        display: grid;
+        gap: 0.4em;
+        margin-bottom: 0.9em;
+      }
+
+      input[type="text"], textarea, select {
+        width: 100%;
+        padding: 0.75em 0.9em;
+        border-radius: 10px;
+        border: 1px solid rgba(17, 24, 39, 0.14);
+        font-family: inherit;
+        font-size: 1em;
+        background: rgba(255,255,255,0.9);
+      }
+
+      textarea { min-height: 140px; resize: vertical; }
+
+      .btn {
+        display: inline-block;
+        padding: 0.6em 1.0em;
+        border-radius: 10px;
+        border: 2px solid #146ebe;
+        background: #146ebe;
+        color: #fff;
+        font-weight: 700;
+        cursor: pointer;
+        transition: transform 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+        text-decoration: none;
+      }
+
+      .btn:hover { transform: translateY(-1px); background: #0d4a8a; border-color: #0d4a8a; }
+      .btn.secondary { background: transparent; color: #146ebe; }
+      .btn.secondary:hover { background: rgba(20,110,190,0.10); border-color: #146ebe; color: #0d4a8a; }
+      .btn.danger { border-color: #b91c1c; background: #b91c1c; }
+      .btn.danger:hover { border-color: #7f1d1d; background: #7f1d1d; }
+
+      .btn-row { display: flex; flex-wrap: wrap; gap: 0.6em; align-items: center; }
+
+      .post {
+        border-radius: 14px;
+        border: 1px solid rgba(17, 24, 39, 0.12);
+        background: rgba(255,255,255,0.85);
+        padding: 1.2em 1.2em;
+        margin-bottom: 1.0em;
+      }
+
+      .post-title {
+        font-size: 1.25em;
+        font-weight: 800;
+        margin: 0 0 0.2em 0;
+        color: #111827;
+      }
+
+      .post-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.6em;
+        align-items: center;
+        margin: 0.2em 0 0.8em 0;
+        color: #6b7280;
+        font-size: 0.95em;
+      }
+
+      .post-body {
+        white-space: pre-wrap;
+        line-height: 1.75;
+        color: #374151;
+      }
+
+      .post-actions { margin-top: 0.9em; display: flex; gap: 0.6em; flex-wrap: wrap; }
+
+      .kbd {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+        font-size: 0.95em;
+        background: rgba(15, 23, 42, 0.06);
+        border: 1px solid rgba(15, 23, 42, 0.12);
+        padding: 0.05em 0.35em;
+        border-radius: 6px;
+      }
+
+      .back-link {
+        display: inline-block;
+        margin-top: 1.0em;
+        margin-bottom: 1.0em;
+        color: #146ebe;
+        font-size: 1.05em;
+        text-decoration: none;
+        padding: 0.5em 1em;
+        border: 2px solid #146ebe;
+        border-radius: 6px;
+        transition: all 0.3s ease;
+      }
+      .back-link:hover { background-color: #146ebe; color: white; border-bottom: 2px solid #146ebe; }
+
+      .lang-switcher {
+        display: inline-flex;
+        margin-left: 1.2em;
+        background: #f0f0f0;
+        border-radius: 25px;
+        padding: 4px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        position: relative;
+      }
+      .lang-toggle {
+        display: inline-block;
+        padding: 0.5em 1.2em;
+        border-radius: 20px;
+        cursor: pointer;
+        font-size: 0.9em;
+        font-weight: 500;
+        color: #666;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        z-index: 2;
+        white-space: nowrap;
+      }
+      .lang-toggle.active {
+        color: white;
+        background: linear-gradient(135deg, #146ebe 0%, #0d4a8a 100%);
+        box-shadow: 0 2px 8px rgba(20, 110, 190, 0.3);
+        transform: scale(1.05);
+      }
+      .lang-content { display: none; }
+      .lang-content.active { display: block; }
+
+      /* Dark theme */
+      body.dark-theme .section-title { color: #ffffff; border-bottom-color: #4a9eff; }
+      body.dark-theme .card { background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%); border-left-color: #4a9eff; }
+      body.dark-theme .card h3 { color: #4a9eff; }
+      body.dark-theme .card p, body.dark-theme .card li, body.dark-theme .card label { color: #e2e8f0; }
+      body.dark-theme .muted { color: #cbd5e1; }
+      body.dark-theme input[type="text"], body.dark-theme textarea, body.dark-theme select {
+        background: rgba(17, 24, 39, 0.55);
+        border-color: rgba(148, 163, 184, 0.25);
+        color: #e5e7eb;
+      }
+      body.dark-theme .post { background: rgba(17, 24, 39, 0.45); border-color: rgba(148, 163, 184, 0.18); }
+      body.dark-theme .post-title { color: #f8fafc; }
+      body.dark-theme .post-body { color: #e2e8f0; }
+      body.dark-theme .post-meta { color: #cbd5e1; }
+      body.dark-theme .pill { background: rgba(74, 158, 255, 0.14); color: #cfe8ff; }
+      body.dark-theme .btn.secondary { color: #4a9eff; border-color: #4a9eff; }
+      body.dark-theme .btn.secondary:hover { background: rgba(74,158,255,0.15); }
+      body.dark-theme .back-link { color: #4a9eff; border-color: #4a9eff; }
+      body.dark-theme .back-link:hover { background-color: #4a9eff; color: #1a1a1a; }
+      body.dark-theme .lang-switcher { background: #2d3748; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3); }
+      body.dark-theme .lang-toggle { color: #b0b0b0; }
+      body.dark-theme .lang-toggle.active { background: linear-gradient(135deg, #4a9eff 0%, #2d5aa0 100%); color: #ffffff; }
+      body.dark-theme .kbd { background: rgba(148,163,184,0.15); border-color: rgba(148,163,184,0.25); color: #e2e8f0; }
+
+      @media (max-width: 1100px) {
+        .grid2 { grid-template-columns: 1fr; }
+      }
+    </style>
+  </head>
+
+  <body id="body">
+    <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">
+      <span id="theme-icon">🌙</span>
+    </button>
+
+    <div id="main">
+      <div id="intro" style="padding-top: 3em;">
+        <div id="intro-text">
+          <div style="display:flex; align-items:center; flex-wrap:wrap; gap: 1em;">
+            <h1 style="margin: 0;">Thinking Board</h1>
+            <div class="lang-switcher">
+              <span class="lang-toggle active" id="lang-en" onclick="switchLang('en')">EN</span>
+              <span class="lang-toggle" id="lang-zh" onclick="switchLang('zh')">中文</span>
+            </div>
+          </div>
+          <p style="margin-top: 0.9em;">
+            <a href="index.html" class="back-link">← Back to Home</a>
+            <a href="research-details.html" class="back-link" style="margin-left: 0.8em;">← Research Details</a>
+          </p>
+        </div>
+      </div>
+
+      <!-- EN -->
+      <div id="content-en" class="lang-content active">
+        <div class="page-section">
+          <h2 class="section-title">A lightweight “message board” for future notes</h2>
+
+          <div class="card">
+            <h3>How it works</h3>
+            <ul>
+              <li>Everything is stored locally in your browser (<span class="kbd">localStorage</span>). No backend.</li>
+              <li>You can export/import as JSON to move notes between devices.</li>
+              <li>This page is designed for fast iteration: tech future, product future, economy future…</li>
+            </ul>
+          </div>
+
+          <div class="card">
+            <h3>Create a post</h3>
+            <div class="grid2">
+              <div>
+                <div class="form-row">
+                  <label><b>Topic</b></label>
+                  <select id="post-topic">
+                    <option value="Tech">Tech</option>
+                    <option value="Product">Product</option>
+                    <option value="Economy">Economy</option>
+                    <option value="Research">Research</option>
+                    <option value="Life">Life</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+
+                <div class="form-row">
+                  <label><b>Title</b></label>
+                  <input id="post-title" type="text" placeholder="e.g., DexHand sensing system: what should we log?" />
+                </div>
+
+                <div class="form-row">
+                  <label><b>Tags</b> <span class="muted">(comma-separated)</span></label>
+                  <input id="post-tags" type="text" placeholder="DexHand, tactile, sync, VLA" />
+                </div>
+              </div>
+
+              <div>
+                <div class="form-row">
+                  <label><b>Message</b></label>
+                  <textarea id="post-body" placeholder="Write your thoughts..."></textarea>
+                </div>
+              </div>
+            </div>
+
+            <div class="btn-row" style="margin-top: 0.4em;">
+              <button class="btn" onclick="addPost()">Post</button>
+              <button class="btn secondary" onclick="clearComposer()">Clear</button>
+              <span class="muted">Tip: use <span class="kbd">Shift</span>+<span class="kbd">Enter</span> for new lines.</span>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3>Browse</h3>
+            <div class="grid2">
+              <div class="form-row">
+                <label><b>Filter by topic</b></label>
+                <select id="filter-topic" onchange="renderPosts()">
+                  <option value="All">All</option>
+                  <option value="Tech">Tech</option>
+                  <option value="Product">Product</option>
+                  <option value="Economy">Economy</option>
+                  <option value="Research">Research</option>
+                  <option value="Life">Life</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+              <div class="form-row">
+                <label><b>Search</b></label>
+                <input id="filter-search" type="text" placeholder="Search title/body/tags..." oninput="renderPosts()" />
+              </div>
+            </div>
+
+            <div class="btn-row" style="margin-top: 0.4em;">
+              <button class="btn secondary" onclick="exportPosts()">Export JSON</button>
+              <button class="btn secondary" onclick="document.getElementById('import-file').click()">Import JSON</button>
+              <input id="import-file" type="file" accept="application/json" style="display:none" onchange="importPosts(event)" />
+              <button class="btn danger" onclick="clearAllPosts()">Clear All (local)</button>
+            </div>
+          </div>
+
+          <div class="page-section">
+            <h2 class="section-title">Posts</h2>
+            <div id="posts"></div>
+            <p id="empty-hint" class="muted" style="display:none;">
+              No posts yet. Write your first note above.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 中文（繁體） -->
+      <div id="content-zh" class="lang-content">
+        <div class="page-section">
+          <h2 class="section-title">一個輕量「留言版」：用來寫未來</h2>
+
+          <div class="card">
+            <h3>使用方式</h3>
+            <ul>
+              <li>資料只存在你的瀏覽器（<span class="kbd">localStorage</span>），不需要後端。</li>
+              <li>可匯出/匯入 JSON，把筆記帶到其他電腦。</li>
+              <li>適合快速記錄：技術未來、產品未來、經濟未來、研究靈感…</li>
+            </ul>
+          </div>
+
+          <div class="card">
+            <h3>新增一則留言</h3>
+            <div class="grid2">
+              <div>
+                <div class="form-row">
+                  <label><b>分類</b></label>
+                  <select id="post-topic-zh">
+                    <option value="Tech">Tech / 技術</option>
+                    <option value="Product">Product / 產品</option>
+                    <option value="Economy">Economy / 經濟</option>
+                    <option value="Research">Research / 研究</option>
+                    <option value="Life">Life / 生活</option>
+                    <option value="Other">Other / 其他</option>
+                  </select>
+                </div>
+
+                <div class="form-row">
+                  <label><b>標題</b></label>
+                  <input id="post-title-zh" type="text" placeholder="例如：DexHand sensing system 應該怎樣做同步？" />
+                </div>
+
+                <div class="form-row">
+                  <label><b>標籤</b> <span class="muted">（用逗號分隔）</span></label>
+                  <input id="post-tags-zh" type="text" placeholder="DexHand, tactile, sync, VLA" />
+                </div>
+              </div>
+
+              <div>
+                <div class="form-row">
+                  <label><b>內容</b></label>
+                  <textarea id="post-body-zh" placeholder="寫下你的想法…"></textarea>
+                </div>
+              </div>
+            </div>
+
+            <div class="btn-row" style="margin-top: 0.4em;">
+              <button class="btn" onclick="addPostZh()">發布</button>
+              <button class="btn secondary" onclick="clearComposerZh()">清空</button>
+              <span class="muted">提示：用 <span class="kbd">Shift</span>+<span class="kbd">Enter</span> 換行。</span>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3>瀏覽</h3>
+            <div class="grid2">
+              <div class="form-row">
+                <label><b>分類篩選</b></label>
+                <select id="filter-topic-zh" onchange="renderPosts()">
+                  <option value="All">All / 全部</option>
+                  <option value="Tech">Tech / 技術</option>
+                  <option value="Product">Product / 產品</option>
+                  <option value="Economy">Economy / 經濟</option>
+                  <option value="Research">Research / 研究</option>
+                  <option value="Life">Life / 生活</option>
+                  <option value="Other">Other / 其他</option>
+                </select>
+              </div>
+              <div class="form-row">
+                <label><b>搜尋</b></label>
+                <input id="filter-search-zh" type="text" placeholder="搜尋標題/內容/標籤…" oninput="renderPosts()" />
+              </div>
+            </div>
+
+            <div class="btn-row" style="margin-top: 0.4em;">
+              <button class="btn secondary" onclick="exportPosts()">匯出 JSON</button>
+              <button class="btn secondary" onclick="document.getElementById('import-file-zh').click()">匯入 JSON</button>
+              <input id="import-file-zh" type="file" accept="application/json" style="display:none" onchange="importPosts(event)" />
+              <button class="btn danger" onclick="clearAllPosts()">清空全部（本機）</button>
+            </div>
+          </div>
+
+          <div class="page-section">
+            <h2 class="section-title">留言</h2>
+            <div id="posts-zh"></div>
+            <p id="empty-hint-zh" class="muted" style="display:none;">
+              目前還沒有留言，你可以從上面開始寫第一則。
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const STORAGE_KEY = 'thinking_posts_v1';
+
+      function nowISO() {
+        return new Date().toISOString();
+      }
+
+      function safeId() {
+        return 'p_' + Math.random().toString(16).slice(2) + '_' + Date.now().toString(16);
+      }
+
+      function loadPosts() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (!raw) return [];
+          const parsed = JSON.parse(raw);
+          if (!Array.isArray(parsed)) return [];
+          return parsed;
+        } catch (e) {
+          return [];
+        }
+      }
+
+      function savePosts(posts) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(posts));
+      }
+
+      function seedIfEmpty() {
+        const posts = loadPosts();
+        if (posts.length > 0) return;
+
+        const seeded = [{
+          id: safeId(),
+          topic: 'Tech',
+          title: 'DexHand sensing system: what should the next 2 years look like?',
+          tags: ['DexHand', 'tactile', 'sync', 'VLA', 'recovery'],
+          body:
+`Start point: contact-rich manipulation is about *measurable contact + stable control + replayable data*.\n\nQuestions:\n- What is the minimum viable sensor stack for robust grasping?\n- How to design multi-rate loops (1kHz safety, 60~200Hz tactile control, 5~15Hz planning)?\n- What should we log as training data units (tactile/proprioception/action/QC labels)?\n\nRelated note:\n- DexHand Sensing System page: dexhand-sensing.html\n\nReference for “messy data matters”:\n- Spirit-v1.5 blog: https://www.spirit-ai.com/en/blog/spirit-v1-5`,
+          createdAt: nowISO(),
+          lang: 'en'
+        }];
+
+        savePosts(seeded);
+      }
+
+      function fmtTime(iso) {
+        try {
+          const d = new Date(iso);
+          const y = d.getFullYear();
+          const m = String(d.getMonth() + 1).padStart(2, '0');
+          const day = String(d.getDate()).padStart(2, '0');
+          const hh = String(d.getHours()).padStart(2, '0');
+          const mm = String(d.getMinutes()).padStart(2, '0');
+          return `${y}-${m}-${day} ${hh}:${mm}`;
+        } catch (e) {
+          return iso;
+        }
+      }
+
+      function getFilters() {
+        // Use whichever UI is visible; fall back gracefully.
+        const enTopic = document.getElementById('filter-topic');
+        const zhTopic = document.getElementById('filter-topic-zh');
+        const enSearch = document.getElementById('filter-search');
+        const zhSearch = document.getElementById('filter-search-zh');
+
+        const topic = (enTopic && enTopic.value) || (zhTopic && zhTopic.value) || 'All';
+        const search = ((enSearch && enSearch.value) || (zhSearch && zhSearch.value) || '').trim().toLowerCase();
+        return { topic, search };
+      }
+
+      function matchPost(post, filters) {
+        if (filters.topic !== 'All' && post.topic !== filters.topic) return false;
+        if (!filters.search) return true;
+        const hay = [
+          post.title || '',
+          post.body || '',
+          Array.isArray(post.tags) ? post.tags.join(',') : ''
+        ].join(' ').toLowerCase();
+        return hay.includes(filters.search);
+      }
+
+      function escapeHTML(str) {
+        return String(str)
+          .replaceAll('&', '&amp;')
+          .replaceAll('<', '&lt;')
+          .replaceAll('>', '&gt;')
+          .replaceAll('"', '&quot;')
+          .replaceAll("'", '&#039;');
+      }
+
+      function renderPosts() {
+        const posts = loadPosts().slice().sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
+        const filters = getFilters();
+        const filtered = posts.filter(p => matchPost(p, filters));
+
+        const enContainer = document.getElementById('posts');
+        const zhContainer = document.getElementById('posts-zh');
+        const enEmpty = document.getElementById('empty-hint');
+        const zhEmpty = document.getElementById('empty-hint-zh');
+
+        const html = filtered.map(p => {
+          const tags = Array.isArray(p.tags) ? p.tags : [];
+          const tagHTML = tags.map(t => `<span class="pill">${escapeHTML(t)}</span>`).join('');
+          const refLink = (p.body || '').includes('dexhand-sensing.html')
+            ? `<a href="dexhand-sensing.html" class="btn secondary" style="padding:0.45em 0.8em;">Open DexHand note</a>`
+            : '';
+
+          return `
+            <div class="post">
+              <div class="post-title">${escapeHTML(p.title || '(untitled)')}</div>
+              <div class="post-meta">
+                <span><b>${escapeHTML(p.topic || 'Other')}</b></span>
+                <span>·</span>
+                <span>${escapeHTML(fmtTime(p.createdAt || ''))}</span>
+              </div>
+              <div>${tagHTML}</div>
+              <div class="post-body" style="margin-top:0.8em;">${escapeHTML(p.body || '')}</div>
+              <div class="post-actions">
+                ${refLink}
+                <button class="btn danger" style="padding:0.45em 0.8em;" onclick="deletePost('${escapeHTML(p.id)}')">Delete</button>
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        if (enContainer) enContainer.innerHTML = html;
+        if (zhContainer) zhContainer.innerHTML = html;
+
+        if (enEmpty) enEmpty.style.display = filtered.length === 0 ? 'block' : 'none';
+        if (zhEmpty) zhEmpty.style.display = filtered.length === 0 ? 'block' : 'none';
+      }
+
+      function parseTags(raw) {
+        return (raw || '')
+          .split(',')
+          .map(s => s.trim())
+          .filter(Boolean)
+          .slice(0, 20);
+      }
+
+      function addPost() {
+        const topic = document.getElementById('post-topic').value;
+        const title = document.getElementById('post-title').value.trim();
+        const tags = parseTags(document.getElementById('post-tags').value);
+        const body = document.getElementById('post-body').value.trim();
+
+        if (!title && !body) {
+          alert('Please write at least a title or a message.');
+          return;
+        }
+
+        const posts = loadPosts();
+        posts.unshift({
+          id: safeId(),
+          topic,
+          title: title || '(untitled)',
+          tags,
+          body,
+          createdAt: nowISO(),
+          lang: 'en'
+        });
+        savePosts(posts);
+        clearComposer();
+        renderPosts();
+      }
+
+      function addPostZh() {
+        const topic = document.getElementById('post-topic-zh').value;
+        const title = document.getElementById('post-title-zh').value.trim();
+        const tags = parseTags(document.getElementById('post-tags-zh').value);
+        const body = document.getElementById('post-body-zh').value.trim();
+
+        if (!title && !body) {
+          alert('請至少填寫標題或內容。');
+          return;
+        }
+
+        const posts = loadPosts();
+        posts.unshift({
+          id: safeId(),
+          topic,
+          title: title || '(未命名)',
+          tags,
+          body,
+          createdAt: nowISO(),
+          lang: 'zh'
+        });
+        savePosts(posts);
+        clearComposerZh();
+        renderPosts();
+      }
+
+      function deletePost(id) {
+        if (!confirm('Delete this post?')) return;
+        const posts = loadPosts().filter(p => p.id !== id);
+        savePosts(posts);
+        renderPosts();
+      }
+
+      function clearAllPosts() {
+        const msg = 'This will clear ALL posts stored in this browser. Continue?';
+        if (!confirm(msg)) return;
+        localStorage.removeItem(STORAGE_KEY);
+        seedIfEmpty();
+        renderPosts();
+      }
+
+      function clearComposer() {
+        document.getElementById('post-title').value = '';
+        document.getElementById('post-tags').value = '';
+        document.getElementById('post-body').value = '';
+      }
+
+      function clearComposerZh() {
+        document.getElementById('post-title-zh').value = '';
+        document.getElementById('post-tags-zh').value = '';
+        document.getElementById('post-body-zh').value = '';
+      }
+
+      function exportPosts() {
+        const posts = loadPosts();
+        const blob = new Blob([JSON.stringify(posts, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'thinking-posts.json';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+      }
+
+      function importPosts(event) {
+        const file = event.target.files && event.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = () => {
+          try {
+            const incoming = JSON.parse(reader.result);
+            if (!Array.isArray(incoming)) throw new Error('Invalid JSON format');
+            // Merge (by id) with existing
+            const existing = loadPosts();
+            const map = new Map();
+            for (const p of existing) map.set(p.id, p);
+            for (const p of incoming) {
+              if (p && typeof p === 'object' && p.id) map.set(p.id, p);
+            }
+            const merged = Array.from(map.values());
+            savePosts(merged);
+            renderPosts();
+          } catch (e) {
+            alert('Import failed: ' + e.message);
+          } finally {
+            event.target.value = '';
+          }
+        };
+        reader.readAsText(file);
+      }
+
+      function switchLang(lang) {
+        document.querySelectorAll('.lang-content').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.lang-toggle').forEach(el => el.classList.remove('active'));
+
+        if (lang === 'en') {
+          document.getElementById('content-en').classList.add('active');
+          document.getElementById('lang-en').classList.add('active');
+        } else {
+          document.getElementById('content-zh').classList.add('active');
+          document.getElementById('lang-zh').classList.add('active');
+        }
+        renderPosts();
+      }
+
+      document.addEventListener('DOMContentLoaded', () => {
+        // Theme init (match other pages)
+        const themeToggle = document.getElementById('theme-toggle');
+        const themeIcon = document.getElementById('theme-icon');
+        const body = document.body;
+
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        if (savedTheme === 'dark') {
+          body.classList.add('dark-theme');
+          themeIcon.textContent = '☀️';
+        } else {
+          body.classList.remove('dark-theme');
+          themeIcon.textContent = '🌙';
+        }
+
+        themeToggle.addEventListener('click', () => {
+          const newTheme = body.classList.contains('dark-theme') ? 'light' : 'dark';
+          if (newTheme === 'dark') {
+            body.classList.add('dark-theme');
+            themeIcon.textContent = '☀️';
+          } else {
+            body.classList.remove('dark-theme');
+            themeIcon.textContent = '🌙';
+          }
+          localStorage.setItem('theme', newTheme);
+        });
+
+        seedIfEmpty();
+        renderPosts();
+      });
+    </script>
+  </body>
+</html>
+
