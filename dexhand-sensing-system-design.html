@@ -1,0 +1,438 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title>DexHand Sensing System Design - Sou Kit-Wa (Ken)</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=1000">
+
+    <link rel="stylesheet" href="css/style.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Asap:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
+
+    <style>
+      .doc-header {
+        padding-top: 6em;
+        margin-bottom: 1.2em;
+      }
+      .page-title {
+        font-size: 2.4em;
+        line-height: 1.2em;
+        font-weight: 600;
+        margin-bottom: 0.4em;
+      }
+      .page-subtitle {
+        color: #a0a8b0;
+        line-height: 1.6em;
+      }
+      .back-link {
+        display: inline-block;
+        margin-top: 1.2em;
+        margin-right: 0.8em;
+        color: #146ebe;
+        font-size: 1.05em;
+      }
+      .doc {
+        margin-top: 2.0em;
+        padding: 1.6em 1.8em;
+        border-radius: 12px;
+        border-left: 4px solid #146ebe;
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      }
+      .doc h1, .doc h2, .doc h3, .doc h4 {
+        color: #150c21;
+        margin: 1.0em 0 0.4em 0;
+        line-height: 1.35em;
+      }
+      .doc h1 { font-size: 2.0em; }
+      .doc h2 { font-size: 1.55em; border-bottom: 2px solid rgba(20,110,190,0.25); padding-bottom: 0.35em; }
+      .doc h3 { font-size: 1.25em; color: #146ebe; }
+      .doc p, .doc li {
+        color: #495057;
+        line-height: 1.8;
+      }
+      .doc ul {
+        list-style: disc;
+        margin-left: 1.3em;
+      }
+      .doc ol {
+        list-style: decimal;
+        margin-left: 1.3em;
+      }
+      .doc code {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+        font-size: 0.95em;
+        background: rgba(15, 23, 42, 0.06);
+        border: 1px solid rgba(15, 23, 42, 0.12);
+        padding: 0.05em 0.35em;
+        border-radius: 6px;
+      }
+      .doc pre code {
+        display: block;
+        padding: 1em 1.2em;
+        overflow: auto;
+        background: #0b1220;
+        color: #e5e7eb;
+        border: 1px solid rgba(20, 110, 190, 0.35);
+        border-radius: 10px;
+      }
+      .doc table {
+        width: 100%;
+        margin-top: 1em;
+        margin-bottom: 1em;
+        border: 1px solid rgba(17, 24, 39, 0.12);
+        border-radius: 10px;
+        overflow: hidden;
+      }
+      .doc th, .doc td {
+        padding: 0.7em 0.8em;
+        border-bottom: 1px solid rgba(17, 24, 39, 0.10);
+        vertical-align: top;
+      }
+      .doc th {
+        background: rgba(20, 110, 190, 0.08);
+        font-weight: 700;
+      }
+      .doc blockquote {
+        border-left: 4px solid rgba(20, 110, 190, 0.5);
+        padding-left: 1em;
+        margin: 1em 0;
+        color: #4b5563;
+      }
+
+      body.dark-theme .doc {
+        background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
+        border-left-color: #4a9eff;
+      }
+      body.dark-theme .doc h1, body.dark-theme .doc h2, body.dark-theme .doc h3, body.dark-theme .doc h4 {
+        color: #ffffff;
+      }
+      body.dark-theme .doc h2 { border-bottom-color: rgba(74, 158, 255, 0.25); }
+      body.dark-theme .doc p, body.dark-theme .doc li { color: #e2e8f0; }
+      body.dark-theme .page-subtitle { color: #b0b0b0; }
+      body.dark-theme .doc code {
+        background: rgba(148,163,184,0.15);
+        border-color: rgba(148,163,184,0.25);
+        color: #e2e8f0;
+      }
+      body.dark-theme .doc table { border-color: rgba(148,163,184,0.18); }
+      body.dark-theme .doc th { background: rgba(74, 158, 255, 0.12); }
+      body.dark-theme .doc th, body.dark-theme .doc td { border-bottom-color: rgba(148,163,184,0.18); }
+    </style>
+
+    <script>
+      window.MathJax = {
+        tex: { inlineMath: [['\(','\)'], ['$', '$']], displayMath: [['$$','$$']] },
+        options: { skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'] }
+      };
+    </script>
+    <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  </head>
+
+  <body id="body">
+    <div id="main">
+      <div class="doc-header">
+        <div class="page-title">DexHand Sensing System Design</div>
+        <div class="page-subtitle">
+          Full HTML rendering of the handbook markdown (system design view): deployment 脳 data 脳 self-recovery.
+        </div>
+        <a class="back-link" href="index.html">鈫?Back to Home</a>
+        <a class="back-link" href="blog.html">鈫?Back to Dex Notes</a>
+      </div>
+
+      <div class="doc">
+        <h1 id="dexhand-sensing-system">鐏靛阀鎵?DexHand 鐨?Sensing System 璁捐锛堥潰鍚戦儴缃?脳 閲囨暟 脳 鑷仮澶嶏級<a class="headerlink" href="#dexhand-sensing-system" title="Permanent link">&para;</a></h1>
+<blockquote>
+<p>杩欐槸涓€浠解€滃彲钀藉湴鐨勭郴缁熻璁℃枃妗ｂ€濓細浠?*<em>浠诲姟鈫掑姏瀛﹀洜鏋溾啋鍙娴嬩俊鍙封啋澶氶闂幆鈫掓暟鎹棴鐜紙RM-in-loop锛?</em> 涓€娆¤娓呮锛屽苟缁欏嚭浠?MVS 鍒扳€滆秴瓒婁汉绫昏兘鍔涒€濈殑璺嚎鍥俱€?</p>
+</blockquote>
+<hr />
+<h2 id="_1">鐩綍<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
+<ul>
+<li>
+<ol>
+<li>绯荤粺鐩爣涓?KPI</li>
+</ol>
+</li>
+<li>
+<ol start="2">
+<li>鎬讳綋鏋舵瀯锛堜紶鎰熸爤 脳 澶氶闂幆 脳 鏁版嵁闂幆锛?- 3. 浼犳劅鏍堝垎灞傦紙MVS鈫扨ro锛変笌鏈€浣冲垎甯?- 4. 涓夊眰闂幆锛圠evel-A/B/C锛変笌鑱岃矗杈圭晫</li>
+</ol>
+</li>
+<li>
+<ol start="5">
+<li>浜哄舰瑙嗚锛氭墜鏄€滅墿鐞嗗洜鏋滄帴鍙ｂ€濓紙鍔涘鍘熻銆佹帴瑙︽ā寮忋€佹粦绉伙級</li>
+</ol>
+</li>
+<li>
+<ol start="6">
+<li>RM-in-loop锛氳绯荤粺鑷姩鍒囨銆佹寫 hard cases銆佽Е鍙戣嚜鎭㈠</li>
+</ol>
+</li>
+<li>
+<ol start="7">
+<li>鏃堕棿鍚屾涓庢暟鎹绾匡紙鍙缁冦€佸彲澶嶇幇銆佸彲杩借矗锛?- 8. 鏍囧畾銆佸仴搴风洃娴嬩笌鍙淮鎶ゆ€?- 9. 鏈€灏忚惤鍦扮増鏈?+ 杩唬璺嚎鍥撅紙璧板悜瓒呰秺浜虹被锛?</li>
+</ol>
+</li>
+</ul>
+<hr />
+<h2 id="1-kpi">1. 绯荤粺鐩爣涓?KPI锛堟妸鏂瑰悜閿佹锛?<a class="headerlink" href="#1-kpi" title="Permanent link">&para;</a></h2>
+<p>DexHand 鐨?sensing system 涓嶅簲杩芥眰鈥滀紶鎰熷櫒鏈€澶氣€濓紝鑰屽簲杩芥眰 *<em>闀挎椂绋冲畾 + 鍙嚜鏁?+ 鏁版嵁鍙鐜?</em>锛?</p>
+<ul>
+<li><strong>绋冲畾鎬?KPI</strong>锛氳繛缁繍琛?(T) 鍒嗛挓鍐咃紝<code>recover_event</code> 娆℃暟銆乣human_intervention<code>娆℃暟銆乣drop</code> 娆℃暟銆?- <strong>璐ㄩ噺 KPI</strong>锛氬悓涓€杞ㄨ抗 <strong>Replay 鍙鐜扮巼</strong>锛堣瑙?[澶氭ā鎬佸悓姝(./multimodal_data_synchronization.md)锛夈€?- <strong>鏁堢巼 KPI</strong>锛氬崟浣嶆椂闂村彲閲囬泦鐨勨€滄湁鏁?episode鈥濇暟閲忥紙鎺掗櫎涓嶅彲澶嶇幇/涓嶅彲瀵归綈鐨勫簾鏁版嵁锛夈€?- <strong>瀹夊叏 KPI</strong>锛氱數娴?娓╁害瓒呴檺娆℃暟銆佽繎纰版挒娆℃暟锛堣蒋纭檺浣嶈Е鍙戠粺璁★級銆?</li>
+</ul>
+<blockquote>
+<p>鐩磋锛欴exHand 鐨勫伐绋嬭儨璐熸墜涓嶆槸鍗曟鎴愬姛鐜囷紝鑰屾槸鈥滈暱鏃剁ǔ瀹?+ 蹇€熻嚜鏁?+ 鍙鐜版暟鎹杞€濄€?</p>
+</blockquote>
+<hr />
+<h2 id="2">2. 鎬讳綋鏋舵瀯锛堜紶鎰熸爤 脳 澶氶闂幆 脳 鏁版嵁闂幆锛?<a class="headerlink" href="#2" title="Permanent link">&para;</a></h2>
+<p>涓変欢浜嬪繀椤诲悓鏃舵垚绔嬶細</p>
+<p>1) *<em>浼犳劅鏍堝垎灞?</em>锛氶珮棰戜綆甯﹀淇″彿鍏滃簳銆佸皯閲忛珮淇℃伅浼犳劅鍣ㄨ礋璐ｂ€滅悊瑙ｆ帴瑙︹€濄€? </p>
+<p>2) <strong>澶氶闂幆鍒嗗伐</strong>锛?kHz 姝㈡崯銆?00Hz 闃叉粦銆?0Hz 鍘熻鍒囨崲銆? </p>
+<p>3) <strong>鏁版嵁闂幆</strong>锛氭妸閮ㄧ讲鏁版嵁鑷姩鍒囨銆佹墦鏍囩銆佹寫 hard cases锛屽啀鍙嶅摵璁粌锛圧M-in-loop锛夈€?</p>
+<div class="highlight"><pre><span></span><code>           鈹屸攢鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹?           鈹? Level-C     鈹? 5鈥?5Hz  璇箟绛栫暐 / 鍘熻鍒囨崲锛坧ush/pull/wedge/twist鈥︼級
+
+           鈹斺攢鈹€鈹€鈹€鈹€鈹€鈹攢鈹€鈹€鈹€鈹€鈹€鈹€鈹?                  鈹? 涓嬪彂鍙傛暟/瀛愮洰鏍?                  鈻?           鈹屸攢鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹?           鈹? Level-B     鈹? 60鈥?00Hz  瑙﹁鍗忚皟锛堥槻婊戙€佸す鎸佸姏璋冨害銆佸井璋冩帴瑙﹀嚑浣曪級
+
+           鈹斺攢鈹€鈹€鈹€鈹€鈹€鈹攢鈹€鈹€鈹€鈹€鈹€鈹€鈹?                  鈹? 澶规寔/濮挎€佸井璋?                  鈻?           鈹屸攢鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹?           鈹? Level-A     鈹? 500鈥?000Hz  瀹夊叏鍙嶅皠锛堥檺娴併€佸崱姝汇€侀€€閬匡級
+
+           鈹斺攢鈹€鈹€鈹€鈹€鈹€鈹攢鈹€鈹€鈹€鈹€鈹€鈹€鈹?                  鈹? 鐢垫満/鍏宠妭鍛戒护
+
+                  鈻?             DexHand 纭欢
+
+
+
+  鏁版嵁闂幆锛堟梺璺級锛歵imestamp鈫掑榻愨啋episode鍒囨鈫扲M鎵撳垎鈫抙ard cases鈫掑啀璁粌
+</code></pre></div>
+<p>璁捐鍘熷垯锛堝帇缂╂垚 5 鏉★級锛?</p>
+<ul>
+<li><strong>P1锛歍imestamp-at-source</strong>锛氭墍鏈夋ā鎬佸湪鈥滀骇鐢熺灛闂粹€濇墦缁熶竴鏃堕挓鎴筹紙PTP 浼樺厛锛夛紙瑙?[澶氭ā鎬佸悓姝(./multimodal_data_synchronization.md)锛夈€?- <strong>P2锛氬棰戦棴鐜?*锛氫笉瑕佺敤 30Hz 瑙嗚鍘荤‖鍋?1kHz 鎺ヨЕ绋冲畾锛涘繀椤诲垎灞傘€?- </strong>P3锛氭帴瑙﹀彲瑙?<em>锛氫粎闈?RGB 寰堥毦鍒ゆ柇鈥滄粦/鍗?澶规鈥濓紱蹇呴』寮曞叆 </em><em>鐢垫祦/鎵煩/瑙﹁ proxy</em><em>銆?- </em><em>P4锛氬彲缁存姢浼樺厛</em><em>锛氳Е瑙夛紙灏ゅ叾瑙嗚Е瑙夛級鏄槗鎹熻€椾欢锛堣 <a href="./tactile_sensor_integration_challenges.md">瑙﹁闆嗘垚鎸戞垬</a>锛夈€?- </em><em>P5锛氬厛鍋?MVS</em>*锛氬厛璺戦€氣€滃彲澶嶇幇閲囨暟 + 鑷仮澶嶁€濓紝鍐嶅崌绾т紶鎰熷櫒锛岃€屼笉鏄竴寮€濮嬪爢婊＄‖浠躲€?</li>
+</ul>
+<hr />
+<h2 id="3-mvsro">3. 浼犳劅鏍堝垎灞傦紙MVS鈫扨ro锛変笌鏈€浣冲垎甯?<a class="headerlink" href="#3-mvsro" title="Permanent link">&para;</a></h2>
+<h3 id="31-level-0vs">3.1 Level-0锛圡VS锛氭渶灏忓彲琛屼紶鎰燂級<a class="headerlink" href="#31-level-0vs" title="Permanent link">&para;</a></h3>
+<p>鐩爣锛?<em>浣庢垚鏈幏寰楁帴瑙︽€佸垽鍒兘鍔?+ 鍙鐜版暟鎹?</em>銆?</p>
+<ul>
+<li>
+<p><strong>瑙嗚</strong>锛歚rgb_static<code>+</code>rgb_wrist<code>锛堣厱鐩告満寮虹儓寤鸿锛?- **鏈綋**锛歚q</code>銆乣\dot{q}`</p>
+</li>
+<li>
+<p>*<em>鎺ヨЕ浠ｇ悊锛堝繀閫夊叾涓€锛?</em>锛歚motor_current<code>鎴?</code>joint_effort`</p>
+</li>
+<li>
+<p><strong>浜嬩欢淇″彿锛堣蒋浠剁敓鎴愶級</strong>锛歚contact_flag<code>銆乣safety_trip</code></p>
+</li>
+</ul>
+<p>杩欏閰嶇疆宸茬粡鑳芥敮鎾戯細</p>
+<ul>
+<li><strong>鍗℃/椤朵綇妫€娴?*锛堝己鍙锛?- </strong>鎺ヨЕ寮€濮?澶规寔寮哄急鐨勭矖闂幆<strong>锛堝己鍙锛?- </strong>Replay Validation**锛堝喅瀹氭暟鎹兘涓嶈兘鐢ㄤ簬璁粌锛?</li>
+</ul>
+<h3 id="32-level-1">3.2 Level-1锛堣Е瑙夊眰锛氳鈥滄粦绉?鎺ヨЕ鍑犱綍鈥濆彲瑙傛祴锛?<a class="headerlink" href="#32-level-1" title="Permanent link">&para;</a></h3>
+<p>鍏堣缁撹锛氫负浜嗗吋椤?KPI锛屾渶鎺ㄨ崘鐨勭┖闂村垎甯冩槸 *<em>鈥? + 1 + 1鈥?</em>锛?</p>
+<ul>
+<li>
+<p>*<em>2 涓寚灏栧仛楂橀鍓垏/鍘嬪姏闃靛垪锛?00鈥?00Hz锛?</em>锛氭媷鎸?+ 椋熸寚锛堥槻婊戦棴鐜富鍔涳級</p>
+</li>
+<li>
+<p>*<em>1 涓寚灏栧仛楂樹俊鎭嚑浣曪紙瑙嗚Е瑙?30鈥?0Hz锛?</em>锛氭媷鎸囨垨椋熸寚锛堟帴瑙︾偣/闈㈢Н/杈圭紭/寰粦鍔級</p>
+</li>
+<li>
+<p>*<em>1 涓墜鑵?6D F/T锛?=200Hz锛?</em>锛氭帹/鎷?鎵?鎾殑鍥犳灉鍒ゅ畾锛堝閮ㄥ姏鐭?绾︽潫鍙嶅姏锛?</p>
+</li>
+</ul>
+<p>涓轰粈涔堜笉鏄€滃叏鎸囪瑙﹁鈥濓細鍏ㄩ摵浼氭妸甯﹀/甯冪嚎/鑰愪箙/鏍囧畾缁存姢 KPI 鎷夌垎锛涜€岀敤鈥滃皯閲忛珮淇℃伅鑰佸笀 + 灏戦噺楂橀宸ュ叺 + 鍏ㄥ叧鑺傚厹搴曗€濓紝鑳藉湪淇℃伅閲忎笌宸ョ▼鍙淮鎶や箣闂磋揪鍒版渶浼樼偣锛堣 <a href="./tactile_sensor_integration_challenges.md">瑙﹁闆嗘垚鎸戞垬</a>锛夈€?</p>
+<h3 id="33-level-2-pro">3.3 Level-2锛堝伐绋嬪寲 Pro锛氶暱鏃堕儴缃蹭笌鍋ュ悍绠＄悊锛?<a class="headerlink" href="#33-level-2-pro" title="Permanent link">&para;</a></h3>
+<ul>
+<li>
+<p><strong>鐑笌鍋ュ悍鐩戞祴</strong>锛歚temp_motor_i<code>銆乣over_current_count</code>銆乣stall_time_ms`</p>
+</li>
+<li>
+<p><strong>鍐椾綑瑙傛祴</strong>锛氬叧閿叧鑺?<code>effort/current</code> 鐨勭粺璁℃紓绉伙紙鐢ㄤ簬 <code>sensor_health</code>锛?</p>
+</li>
+</ul>
+<hr />
+<h2 id="4-evel-abc">4. 涓夊眰闂幆锛圠evel-A/B/C锛変笌鑱岃矗杈圭晫<a class="headerlink" href="#4-evel-abc" title="Permanent link">&para;</a></h2>
+<h3 id="41-level-a500000hz">4.1 Level-A锛氬畨鍏?鍙嶅皠灞傦紙500鈥?000Hz锛屽繀椤诲疄鏃讹級<a class="headerlink" href="#41-level-a500000hz" title="Permanent link">&para;</a></h3>
+<p>鐩爣锛氶槻鎹熷潖銆侀槻鍗℃銆侀槻杩囩儹銆佹绉掔骇姝㈡崯銆?</p>
+<ul>
+<li>
+<p>杈撳叆锛歚motor_current/joint_effort<code>銆乣\dot{q}</code>銆佹俯搴︺€佽蒋闄愪綅</p>
+</li>
+<li>
+<p>杈撳嚭锛氶檺娴?闄愰€?鎬ュ仠銆佸井閫€閬匡紙backoff锛?- 鍏稿瀷瑙勫垯锛歚current &gt; I_hard<code>涓?</code>|\dot{q}| &lt; eps<code>鎸佺画 \(&gt;200\)ms 鈫?</code>jam` 鈫?backoff</p>
+</li>
+</ul>
+<h3 id="42-level-b000hz">4.2 Level-B锛氳Е瑙夊崗璋冨眰锛?0鈥?00Hz锛?<a class="headerlink" href="#42-level-b000hz" title="Permanent link">&para;</a></h3>
+<p>鐩爣锛氶槻婊戯紙slip control锛夈€佸す鎸佸姏璋冨害銆佸井璋冩帴瑙﹀嚑浣曘€?</p>
+<ul>
+<li>杈撳叆锛?<em>鍓垏/鍘嬪姏闃靛垪锛堜富锛?</em> + <code>effort/current</code>锛堝啑浣欙級 + 锛堝彲閫夛級瑙嗚Е瑙夌壒寰?- 杈撳嚭锛氬す鎸佸姏锛堟垨鍏宠妭闂悎閲忥級寰皟銆佹帴瑙﹀Э鎬佸井璋?- 鍏稿瀷鑳藉姏锛氬湪鐗╀綋鍒氬紑濮嬫粦鏃跺鍔犲す鎸併€佹垨璋冩暣鎺ヨЕ鐐?</li>
+</ul>
+<h3 id="43-level-c5hz">4.3 Level-C锛氳涔夌瓥鐣ュ眰锛?鈥?5Hz锛?<a class="headerlink" href="#43-level-c5hz" title="Permanent link">&para;</a></h3>
+<p>鐩爣锛氫换鍔＄悊瑙ｃ€佸瓙浠诲姟鍒囨崲銆佷笌 VLA/LLM 鐨勯珮灞傚喅绛栧鎺ャ€?</p>
+<ul>
+<li>
+<p>杈撳叆锛歚rgb_static/rgb_wrist`锛堜互鍙婂彲閫夎瑷€鎸囦护/浠诲姟鐘舵€侊級 + 锛堝彲閫夛級鎵嬭厱 F/T 缁熻鐗瑰緛</p>
+</li>
+<li>
+<p>杈撳嚭锛氬瓙鐩爣锛坓rasp pose / open-close schedule / retreat policy锛夈€佷互鍙婂 Level-A/B 鐨勫弬鏁颁笅鍙戯紙澶规寔鍔涗笂闄愩€侀€熷害涓婇檺銆佹仮澶嶈矾寰勶級</p>
+</li>
+</ul>
+<blockquote>
+<p>鍏抽敭鐐癸細Level-C 涓嶇洿鎺ョ鈥滄帴瑙︾灛闂存€庝箞绋充綇鈥濓紝瀹冪鐨勬槸鈥滀粈涔堟椂鍊欒杩涘叆鎺ヨЕ銆佸け璐ュ悗璧板摢鏉℃仮澶嶈矾寰勨€濄€?</p>
+</blockquote>
+<hr />
+<h2 id="5-ba">5. 浜哄舰瑙嗚锛氭墜鏄€滅墿鐞嗗洜鏋滄帴鍙ｂ€濓紙鍔涘鍘熻銆佹帴瑙︽ā寮忋€佹粦绉伙級<a class="headerlink" href="#5-ba" title="Permanent link">&para;</a></h2>
+<p>瀵逛汉褰㈡満鍣ㄤ汉鏉ヨ锛屾墜鐨勮亴璐ｆ槸锛氭妸鎰忓浘杞垚鐗╃悊涓栫晫浼氬搷搴旂殑鍘熷洜锛堝姏銆佸姏鐭┿€佹帴瑙︾害鏉燂級銆?</p>
+<h3 id="51-wrench">5.1 Wrench锛堝姏 + 鍔涚煩锛夋槸浠诲姟璇箟鐨勬渶灏忔帴鍙?<a class="headerlink" href="#51-wrench" title="Permanent link">&para;</a></h3>
+<p>瀵圭墿浣撶殑鐩存帴浣滅敤鍙互鍐欐垚 6 缁?wrench锛?</p>
+<p>$$</p>
+<p>w = \begin{bmatrix} f \ \tau \end{bmatrix}</p>
+<p>= \begin{bmatrix} F_x &amp; F_y &amp; F_z &amp; \tau_x &amp; \tau_y &amp; \tau_z \end{bmatrix}^T</p>
+<p>$$</p>
+<p>push/pull/press/twist/pry 鏈川鏄湪鎺у埗 (w) 鐨勪笉鍚屽垎閲忋€?</p>
+<h3 id="52">5.2 鎺ヨЕ妯″紡 + 鎽╂摝杈圭晫锛堟粦绉诲垽瀹氱殑鐗╃悊鏈川锛?<a class="headerlink" href="#52" title="Permanent link">&para;</a></h3>
+<p>鎺ヨЕ妯″紡鍙矖鍒嗭細sticking / sliding / rolling(pivot)銆?</p>
+<p>鎽╂摝杈圭晫锛堢畝鍖栵級锛?</p>
+<p>$$</p>
+<p>|f_t| \le \mu f_n</p>
+<p>$$</p>
+<p>婊戠Щ妫€娴嬪氨鏄湪浼拌锛氭槸鍚﹁繘鍏?sliding锛屼互鍙婄杈圭晫鏈夊杩戯紙<code>slip_risk</code>锛夈€?</p>
+<h3 id="53-orce-primitives">5.3 鍔涘鍘熻锛團orce Primitives锛夛細鎺?鎷変笉鏄涔夛紝鑰屾槸鐗╃悊绛栫暐<a class="headerlink" href="#53-orce-primitives" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>push / pull / press / drag / wedge / twist / pry</code></li>
+</ul>
+<blockquote>
+<p>鎵€浠モ€滄帹/鎷夆€濅笉鏄函璇箟閫夋嫨锛岃€屽簲鐢憋細鍙敤鎺ヨЕ鐐广€佹懇鎿﹂绠椼€佸彲鐢ㄥ姏鐭┿€佷互鍙婂け璐ユā寮忥紙婊?鍗?椤讹級鍏卞悓鍐冲畾銆?</p>
+</blockquote>
+<h3 id="54">5.4 涓轰簡鍋氬嚭杩欎簺鍐崇瓥锛氬洓绫诲繀澶囧彲瑙傛祴淇″彿<a class="headerlink" href="#54" title="Permanent link">&para;</a></h3>
+<ul>
+<li>
+<p><strong>娉曞悜鍔涗唬鐞?(f_n)</strong>锛歚motor_current/joint_effort`锛堟渶浣庨厤锛夆啋 鍘嬪姏闃靛垪锛堟洿濂斤級</p>
+</li>
+<li>
+<p><strong>鍒囧悜/鍓垏瓒嬪娍 (f_t)</strong>锛氬壀鍒囪Е瑙夐樀鍒楁渶鐩存帴锛涙病鏈夎Е瑙夋椂鍙兘寮变緷璧栬瑙?+ 鐢垫祦娈嬪樊</p>
+</li>
+<li>
+<p><strong>鎺ヨЕ鍑犱綍</strong>锛氭帴瑙﹂潰绉?鎺ヨЕ鐐逛綅缃紙瑙嗚Е瑙夋渶寮猴紱浣庡垎杈ㄧ巼闃靛垪娆′箣锛?- <strong>澶栭儴鍔涚煩/绾︽潫鍙嶅姏</strong>锛氭墜鑵?F/T 鏈€鐩存帴锛堝挨鍏跺鎷?鎾?鎺ㄦ媺闂ㄧ被浠诲姟锛?</p>
+</li>
+</ul>
+<hr />
+<h2 id="6-rm-in-loop-hard-cases">6. RM-in-loop锛氳绯荤粺鑷姩鍒囨銆佹寫 hard cases銆佽Е鍙戣嚜鎭㈠<a class="headerlink" href="#6-rm-in-loop-hard-cases" title="Permanent link">&para;</a></h2>
+<p>鎶?RM 褰撴垚鈥滆川閲忚鍒も€濓紝璁╃郴缁熷湪閮ㄧ讲鏃朵笉浠呰兘鍋氫换鍔★紝杩樿兘锛?</p>
+<ul>
+<li>鑷姩鍒囨锛坰treaming 鈫?episode/subtask锛?- 鑷姩鎸戦€?hard cases锛堝璁粌鏈€鍊奸挶锛?- 鑷姩瑙﹀彂鎭㈠绛栫暐锛堝噺灏戜汉宸ヤ粙鍏ワ級</li>
+</ul>
+<p>鏈€灏忓缓璁細RM 鍋氬澶磋緭鍑猴紝鑰屼笉鏄彧杈撳嚭涓€涓爣閲忥細</p>
+<ul>
+<li>
+<p><code>progress</code>锛氬瓙浠诲姟杩涘害锛堝彲鐢ㄨ鍒欏厛鍋氫吉鏍囩锛?- <code>quality</code>锛氱敓浜х骇璐ㄩ噺锛圧eplay 鎴愬姛 + 鏃犱繚鎶よЕ鍙?= 楂橈級</p>
+</li>
+<li>
+<p><code>recoverability</code>锛氭槸鍚﹀浜庡彲鑷晳绐楀彛</p>
+</li>
+<li>
+<p><code>failure_mode</code>锛歚slip/jam/occlusion/&hellip;`</p>
+</li>
+<li>
+<p>锛堝己寤鸿鍔狅級<code>primitive/contact_mode/slip_risk</code>锛氭妸鐗╃悊鍥犳灉鍐欒繘鏍囩浣撶郴</p>
+</li>
+</ul>
+<blockquote>
+<p>杩欏鎬濊矾涓?DYNA 鐨勫叕寮€鍙欎簨涓€鑷达細鐢?RM 鏀拺 long-horizon 鐨勯瞾妫掕繍琛屼笌鏁版嵁闂幆锛堝弬鑰?<a href="https://www.dyna.co/dyna-1/research">DYNA-1 Research</a> 鍙?<a href="https://www.dyna.co/blog/dyna-robotics-closes-120m-series-a">DYNA Series A 鍗氭枃</a>锛夈€?</p>
+</blockquote>
+<hr />
+<h2 id="7">7. 鏃堕棿鍚屾涓庢暟鎹绾匡紙鍙缁冦€佸彲澶嶇幇銆佸彲杩借矗锛?<a class="headerlink" href="#7" title="Permanent link">&para;</a></h2>
+<ul>
+<li>
+<p><strong>缁熶竴鏃堕挓</strong>锛氫紭鍏?PTP锛圛EEE 1588锛?- <strong>Timestamp-at-source</strong>锛氳澶囩浜х敓鏁版嵁鏃剁珛鍗虫墦鎴筹紙瑙?[澶氭ā鎬佸悓姝(./multimodal_data_synchronization.md)锛?- <strong>Ring Buffer 瀵归綈</strong>锛氫互瑙嗚甯т负 anchor锛?0鈥?0Hz锛夛紝瀵归綈 <code>q,\dot{q},effort/current,tactile</code></p>
+</li>
+<li>
+<p>*<em>璁板綍涓ゆ潯鍔ㄤ綔娴侊紙闈炲父閲嶈锛?</em>锛?  - 鍛戒护娴侊細<code>cmd_joint_target</code></p>
+</li>
+<li>
+<p>鎵ц娴侊細<code>measured_q, measured_effort</code></p>
+</li>
+</ul>
+<p>鍚﹀垯浣犳棤娉曞垽鏂け璐ュ埌搴曟槸鈥滅瓥鐣ラ敊鈥濓紝杩樻槸鈥滄墽琛?寤惰繜/楗卞拰/淇濇姢瑙﹀彂鈥濆鑷寸殑銆?</p>
+<hr />
+<h2 id="8">8. 鏍囧畾銆佸仴搴风洃娴嬩笌鍙淮鎶ゆ€?<a class="headerlink" href="#8" title="Permanent link">&para;</a></h2>
+<ul>
+<li>
+<p>*<em>鐩告満涓庢墜鐪兼爣瀹?</em>锛氳 [鐩告満鏍囧畾涓庢墜鐪煎榻怾(./camera_calibration_eye_in_hand.md)</p>
+</li>
+<li>
+<p><strong>瑙﹁鏍囧畾</strong>锛氶浂鐐规紓绉汇€佹潗鏂欒€佸寲鏄父鎬侊紙瑙?<a href="./tactile_sensor_integration_challenges.md">瑙﹁闆嗘垚鎸戞垬</a>锛?- *<em>鍙惤鍦板仛娉?</em>锛?  - 姣忓ぉ/姣忕彮娆￠浂鐐规牎鍑嗭紙baseline锛?  - 姣忔鏇存崲钂欑毊/鎸囧皷妯″潡锛歚recalib_required=1`</p>
+</li>
+<li>
+<p>鎶婂仴搴风姸鎬佸啓鎴愬彲瑙傛祴浜嬩欢锛歚sensor_health=degraded`</p>
+</li>
+</ul>
+<hr />
+<h2 id="9">9. 鏈€灏忚惤鍦扮増鏈?+ 杩唬璺嚎鍥撅紙璧板悜瓒呰秺浜虹被锛?<a class="headerlink" href="#9" title="Permanent link">&para;</a></h2>
+<h3 id="91">9.1 鏈€灏忚惤鍦扮増鏈紙浣犱粖澶╁氨鑳藉仛鍑烘潵锛?<a class="headerlink" href="#91" title="Permanent link">&para;</a></h3>
+<p>濡傛灉浣犲彧鏈?DexHand + 2 涓浉鏈猴紙闈欐€?+ 鑵曢儴锛夛紝娌℃湁瑙﹁锛?</p>
+<ul>
+<li>
+<p><strong>纭欢</strong>锛歸rist RGB锛?0鈥?0Hz锛夈€乻tatic RGB锛?0Hz锛夈€乣effort/current<code>锛?=200Hz锛夈€乣q,\dot{q}</code>锛?=200Hz锛?- <strong>杞欢</strong>锛歅TP/缁熶竴鏃堕挓銆丷ing Buffer 瀵归綈銆丩evel-A 瀹夊叏鍙嶅皠銆丷eplay Validation</p>
+</li>
+<li>
+<p><strong>鏁版嵁</strong>锛氬懡浠ゆ祦 + 鎵ц娴併€乪pisode metadata锛坄calib_version/sync_status/replay_ok`锛?</p>
+</li>
+</ul>
+<h3 id="92-mvs">9.2 璺嚎鍥撅細浠?MVS 鍒扳€滆秴瓒婁汉绫昏兘鍔涒€?<a class="headerlink" href="#92-mvs" title="Permanent link">&para;</a></h3>
+<p>鈥滆秴瓒婁汉绫烩€濅笉鏄爢浼犳劅鍣紝鑰屾槸瀹氫箟瓒呰兘鍔涘苟鍋氱郴缁熼棴鐜細</p>
+<ul>
+<li>
+<p>*<em>瓒呬汉绫诲甫瀹?</em>锛?kHz 鍙嶅皠 + 100鈥?00Hz 闃叉粦</p>
+</li>
+<li>
+<p>*<em>瓒呬汉绫诲姩鎬佽寖鍥?</em>锛氫粠杞昏Е鍒板己瀵规姉锛屽疄鏃剁鐞?<code>slip_risk</code></p>
+</li>
+<li>
+<p>*<em>瓒呬汉绫诲彲瑙ｉ噴鎬?</em>锛氳緭鍑?<code>contact_mode/wrench_est/constraint_state</code></p>
+</li>
+<li>
+<p>*<em>瓒呬汉绫绘帴瑙﹀嚑浣曠悊瑙?</em>锛? 涓珮淇℃伅鈥滆€佸笀鈥濓紙瑙嗚Е瑙夛級+ 2鈥? 涓珮棰戔€滃伐鍏碘€濓紙鍓垏/鍘嬪姏锛? effort/current 鍏滃簳</p>
+</li>
+<li>
+<p><strong>瓒呬汉绫昏嚜鏍囨敞椋炶疆</strong>锛歊M-in-loop 鑷姩鍒囨/鎸?hard cases/瑙﹀彂鑷仮澶?- *<em>瓒呬汉绫婚瞾妫掓€?</em>锛氭紓绉?纾ㄦ崯/娓╁崌閮借繘鍏?<code>sensor_health</code> 涓庨檷棰濋€昏緫</p>
+</li>
+</ul>
+<p>寤鸿杩唬鑺傚锛?- <strong>闃舵 1锛?鈥? 鍛級</strong>锛歁VS + Replay Validation + 瑙勫垯 RM</p>
+<ul>
+<li>
+<p><strong>闃舵 2锛?鈥? 鍛級</strong>锛氭妸瑙勫垯浼爣绛捐缁冩垚杞婚噺 RM锛堟浛鎹㈤槇鍊硷級</p>
+</li>
+<li>
+<p><strong>闃舵 3锛?鈥? 鏈堬級</strong>锛氬姞鍏?2 涓壀鍒?鍘嬪姏鎸囧皷锛圠evel-B 鍙樺己锛?- <strong>闃舵 4锛堥暱鏈燂級</strong>锛氬姞鍏?1 涓瑙﹁ + 1 涓墜鑵?F/T锛堝缓绔嬧€滃洜鏋滃垽瀹?+ 鏁欏笀浼犳劅鈥濓級</p>
+</li>
+</ul>
+<hr />
+<h2 id="_2">鍙傝€冮摼鎺ワ紙涓庢湰浠撳簱鍐呭鐨勫叧绯伙級<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
+<ul>
+<li>
+<p>澶氭ā鎬佸悓姝ユ柟娉曡锛歔<code>multimodal_data_synchronization.md</code>](./multimodal_data_synchronization.md)</p>
+</li>
+<li>
+<p>瑙﹁闆嗘垚宸ョ▼闅剧偣锛歔<code>tactile_sensor_integration_challenges.md</code>](./tactile_sensor_integration_challenges.md)</p>
+</li>
+<li>
+<p>DexHand 閲囨暟涓?RM-in-loop 钀藉湴妗堜緥锛歔<code>dexterous_hand_data_collection.md</code>](./dexterous_hand_data_collection.md)</p>
+</li>
+</ul>
+      </div>
+
+      <div id="footer" style="display:flex; justify-content:flex-start; align-items:center; gap: 1em; flex-wrap: wrap; padding: 2em 0;">
+        <div>&copy; 2025 Sou Kit-Wa (Ken). All rights reserved.</div>
+      </div>
+    </div>
+
+    <script>
+      (function() {
+        var savedTheme = localStorage.getItem('theme') || 'light';
+        if (savedTheme === 'dark') document.body.classList.add('dark-theme');
+      })();
+    </script>
+  </body>
+</html>
