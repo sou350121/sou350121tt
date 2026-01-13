@@ -141,15 +141,6 @@ h1 {
   margin-left: auto;
 }
 
-.nav-extra-sep {
-  display: inline-block;
-  color: #a0a8b0;
-  font-size: 1.6em;
-  line-height: 2.4em;
-  margin: 0 0.5em;
-  user-select: none;
-}
-
 .nav-extra-link {
   display: inline-block;
   cursor: pointer;
@@ -168,10 +159,6 @@ h1 {
 }
 
 body.dark-theme .nav-extra-link {
-  color: #b0b0b0;
-}
-
-body.dark-theme .nav-extra-sep {
   color: #b0b0b0;
 }
 
