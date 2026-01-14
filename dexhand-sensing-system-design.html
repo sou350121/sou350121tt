@@ -103,6 +103,46 @@
         background: rgba(20, 110, 190, 0.08);
         font-weight: 700;
       }
+      /* Primitives table: more readable and "doc-like" */
+      .doc table.primitives-table {
+        table-layout: fixed;
+      }
+      .doc table.primitives-table thead th {
+        vertical-align: top;
+        white-space: normal;
+        line-height: 1.25;
+      }
+      .doc table.primitives-table .th-sub {
+        display: block;
+        margin-top: 0.25em;
+        font-weight: 500;
+        font-size: 0.88em;
+        color: #6b7280;
+      }
+      .doc table.primitives-table tbody tr:nth-child(odd) {
+        background: rgba(0, 0, 0, 0.015);
+      }
+      .doc table.primitives-table tbody tr:hover {
+        background: rgba(20, 110, 190, 0.06);
+      }
+      .doc table.primitives-table td {
+        word-break: break-word;
+      }
+      .doc table.primitives-table td:first-child,
+      .doc table.primitives-table th:first-child {
+        width: 10%;
+      }
+      .doc table.primitives-table td:first-child code {
+        font-size: 0.95em;
+        padding: 0.12em 0.55em;
+        border-radius: 999px;
+        border-color: rgba(20, 110, 190, 0.18);
+        background: rgba(20, 110, 190, 0.10);
+        white-space: nowrap;
+      }
+      .doc table.primitives-table code {
+        white-space: nowrap;
+      }
       .doc .toc {
         background: rgba(20,110,190,0.06);
         border: 1px solid rgba(20,110,190,0.18);
@@ -128,6 +168,20 @@
       body.dark-theme .doc table { border-color: rgba(148,163,184,0.18); }
       body.dark-theme .doc th { background: rgba(74, 158, 255, 0.12); }
       body.dark-theme .doc th, body.dark-theme .doc td { border-bottom-color: rgba(148,163,184,0.18); }
+      body.dark-theme .doc table.primitives-table tbody tr:nth-child(odd) {
+        background: rgba(255, 255, 255, 0.03);
+      }
+      body.dark-theme .doc table.primitives-table tbody tr:hover {
+        background: rgba(74, 158, 255, 0.10);
+      }
+      body.dark-theme .doc table.primitives-table .th-sub {
+        color: #b0b0b0;
+      }
+      body.dark-theme .doc table.primitives-table td:first-child code {
+        border-color: rgba(74, 158, 255, 0.30);
+        background: rgba(74, 158, 255, 0.14);
+        color: #d6ecff;
+      }
       body.dark-theme .doc .toc {
         background: rgba(74,158,255,0.10);
         border-color: rgba(74,158,255,0.22);
@@ -347,17 +401,24 @@ Level-A  (500–1000Hz):  安全反射（限流、卡死检测、退避）
 
         <h3 id="primitives">5.1 物理原语（Physical Primitives）词汇表</h3>
         <p>
-          下面把文中出现的“物理原语”统一成可落地的定义：每个词对应你想改变的物理量（wrench/约束/接触模式），以及它依赖的关键可观测信号。
-          这些原语既可以作为早期 rule-based policy，也可以作为 VLA policy 的高层动作空间（primitive switching）。
+          下面把文中出现的“物理原语”统一成可落地定义：每个词对应你想改变的物理量（wrench/约束/接触模式）以及它依赖的关键可观测信号。
+          原语可以作为早期 <b>rule-based policy</b>，也可以作为 VLA policy 的高层动作空间（primitive switching）。
         </p>
-        <table>
+        <table class="primitives-table">
+          <colgroup>
+            <col style="width: 10%;">
+            <col style="width: 20%;">
+            <col style="width: 18%;">
+            <col style="width: 22%;">
+            <col style="width: 30%;">
+          </colgroup>
           <thead>
             <tr>
               <th>原语</th>
-              <th>直白定义（你在物理上做什么）</th>
-              <th>目标（改变什么）</th>
-              <th>关键观测（最低配）</th>
-              <th>常见失败/触发恢复</th>
+              <th>直白定义<span class="th-sub">你在物理上做什么</span></th>
+              <th>目标<span class="th-sub">改变什么</span></th>
+              <th>关键观测<span class="th-sub">最低配</span></th>
+              <th>常见失败<span class="th-sub">触发恢复</span></th>
             </tr>
           </thead>
           <tbody>
