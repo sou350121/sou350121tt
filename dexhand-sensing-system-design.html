@@ -352,9 +352,9 @@ Level-A  (500–1000Hz):  安全反射（限流、卡死检测、退避）
             <tr>
               <td><b>Level-B</b></td>
               <td>60–200Hz</td>
-              <td>接触协调/防滑（夹持力调度、微调几何）</td>
-              <td><code>current/effort</code>（触觉代理）, <code>q/qdot</code></td>
-              <td>指尖剪切/压力阵列；耐久触觉（ITPU/霍尔/类 uSkin）；<code>wrist_FT</code></td>
+              <td>接触协调/防滑（夹持力调度、微调几何）<br><b>精细力控（twist/insertion/pry）</b></td>
+              <td><code>current/effort</code>（触觉代理）, <code>q/qdot</code><br><b>对精细力控：<code>wrist_FT</code>（6D，必选）</b></td>
+              <td>指尖剪切/压力阵列；耐久触觉（ITPU/霍尔/类 uSkin）</td>
               <td>中等（10–30ms）</td>
             </tr>
             <tr>
@@ -415,12 +415,17 @@ Level-A  (500–1000Hz):  安全反射（限流、卡死检测、退避）
             <b>Level-B（60–200Hz）</b>：
             <ul style="margin: 0.3em 0 0 0; padding-left: 1.1em;">
               <li>
-                <b><code>current/effort</code>（触觉代理）</b>：在没有高频触觉阵列的情况下，它是“接触状态变化”的最低配观测（夹持变强/变弱、阻力突变、微滑动引发的扰动）。
+                <b><code>current/effort</code>（触觉代理）</b>：在没有高频触觉阵列的情况下，它是"接触状态变化"的最低配观测（夹持变强/变弱、阻力突变、微滑动引发的扰动）。
                 缺它会导致：你只能靠视觉判断接触稳定，而视觉对 slip/misalignment 往往滞后且不可用（遮挡/光照）。
               </li>
               <li>
-                <b><code>q/qdot</code></b>：把 effort/current 的变化解释成“接触导致”还是“主动运动导致”（同样的电流变化，在不同 <code>qdot</code> 下物理意义不同）。
+                <b><code>q/qdot</code></b>：把 effort/current 的变化解释成"接触导致"还是"主动运动导致"（同样的电流变化，在不同 <code>qdot</code> 下物理意义不同）。
                 缺它会导致：防滑与夹持调度会变成误触发（把主动加速当滑移，把静止摩擦当卡死）。
+              </li>
+              <li>
+                <b><code>wrist_FT</code>（6D F/T）对精细力控的必要性</b>：对 twist/insertion/pry 等精细力控任务，<code>current/effort</code> 只是力矩的弱 proxy（受齿隙、摩擦、传动比影响），<strong>无法提供扭矩闭环（τz）或侧向力/力矩的精确反馈</strong>。
+                缺它会导致：擰瓶盖时无法区分"扭矩达标"与"手指打滑"；peg-in-hole 无法区分"顶住"与"对歪"；脆弱物抓取时电机摩擦吃掉精度。<br>
+                <b>结论：对精细力控任务，wrist_FT 是必选而非可选。</b>
               </li>
             </ul>
           </li>
@@ -613,6 +618,92 @@ Level-A  (500–1000Hz):  安全反射（限流、卡死检测、退避）
           </tbody>
         </table>
 
+        <h3 id="sensor-capability">3.0.1 传感配置 vs 可解锁的任务能力（速查表）</h3>
+        <p>
+          不同的传感配置决定了系统能够完成的任务谱系。下表明确展示：<b>每增加一个传感器，能解锁什么新能力</b>。
+        </p>
+        <table>
+          <thead>
+            <tr>
+              <th>配置等级</th>
+              <th>传感器组合</th>
+              <th>可做的任务</th>
+              <th>不能做的任务（缺什么）</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><b>MVS<br>（阶段 1–2）</b></td>
+              <td>RGB (static+wrist) + proprio (q/qdot) + <code>current/effort</code></td>
+              <td>
+                <ul style="margin:0; padding-left: 1.1em;">
+                  <li>简单抓取、pick-and-place</li>
+                  <li><code>press</code>（粗力控）、<code>push</code></li>
+                  <li>基于 effort 的粗防滑</li>
+                  <li><code>backoff</code>、<code>reopen</code>、<code>regrasp</code></li>
+                </ul>
+              </td>
+              <td>
+                <ul style="margin:0; padding-left: 1.1em;">
+                  <li><b>精细力控</b>：twist、insertion、pry（缺扭矩/侧向力精确闭环）</li>
+                  <li>毫牛级夹持、脆弱物（电机摩擦吃掉精度）</li>
+                </ul>
+              </td>
+            </tr>
+            <tr>
+              <td><b>+wrist_FT<br>（阶段 2.5）</b></td>
+              <td>上述 + <b>6D F/T（≥200Hz）</b></td>
+              <td>
+                <ul style="margin:0; padding-left: 1.1em;">
+                  <li><b>新增</b>：<code>twist</code>（擰瓶盖）、<code>insertion</code>（精密插入）、<code>pry</code>（撬开）</li>
+                  <li><code>pull</code> 拉力闭环、<code>wedge</code> 力矩限幅</li>
+                  <li>推/拉/扭的因果判定（外部约束反力）</li>
+                </ul>
+              </td>
+              <td>
+                <ul style="margin:0; padding-left: 1.1em;">
+                  <li>毫牛级夹持精度（指尖直接测力更优）</li>
+                  <li>高品质 slip detection（指尖触觉更敏感）</li>
+                </ul>
+              </td>
+            </tr>
+            <tr>
+              <td><b>+指尖力<br>（阶段 3）</b></td>
+              <td>上述 + <b>指尖 3 轴力传感器 ×2</b></td>
+              <td>
+                <ul style="margin:0; padding-left: 1.1em;">
+                  <li><b>新增</b>：脆弱物抓取（毫牛级法向控制）</li>
+                  <li>精细防滑（直接测量指尖摩擦状态）</li>
+                  <li>夹持力精确闭环（不受传动摩擦影响）</li>
+                </ul>
+              </td>
+              <td>
+                <ul style="margin:0; padding-left: 1.1em;">
+                  <li>接触几何真值（面积/边缘/微滑动）</li>
+                </ul>
+              </td>
+            </tr>
+            <tr>
+              <td><b>+视触觉<br>（阶段 4）</b></td>
+              <td>上述 + <b>多点视触（pad+side）</b></td>
+              <td>
+                <ul style="margin:0; padding-left: 1.1em;">
+                  <li><b>新增</b>：高品质 teacher labels（接触几何/接触模式/力学真值）</li>
+                  <li>显著提升 RM/QC 质量（hard case 挖掘更准确）</li>
+                  <li>Teacher→Student 蒸馏质量提升</li>
+                </ul>
+              </td>
+              <td>—（能力谱系完整）</td>
+            </tr>
+          </tbody>
+        </table>
+        <blockquote>
+          <p>
+            <b>关键洞察</b>：wrist_FT 是解锁精细力控的"最小投入"（单传感器），但它不替代指尖触觉的防滑与精细夹持能力；
+            视触觉是 teacher 信息的"金标准"，但它更适合用于 Research Mode 而非闭环主力。
+          </p>
+        </blockquote>
+
         <h3 id="mvs">3.1 Level-0（MVS：最小可行传感）</h3>
         <p>目标：低成本获得“接触判别能力 + 可复现数据”。</p>
         <ul>
@@ -722,6 +813,75 @@ Level-A  (500–1000Hz):  安全反射（限流、卡死检测、退避）
           <li><b>输出</b>：夹持力（或关节闭合量）微调、接触姿态微调。</li>
         </ul>
 
+        <h4 id="level-b-force">4.2.1 精细力控子模式（Level-B-Force）</h4>
+        <p>
+          对 <code>twist</code>/<code>insertion</code>/<code>pry</code> 等精细力控任务，Level-B 需要切换到力控子模式，要求更精确的力/力矩闭环。
+          此时 <code>current/effort</code> 的弱 proxy 不足，<b>必须引入 <code>wrist_FT</code>（6D F/T）</b>。
+        </p>
+
+        <h5>闭环结构</h5>
+        <pre><code>输入: wrist_FT (6D) + 指尖法向/切向力（可选） + q/qdot
+      ↓
+控制律: impedance/admittance control
+      ↓
+输出: 末端位置/力的 compliance 调整（或关节力矩指令）</code></pre>
+
+        <h5>典型控制律示例</h5>
+        <table>
+          <thead>
+            <tr>
+              <th>任务原语</th>
+              <th>控制目标</th>
+              <th>控制律类型</th>
+              <th>关键闭环信号</th>
+              <th>成功/失败判据</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>twist</code>（擰瓶盖）</td>
+              <td>维持 τz 在目标范围，同时监控 slip_risk</td>
+              <td>扭矩闭环：τz_cmd → τz_measured</td>
+              <td><code>wrist_FT.τz</code></td>
+              <td>角度达标 且 <code>slip_risk &lt; 0.3</code></td>
+            </tr>
+            <tr>
+              <td><code>press</code>（精密夹持）</td>
+              <td>限制 Fz，维持预紧力</td>
+              <td>力闭环：F_cmd → F_measured</td>
+              <td>指尖法向力 或 <code>wrist_FT.Fz</code></td>
+              <td><code>contact_confidence &gt; 0.8</code> 且 <code>|F_error| &lt; ε</code></td>
+            </tr>
+            <tr>
+              <td><code>insertion</code>（精密插入）</td>
+              <td>限制 Fz，同时用 Fx/Fy/τx/τy 做对中</td>
+              <td>阻抗控制：位置主/力从</td>
+              <td><code>wrist_FT</code> (6D)</td>
+              <td>深度达标 且 无 <code>jam</code> 事件</td>
+            </tr>
+            <tr>
+              <td><code>pry</code>（撬开）</td>
+              <td>控制力矩，限制峰值力</td>
+              <td>力矩限幅 + 姿态微调</td>
+              <td><code>wrist_FT</code> (6D) + 安全限位</td>
+              <td>约束解除 且 无 <code>safety_trip</code></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h5>职责边界明确化</h5>
+        <p>Level-B 的"微调接触几何"具体指：</p>
+        <ul>
+          <li><b>夹持力调度</b>：指尖法向力 → 关节闭合量（或力矩指令）</li>
+          <li><b>接触姿态微调</b>：<code>wrist_FT</code> 的侧向分量（Fx/Fy/τx/τy）→ 手腕姿态微调（对中/消除 misalignment）</li>
+          <li><b>防滑响应</b>：<code>slip_risk</code> 高 → 增大法向预紧或降低切向速度</li>
+        </ul>
+        <blockquote>
+          <p>
+            <b>关键区别</b>：简单抓取/防滑可用 <code>current/effort</code>；精细力控（twist/insertion/pry）必须用 <code>wrist_FT</code> 才能做到毫牛级闭环与多轴解耦。
+          </p>
+        </blockquote>
+
         <h3 id="level-c">4.3 Level-C：语义策略层（5–15Hz）</h3>
         <p>目标：任务理解、子任务切换、与 VLA/LLM 高层决策对接。</p>
         <ul>
@@ -757,98 +917,111 @@ Level-A  (500–1000Hz):  安全反射（限流、卡死检测、退避）
         </p>
         <table class="primitives-table">
           <colgroup>
-            <col style="width: 10%;">
-            <col style="width: 20%;">
+            <col style="width: 8%;">
+            <col style="width: 16%;">
+            <col style="width: 14%;">
+            <col style="width: 16%;">
             <col style="width: 18%;">
-            <col style="width: 22%;">
-            <col style="width: 30%;">
+            <col style="width: 28%;">
           </colgroup>
           <thead>
             <tr>
               <th>原语</th>
               <th>直白定义<span class="th-sub">你在物理上做什么</span></th>
               <th>目标<span class="th-sub">改变什么</span></th>
-              <th>关键观测<span class="th-sub">最低配</span></th>
-              <th>常见失败<span class="th-sub">触发恢复</span></th>
+              <th>闭环控制律<span class="th-sub">怎么闭环</span></th>
+              <th>关键闭环信号<span class="th-sub">最低配</span></th>
+              <th>成功/失败判据<span class="th-sub">触发恢复</span></th>
             </tr>
           </thead>
           <tbody>
             <tr>
               <td><code>press</code></td>
-              <td>沿接触法向“压下去”，建立/维持法向力</td>
+              <td>沿接触法向"压下去"，建立/维持法向力</td>
               <td>提高 \(f_n\)，增加摩擦预算（降低 slip_risk）</td>
-              <td><code>current/effort</code>（法向 proxy）、<code>q/qdot</code></td>
-              <td>过力/卡死（jam）→ <code>backoff</code>；滑移仍高→转 <code>wedge</code>/<code>regrasp</code></td>
+              <td>力闭环：F_cmd → F_measured（或 current 限幅）</td>
+              <td><code>current/effort</code>（法向 proxy）、<code>q/qdot</code>；高精度：指尖法向力或 <code>wrist_FT.Fz</code></td>
+              <td><b>成功</b>：<code>contact_confidence &gt; 0.8</code> 且 F_error &lt; ε<br><b>失败</b>：过力/jam → <code>backoff</code>；slip 仍高→ <code>wedge</code>/<code>regrasp</code></td>
             </tr>
             <tr>
               <td><code>pull</code></td>
-              <td>沿某方向“拉”，尝试解除约束或拉出物体</td>
+              <td>沿某方向"拉"，尝试解除约束或拉出物体</td>
               <td>控制切向力 \(f_t\)，改变约束反力</td>
-              <td><code>wrist_FT</code>（最好）、<code>current/effort</code></td>
-              <td>滑移/脱手→增大 <code>press</code> 或 <code>regrasp</code></td>
+              <td>力闭环（切向）：f_t_cmd → f_t_measured；或阻抗控制</td>
+              <td><code>wrist_FT</code>（强烈推荐）、<code>current/effort</code></td>
+              <td><b>成功</b>：目标位移达标 且 <code>slip_risk &lt; 0.3</code><br><b>失败</b>：滑移/脱手→增大 <code>press</code> 或 <code>regrasp</code></td>
             </tr>
             <tr>
               <td><code>push</code></td>
-              <td>沿某方向“推”，让物体/机构进入更可控的约束状态</td>
+              <td>沿某方向"推"，让物体/机构进入更可控的约束状态</td>
               <td>改变接触约束与几何关系（让任务更可解）</td>
-              <td><code>rgb_wrist</code> + <code>current/effort</code>（接触/阻力 proxy）</td>
-              <td>顶死/卡住→ <code>backoff</code>；偏斜→ <code>re-approach</code></td>
+              <td>位置控制 + 力限幅（hybrid control）</td>
+              <td><code>rgb_wrist</code> + <code>current/effort</code>（接触/阻力 proxy）；高精度：<code>wrist_FT</code></td>
+              <td><b>成功</b>：目标约束状态达成 且 无 jam<br><b>失败</b>：顶死/卡住→ <code>backoff</code>；偏斜→ <code>re-approach</code></td>
             </tr>
             <tr>
               <td><code>wedge</code></td>
-              <td>“楔入/撬开”式接触：用边缘/角点制造几何杠杆</td>
+              <td>"楔入/撬开"式接触：用边缘/角点制造几何杠杆</td>
               <td>把不可见/难抓的几何变成可抓（解锁/起缝）</td>
-              <td><code>wrist_FT</code>（强烈建议）、<code>current/effort</code></td>
-              <td>过力/损伤风险→限力；进入 slip→转 <code>press</code>/<code>regrasp</code></td>
+              <td>力/力矩限幅 + 姿态微调（限制峰值力）</td>
+              <td><code>wrist_FT</code>（强烈推荐）、<code>current/effort</code></td>
+              <td><b>成功</b>：缝隙打开 或 接触状态改变<br><b>失败</b>：过力/损伤风险→限力 <code>backoff</code>；slip→ <code>press</code>/<code>regrasp</code></td>
             </tr>
             <tr>
               <td><code>twist</code></td>
               <td>绕轴旋转（例如拧盖/旋钮）</td>
-              <td>控制 \(\tau\)（扭矩）并维持接触模式为 stick</td>
-              <td><code>wrist_FT</code>（最好）、<code>current/effort</code>（扭矩 proxy）</td>
-              <td>滑移→先 <code>press</code> 提升摩擦；卡死→ <code>backoff</code> + 重新对齐</td>
+              <td>控制 \(\tau_z\)（扭矩）并维持接触模式为 stick</td>
+              <td><b>扭矩闭环：τz_cmd → τz_measured</b>（<code>wrist_FT</code> 必选）</td>
+              <td><code>wrist_FT.τz</code>（<b>必选</b>）；次选：<code>current/effort</code>（扭矩弱 proxy）</td>
+              <td><b>成功</b>：角度达标 且 <code>slip_risk &lt; 0.3</code><br><b>失败</b>：slip→先 <code>press</code> 提升摩擦；jam→ <code>backoff</code> + 重新对齐</td>
             </tr>
             <tr>
               <td><code>pry</code></td>
-              <td>“撬”：绕支点施加力矩，解除卡扣/粘连</td>
+              <td>"撬"：绕支点施加力矩，解除卡扣/粘连</td>
               <td>改变约束反力与接触点（高风险原语）</td>
-              <td><code>wrist_FT</code>（必要）、安全限位/温度</td>
-              <td>风险高：需要限力/限扭；触发 safety_trip→立刻 <code>backoff</code></td>
+              <td><b>力矩闭环 + 峰值限幅</b>（阻抗控制）</td>
+              <td><code>wrist_FT</code>（<b>必选</b>）、安全限位/温度</td>
+              <td><b>成功</b>：约束解除 且 无 <code>safety_trip</code><br><b>失败</b>：过力/过矩→立刻 <code>backoff</code>；损伤风险→终止并报警</td>
             </tr>
             <tr>
               <td><code>drag</code></td>
-              <td>贴着表面“拖拽/扫过”以定位或产生摩擦信息</td>
+              <td>贴着表面"拖拽/扫过"以定位或产生摩擦信息</td>
               <td>用可控滑移获取信息/对齐（信息驱动原语）</td>
-              <td><code>rgb_wrist</code> + <code>current/effort</code>；（有触觉更好）</td>
-              <td>摩擦过大→减速/减力；抓取不稳→先 <code>press</code></td>
+              <td>位置控制 + 法向力限幅（保持接触但允许滑移）</td>
+              <td><code>rgb_wrist</code> + <code>current/effort</code>；高精度：指尖触觉或 <code>wrist_FT</code></td>
+              <td><b>成功</b>：完成扫描区域 或 找到目标特征<br><b>失败</b>：摩擦过大→减速/减力；抓取不稳→先 <code>press</code></td>
             </tr>
             <tr>
               <td><code>regrasp</code></td>
               <td>重新抓（松开→调整接触点→再抓）</td>
               <td>把接触几何重置到更稳定区域</td>
+              <td>序列控制：<code>reopen</code> → 视觉定位 → <code>press</code></td>
               <td><code>rgb_wrist</code> + <code>q/qdot</code> + <code>current/effort</code></td>
-              <td>重复失败→切换 <code>wedge</code> 或改变 approach 方向</td>
+              <td><b>成功</b>：<code>contact_confidence</code> 提升 且 <code>slip_risk</code> 降低<br><b>失败</b>：重复失败→切换 <code>wedge</code> 或改变 approach 方向</td>
             </tr>
             <tr>
               <td><code>backoff</code></td>
               <td>后退/卸载力（退避）</td>
               <td>快速止损，解除 jam/过力风险（Level-A 常用）</td>
-              <td><code>current/effort</code> + <code>qdot</code> + 安全事件</td>
-              <td>退避后若仍异常→标记 <code>sensor_health</code> 或请求人工介入</td>
+              <td>位置撤退 + 力卸载监控（验证力是否下降）</td>
+              <td><code>current/effort</code> + <code>qdot</code> + 安全事件；高精度：<code>wrist_FT</code></td>
+              <td><b>成功</b>：<code>current/effort</code> 降至安全范围 且 <code>qdot</code> 响应正常<br><b>失败</b>：退避后仍异常→标记 <code>sensor_health</code> 或请求人工介入</td>
             </tr>
             <tr>
               <td><code>reopen</code></td>
               <td>张开手指/减小夹持（释放接触）</td>
               <td>解除卡住/重置接触</td>
+              <td>位置控制（张开）+ 力卸载验证</td>
               <td><code>q</code> + <code>current/effort</code></td>
-              <td>若释放无效→可能几何卡死，转 <code>backoff</code> + 改路径</td>
+              <td><b>成功</b>：<code>current/effort</code> 降至基线 且 <code>q</code> 达到开启位置<br><b>失败</b>：释放无效（仍有阻力）→可能几何卡死，转 <code>backoff</code> + 改路径</td>
             </tr>
             <tr>
               <td><code>re-approach</code></td>
               <td>重新接近（换角度/路径再次进入接触）</td>
               <td>降低 misalignment/occlusion，获得更好接触几何</td>
+              <td>视觉伺服 + 路径规划（重新定位 grasp pose）</td>
               <td><code>rgb_static</code>/<code>rgb_wrist</code> + <code>q</code></td>
-              <td>重复 misalignment→调整目标姿态或先 <code>drag</code> 探索</td>
+              <td><b>成功</b>：接触建立 且 <code>misalignment</code> 指标改善<br><b>失败</b>：重复 misalignment→调整目标姿态或先 <code>drag</code> 探索</td>
             </tr>
           </tbody>
         </table>
@@ -1026,6 +1199,45 @@ Level-A  (500–1000Hz):  安全反射（限流、卡死检测、退避）
               <td>failure_mode + 接触置信度 + 安全事件组合判定</td>
               <td>0–1 或 bool</td>
             </tr>
+            <tr style="background-color: rgba(20, 110, 190, 0.08);">
+              <td colspan="4"><b>力学真值（精细力控必需）</b></td>
+            </tr>
+            <tr>
+              <td><code>contact_wrench</code></td>
+              <td>接触点的 6D 力/力矩估计</td>
+              <td>视触形变 + <code>wrist_FT</code> 的联合估计（或基于形变的力学建模）</td>
+              <td>[Fx, Fy, Fz, τx, τy, τz]</td>
+            </tr>
+            <tr>
+              <td><code>grasp_stability_margin</code></td>
+              <td>离摩擦锥边界的余量（安全距离）</td>
+              <td>\(\mu f_n - |f_t|\) 的归一化（或基于 <code>slip_risk</code> 的逆推）</td>
+              <td>0–1（1 = 非常稳定，0 = 即将滑移）</td>
+            </tr>
+            <tr>
+              <td><code>insertion_phase</code></td>
+              <td>插入任务的阶段状态</td>
+              <td>基于 <code>wrist_FT</code> 特征 + 深度/接触面积变化：approach / contact / slide / jam / success</td>
+              <td>枚举（5 类）</td>
+            </tr>
+            <tr>
+              <td><code>twist_phase</code></td>
+              <td>扭转任务的阶段状态</td>
+              <td>基于 <code>wrist_FT.τz</code> + 角度变化：engage / turn / slip / complete</td>
+              <td>枚举（4 类）</td>
+            </tr>
+            <tr>
+              <td><code>normal_force</code></td>
+              <td>接触法向力估计（单通道）</td>
+              <td>视触压入深度 → 力（需标定）或 <code>wrist_FT.Fz</code> 投影</td>
+              <td>标量（N）</td>
+            </tr>
+            <tr>
+              <td><code>tangential_force</code></td>
+              <td>接触切向力估计（单通道或 2D）</td>
+              <td>视触剪切形变 → 力（需标定）或 <code>wrist_FT</code> 的 Fx/Fy 分量</td>
+              <td>标量或 [fx, fy]（N）</td>
+            </tr>
           </tbody>
         </table>
         <p>
@@ -1158,12 +1370,26 @@ Level-A  (500–1000Hz):  安全反射（限流、卡死检测、退避）
         </ul>
 
         <h3 id="plan">9.2 迭代路线图</h3>
+        <p><b>关键调整</b>：将 <code>wrist_FT</code> 提前到阶段 2.5，使精细力控任务（twist/insertion/pry）能够尽早解锁。</p>
         <ul>
-          <li><b>阶段 1（2–4 周）</b>：MVS + Replay Validation + 规则 RM。</li>
-          <li><b>阶段 2（2–4 周）</b>：规则伪标签训练成轻量 RM（替换阈值）。</li>
-          <li><b>阶段 3（1–2 月）</b>：加 2 个剪切/压力指尖，强化 Level-B 防滑。</li>
-          <li><b>阶段 4（长期）</b>：加 1 组多点视触（至少指腹 + 侧边/侧壁，用于 teacher）+ 1 个手腕 F/T，形成“因果判定 + 老师传感”。</li>
+          <li><b>阶段 1（2–4 周）</b>：MVS + Replay Validation + 规则 RM。<br>
+            <em>能力范围</em>：简单抓取、pick-and-place、基于 current/effort 的粗防滑。</li>
+          <li><b>阶段 2（2–4 周）</b>：规则伪标签训练成轻量 RM（替换阈值）。<br>
+            <em>能力范围</em>：同阶段 1，但数据质量与自动切段能力提升。</li>
+          <li><b>阶段 2.5（4–6 周）</b>：<b>加 1 个手腕 F/T（6D，≥200Hz）</b>，解锁精细力控原语。<br>
+            <em>新增能力</em>：<code>twist</code>（擰瓶盖）、<code>insertion</code>（精密插入）、<code>pry</code>（撬开）、<code>pull</code>（拉力闭环）。<br>
+            <em>理由</em>：这些任务需要扭矩/侧向力的精确闭环，<code>current/effort</code> 的弱 proxy 无法满足毫牛级精度要求。</li>
+          <li><b>阶段 3（1–2 月）</b>：加 2 个指尖 3 轴力传感器（法向 + 切向），强化精细夹持。<br>
+            <em>新增能力</em>：脆弱物抓取（毫牛级法向控制）、精细防滑（直接测量指尖摩擦状态）。</li>
+          <li><b>阶段 4（长期）</b>：加多点视触觉（至少指腹 + 侧边/侧壁，用于 teacher），形成完整数据飞轮。<br>
+            <em>新增能力</em>：高品质 teacher labels（接触几何/接触模式/力学真值）、显著提升 RM/QC 质量。</li>
         </ul>
+        <blockquote>
+          <p>
+            <b>为什么这样排序</b>：阶段 1–2 建立数据底座（可复现、可追责）；阶段 2.5 解锁精细力控（扩展任务谱系）；
+            阶段 3 强化精细夹持（降低损坏风险）；阶段 4 提升数据质量（teacher 真值）。这样既保证了快速交付 MVS，又不让精细力控能力等到"长期"才上线。
+          </p>
+        </blockquote>
 
         <h2 id="feasibility">10) 可行性与未来性（面向 VLA 的评估结论）</h2>
         <p>
