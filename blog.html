@@ -91,6 +91,18 @@
         color: #1b5e20;
       }
 
+      .tag-mode {
+        border-color: rgba(2, 119, 189, 0.25);
+        background: rgba(2, 119, 189, 0.10);
+        color: #01579b;
+      }
+
+      .tag-ac {
+        border-color: rgba(230, 81, 0, 0.25);
+        background: rgba(230, 81, 0, 0.10);
+        color: #e65100;
+      }
+
       .post-title {
         font-size: 1.25em;
         margin-bottom: 0.45em;
@@ -156,6 +168,18 @@
         color: #d5f5d6;
       }
 
+      body.dark-theme .tag-mode {
+        border-color: rgba(79, 195, 247, 0.35);
+        background: rgba(79, 195, 247, 0.12);
+        color: #c8f1ff;
+      }
+
+      body.dark-theme .tag-ac {
+        border-color: rgba(255, 183, 77, 0.40);
+        background: rgba(255, 183, 77, 0.14);
+        color: #ffe0b2;
+      }
+
       body.dark-theme .post-read {
         color: #4a9eff;
       }
@@ -198,14 +222,16 @@
             <time class="post-date" datetime="2026-01-13">2026-01-13</time>
             <div class="post-tags">
               <span class="tag tag-dex">Dex</span>
+              <span class="tag tag-mode">Deploy/Research</span>
+              <span class="tag tag-ac">A+C</span>
             </div>
           </div>
           <h3 class="post-title">
             <a href="dexhand-sensing-system-design.html">🧩 DexHand Sensing System Design (Deployment × Data × Self-Recovery)</a>
           </h3>
           <p class="post-excerpt">
-            Practical system design: task → physical causality → observables → multi-rate loops → RM-in-loop data flywheel.
-            What to sense, where to place sensors, what runs at 1kHz vs 100Hz vs 10Hz, and how to make data replayable and self-labeling.
+            A deployable sensing design for dexterous hands: multi-rate loops + time sync + two-mode data (Deploy vs Research),
+            using A (Teacher→Student distillation) + C (RM/QC flywheel) to get stable deployment and high-resolution research value.
           </p>
           <div class="post-actions">
             <a class="post-read" href="dexhand-sensing-system-design.html">Read →</a>
