@@ -278,6 +278,15 @@ Level-A  (500–1000Hz):  安全反射（限流、卡死检测、退避）
         <p>
           关键约束：视觉/视触觉的 30–120Hz 与编解码/处理延迟，无法直接承担 kHz 级闭环；因此必须分层（handbook 有详细同步与集成讨论）。
         </p>
+        <p>
+          <b>符号速释（这一节里常用的信号是什么意思）</b>：
+          <code>q</code> = 关节位置（角度/位移），<code>qdot</code> = 关节速度（\(\dot q\)）；
+          <code>effort</code> = 关节力矩/驱动器输出的“用力”（有些系统直接给力矩，有些是估算值）；
+          <code>current</code> = 电机电流（常作为力矩/负载的 proxy）；
+          <code>rgb_static</code>/<code>rgb_wrist</code> = 外部相机/腕部相机画面；
+          <code>wrist_FT</code> = 手腕六维力/力矩（F/T）；
+          “限位/故障事件” = 软硬限位触发、过流/过温保护、驱动器 fault、急停等离散事件（必须可回放）。
+        </p>
         <table>
           <thead>
             <tr>
