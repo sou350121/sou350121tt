@@ -326,6 +326,21 @@ Level-A  (500–1000Hz):  安全反射（限流、卡死检测、退避）
         </ul>
 
         <h2 id="stack">3) 传感栈分层（MVS → Pro）与推荐布置</h2>
+        <p>
+          这一节要解决的不是“买什么传感器”，而是：在复杂环境里，用最少的、不容易坏的信号去回答前文的<b>核心三问</b>。
+          记住一个思维框架：<b>先保证可观测因果（observability），再追求更高分辨率</b>。
+        </p>
+
+        <h3 id="stack-decision">3.0 决策逻辑（为什么这样分层）</h3>
+        <ul>
+          <li><b>你永远需要的底座</b>：<code>q/qdot</code> + <code>current/effort</code>（高频、便宜、稳定、可回放）</li>
+          <li><b>你最容易失明的因果</b>：滑移（slip）、卡死（jam）、几何偏置（misalignment）</li>
+          <li><b>因此要把“信息”分两类</b>：</li>
+        </ul>
+        <ul>
+          <li><b>闭环信息（要快）</b>：Level-A/Level-B 需要 60–1000Hz、低延迟、可长期运行 → 优先用 proprio + effort/current +（可选）wrist F/T 或耐久触觉阵列</li>
+          <li><b>老师信息（要准）</b>：Research Mode 用视触觉给几何/接触模式真值 → 通过 A（Teacher→Student）蒸馏到部署可用的状态</li>
+        </ul>
         <h3 id="mvs">3.1 Level-0（MVS：最小可行传感）</h3>
         <p>目标：低成本获得“接触判别能力 + 可复现数据”。</p>
         <ul>
@@ -337,9 +352,18 @@ Level-A  (500–1000Hz):  安全反射（限流、卡死检测、退避）
         <p>
           这套配置已经能支撑：卡死/顶住检测、粗粒度夹持强弱闭环、Replay Validation（决定数据能不能用于训练）。
         </p>
+        <p>
+          <b>这背后的要害</b>：即便你“看不见接触几何”，你也要能用 <code>current/effort</code> 判断“有没有接触/有没有卡死/夹持是否在变强”。<br>
+          否则部署数据会变成不可回放、不可追责的噪声。
+        </p>
 
         <h3 id="tactile">3.2 Level-1（触觉层：让“滑移 / 接触几何”可观测）</h3>
-        <p>为了兼顾 KPI，推荐空间布置：<b>“2 + 1 + 1”</b>。</p>
+        <p>
+          这一层的目标是把两类关键信息补齐：<br>
+          (1) <b>滑移/摩擦状态</b>（用于 Level-B 的防滑闭环）；<br>
+          (2) <b>接触几何真值</b>（用于 Research Mode 的 teacher labels）。<br>
+          为了兼顾 uptime 与信息量，推荐空间布置：<b>“2 + 1 + 1”</b>。
+        </p>
         <ul>
           <li><b>2 个指尖高频剪切/压力阵列（100–200Hz）</b>：拇指 + 食指（防滑闭环主力）。</li>
           <li><b>1 个指尖高信息几何（视触觉 30–60Hz）</b>：拇指或食指（接触点/面积/边缘/微滑动）。</li>
@@ -349,12 +373,22 @@ Level-A  (500–1000Hz):  安全反射（限流、卡死检测、退避）
           为什么不是“全指视触觉”：全铺会把带宽、布线、耐久、标定维护成本拉爆；
           “少量高信息老师 + 少量高频工兵 + 本体信号兜底”更接近工程最优解。
         </p>
+        <h4 id="placement-heuristic">布置启发式（在复杂环境里如何选“装哪里”）</h4>
+        <ul>
+          <li><b>先给拇指/食指</b>：它们承担最多的主动接触与相对运动（也是 slip/jam 最频发的位置）</li>
+          <li><b>视触觉只当老师，不当闭环主力</b>：它输出几何/接触模式真值，用于 teacher labels；闭环仍依赖高频信号</li>
+          <li><b>手腕 F/T 的价值</b>：当任务是 push/pull/twist/pry 这类“力学原语”，F/T 让因果可观测（否则只剩 current/effort 的弱 proxy）</li>
+        </ul>
 
         <h3 id="pro">3.3 Level-2（工程化 Pro：长时部署与健康管理）</h3>
         <ul>
           <li><b>热与健康监测</b>：<code>temp_motor_i</code>、<code>over_current_count</code>、<code>stall_time_ms</code>。</li>
           <li><b>冗余观测</b>：关键关节 <code>effort/current</code> 的统计漂移，形成 <code>sensor_health</code>。</li>
         </ul>
+        <p>
+          <b>落地要点</b>：把“耗材化/会坏”写进系统。<br>
+          视触觉（凝胶/表皮）与线缆在长期部署中就是耗材；因此需要把 <code>sensor_health</code>、<code>recalib_required</code>、以及更换后的 <code>calib_version</code> 当作数据的一等公民写进 episode metadata。
+        </p>
 
         <h2 id="loops">4) 三层闭环（Level-A/B/C）与职责边界</h2>
         <h3 id="level-a">4.1 Level-A：安全反射层（500–1000Hz）</h3>
