@@ -1180,15 +1180,17 @@ Level-A  (500–1000Hz):  安全反射（限流、卡死检测、退避）
           <li><b>RM 指标带偏</b>：RM 先用规则起步，只做排序/筛选；最终验收绑定 SR/IR/ER + 失败类型分布 + 置信区间，并采用交错 A/B 与 reset-free 协议。</li>
         </ul>
 
-        <h3 id="execution-plan">10.5 建议的落地节奏（面试可讲）</h3>
+        <h3 id="execution-plan">10.5 建议的落地顺序（不绑时间）</h3>
         <p>
-          注：下列节奏假设你已经有可用的底层控制（A/B 的基本保护与 recover primitives）、以及可写入的日志/时间同步基础；若这些“地基”缺失，优先补地基再谈周级里程碑。
+          注：这里给的是“先后顺序”，不写周级承诺（不同公司/团队的控制栈、硬件改动窗口与人力差异很大）。
+          若地基缺失，先补齐 A/B 的基本保护与 recover primitives、以及可写入的日志/时间同步，再往后推进。
         </p>
         <ul>
-          <li><b>Week 1–2</b>：MVS + 时间同步 + Replay Validation（先证明数据管线能跑）。</li>
-          <li><b>Week 3–4</b>：规则 teacher（用阈值/窗口先生成 <code>contact_mode</code>/<code>slip_risk</code> 的伪标签）。</li>
-          <li><b>Week 5–8</b>：训练 Student，量化 teacher→student 信息损失，并把输出接到 recover primitives 做闭环验收。</li>
-          <li><b>Month 3+</b>：接入多点视触 teacher（pad+side）做真 teacher；交错 A/B 验证数据质量与 KPI 提升。</li>
+          <li><b>阶段 A（地基）</b>：MVS + 时间同步 + Replay Validation（先证明数据管线能跑、数据可追责）。</li>
+          <li><b>阶段 B（伪 teacher）</b>：规则/阈值 teacher（先生成 <code>contact_mode</code>/<code>slip_risk</code> 的伪标签，定义版本化与不确定度接口）。</li>
+          <li><b>阶段 C（student 上线）</b>：训练 Student，量化 teacher→student 信息损失；把输出接到 recover primitives 做闭环验收（SR/IR/ER + 失败分布）。</li>
+          <li><b>阶段 D（真 teacher）</b>：接入多点视触 teacher（pad+side）做真 teacher；交错 A/B 验证数据质量与 KPI 提升，再逐步替换伪 teacher。</li>
+          <li><b>阶段 E（RM/QC 升级）</b>：RM 从规则 triage 升级为学习型 critic/quality model，但验收仍绑定部署 KPI（避免指标带偏）。</li>
         </ul>
 
         <h2 id="refs">参考链接</h2>
