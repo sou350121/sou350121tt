@@ -215,23 +215,47 @@
         </p>
 
         <div class="toc">
-          <h2 id="toc">目录</h2>
+          <h2 id="toc">目录（简版，减少分级）</h2>
+          <p style="margin: 0.2em 0 0.8em 0;">
+            读法建议：先把“为什么做（买家需求/目标）”讲清楚，再用 2.1 把“信号与闭环底座”锁死，最后讲 Teacher→Student + RM/critic 如何形成数据飞轮。
+          </p>
           <ol>
-            <li><a href="#core">核心三问（直击要害）</a></li>
-            <li><a href="#buyer-demand">买家视角：为什么 VLA 公司会“需要”RM/critic</a></li>
-            <li><a href="#kpi">系统目标与 KPI（把方向锁死）</a></li>
-            <li><a href="#arch">总体架构（传感栈 × 多频闭环 × 数据闭环）</a></li>
-            <li><a href="#contact-system">接触系统的状态空间 × 可观测性（Teacher/Student 分工）</a></li>
-            <li><a href="#vla-fit">面向前沿 VLA：动作表示 × 推理延迟 × 分层接口</a></li>
-            <li><a href="#stack">传感栈分层（MVS → Pro）与推荐布置</a></li>
-            <li><a href="#loops">三层闭环（Level-A/B/C）与职责边界</a></li>
-            <li><a href="#causality">人形视角：手是“物理因果接口”</a></li>
-            <li><a href="#rm">RM-in-loop：自动切段、挑 hard cases、触发自恢复</a></li>
-            <li><a href="#sync">时间同步与数据管线（可训练 / 可复现 / 可追责）</a></li>
-            <li><a href="#maintain">标定、健康监测与可维护性</a></li>
-            <li><a href="#roadmap">最小落地版与迭代路线图（走向超越人类）</a></li>
-            <li><a href="#feasibility">可行性与未来性（面向 VLA 的评估结论）</a></li>
-            <li><a href="#refs">参考链接</a></li>
+            <li>
+              <b>为什么做：需求与目标</b>
+              <ul>
+                <li><a href="#core">核心三问</a> / <a href="#buyer-demand">买家需求（VLA 为何需要 RM/critic）</a> / <a href="#kpi">KPI</a></li>
+              </ul>
+            </li>
+            <li>
+              <b>底座：信号 × 多频闭环（最难被替代）</b>
+              <ul>
+                <li><a href="#multirate-table">2.1 速查表（必需信号解释）</a> / <a href="#loops">Level‑A/B/C 职责边界</a></li>
+              </ul>
+            </li>
+            <li>
+              <b>传感栈：MVS → Pro（工程取舍与推荐布置）</b>
+              <ul>
+                <li><a href="#stack-decision">3.0 分层决策逻辑（why layering）</a> / <a href="#stack">布置与升级路径</a></li>
+              </ul>
+            </li>
+            <li>
+              <b>数据闭环：Teacher→Student + RM/critic（把失败变资产）</b>
+              <ul>
+                <li><a href="#teacher-student">7.2 Teacher→Student</a> / <a href="#rm">6) RM-in-loop</a> / <a href="#rm-qc">7.3 RM/QC flywheel</a></li>
+              </ul>
+            </li>
+            <li>
+              <b>工程化：可训练 / 可复现 / 可追责</b>
+              <ul>
+                <li><a href="#sync">时间同步与数据管线</a> / <a href="#maintain">标定与健康监测</a></li>
+              </ul>
+            </li>
+            <li>
+              <b>面试收束：落地顺序与结论</b>
+              <ul>
+                <li><a href="#roadmap">MVP 与迭代路线</a> / <a href="#feasibility">可行性与未来性</a> / <a href="#execution-plan">落地顺序</a> / <a href="#refs">参考链接</a></li>
+              </ul>
+            </li>
           </ol>
         </div>
 
