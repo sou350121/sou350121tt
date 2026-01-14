@@ -221,6 +221,7 @@
             <li><a href="#kpi">系统目标与 KPI（把方向锁死）</a></li>
             <li><a href="#arch">总体架构（传感栈 × 多频闭环 × 数据闭环）</a></li>
             <li><a href="#contact-system">接触系统的状态空间 × 可观测性（Teacher/Student 分工）</a></li>
+            <li><a href="#vla-fit">面向前沿 VLA：动作表示 × 推理延迟 × 分层接口</a></li>
             <li><a href="#stack">传感栈分层（MVS → Pro）与推荐布置</a></li>
             <li><a href="#loops">三层闭环（Level-A/B/C）与职责边界</a></li>
             <li><a href="#causality">人形视角：手是“物理因果接口”</a></li>
@@ -254,6 +255,7 @@
           <li><b>质量 KPI</b>：同一命令流重放（Replay）可复现率（同样的 command stream → 同样的 outcome）。</li>
           <li><b>效率 KPI</b>：单位时间可采集的“有效 episode”数量（排除不可复现/不可对齐的废数据）。</li>
           <li><b>安全 KPI</b>：过流/过温/软硬限位触发次数、近碰撞次数。</li>
+          <li><b>VLA 对齐 KPI（建议加上）</b>：<code>intervention_rate</code>（单位时间/步的人工接管频率）、<code>executable_rate</code>（动作可执行率：IK/限位/自碰撞不过关的比例）。</li>
         </ul>
         <blockquote>
           <p>
@@ -457,6 +459,21 @@ Level-A  (500–1000Hz):  安全反射（限流、卡死检测、退避）
         </ul>
         <blockquote>
           <p><b>落地检查</b>：如果你能用 Deploy 信号稳定输出 <code>slip_risk</code>/<code>jam_state</code>/<code>recoverability</code>，并驱动 recover primitives 提升 KPI，那么这套分工就是“能跑”的；几何真值则留给 teacher 去提供与校准。</p>
+        </blockquote>
+
+        <h3 id="vla-fit">2.3 面向前沿 VLA：动作表示 × 推理延迟 × 分层接口（让模型“聪明且不手笨”）</h3>
+        <p>
+          VLA 前沿（RT/Octo/OpenVLA/π0/π* 等）在“动作生成”上分成三类：<b>离散 Token</b>、<b>Diffusion</b>、<b>Flow Matching</b>。
+          它们共同的现实约束是：即便模型再强，<b>直接以 VLA 在 kHz 级输出电机命令</b>仍然不经济也不可靠（推理延迟、噪声、动作抖动、误差累积都会被物理世界放大）。
+          因此本方案把 VLA 放在 <b>Level‑C（5–15Hz）</b> 的“原语/子任务接口”上，把高频稳定性交给 Level‑A/B 的闭环去兜底。
+        </p>
+        <ul>
+          <li><b>为什么要分层</b>：Tokenization 可能引入量化误差与高频 bin 抖动；Diffusion 迭代步多、推理慢；Flow 更快但仍更适合 5–50Hz 的连续动作生成而非 kHz 伺服。</li>
+          <li><b>推荐的 VLA Action Space（更契合灵巧手）</b>：让 VLA 输出 <b>primitive + 参数</b>（例如 <code>press</code>/<code>pull</code>/<code>twist</code>/<code>regrasp</code> + 目标方向/上限/速度/容忍度），再由 Level‑A/B 把它落到电机级闭环。</li>
+          <li><b>触觉在 VLA 里的角色（前沿共识）</b>：视觉负责全局几何与语义，触觉负责“接触相位的真反馈”。因此 Deploy 侧必须能输出 <code>contact_mode</code>/<code>slip_risk</code>/<code>recoverability</code> 这类低维触觉状态；Research/Teacher 侧用多点视触（pad+side）把接触真值讲清楚，再蒸馏给 student。</li>
+        </ul>
+        <blockquote>
+          <p><b>一句话</b>：VLA 负责“做什么/怎么做”（原语与策略），A/B 负责“做得稳不稳”（接触闭环与止损）。这也是为什么本方案对 Token/Diffusion/Flow 都兼容——你只要把它们接到同一个原语接口上。</p>
         </blockquote>
 
         <h2 id="stack">3) 传感栈分层（MVS → Pro）与推荐布置</h2>
