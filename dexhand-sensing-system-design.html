@@ -1119,7 +1119,7 @@ Level-A  (500–1000Hz):  安全反射（限流、卡死检测、退避）
         <h2 id="feasibility">10) 可行性与未来性（面向 VLA 的评估结论）</h2>
         <p>
           本节给出一个“面试可复述”的结论：这套 DexHand Sensing System 方案的<strong>底座（多频闭环 + MVS）</strong>成熟且可快速交付；
-          完整版（Teacher→Student + RM-in-loop）具有很强的“前沿 VLA 对齐度”，但需要以标签质量与 domain gap 为中心做 6–12 个月工程迭代。
+          完整版（Teacher→Student + RM-in-loop）具有很强的“前沿 VLA 对齐度”，但通常需要以标签质量与 domain gap 为中心做<strong>数月级工程迭代</strong>（具体取决于既有控制栈、采数基础与人力投入）。
         </p>
 
         <h3 id="feasibility-why">10.1 核心架构的可行性（为什么能跑）</h3>
@@ -1181,6 +1181,9 @@ Level-A  (500–1000Hz):  安全反射（限流、卡死检测、退避）
         </ul>
 
         <h3 id="execution-plan">10.5 建议的落地节奏（面试可讲）</h3>
+        <p>
+          注：下列节奏假设你已经有可用的底层控制（A/B 的基本保护与 recover primitives）、以及可写入的日志/时间同步基础；若这些“地基”缺失，优先补地基再谈周级里程碑。
+        </p>
         <ul>
           <li><b>Week 1–2</b>：MVS + 时间同步 + Replay Validation（先证明数据管线能跑）。</li>
           <li><b>Week 3–4</b>：规则 teacher（用阈值/窗口先生成 <code>contact_mode</code>/<code>slip_risk</code> 的伪标签）。</li>
