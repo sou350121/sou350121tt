@@ -517,6 +517,36 @@ Level-A  (500–1000Hz):  安全反射（限流、卡死检测、退避）
           <li><b>手腕 F/T 的价值</b>：当任务是 push/pull/twist/pry 这类“力学原语”，F/T 让因果可观测（否则只剩 current/effort 的弱 proxy）</li>
         </ul>
 
+        <h4 id="pneumatic-pressure">是否需要“气压/腔压传感器”（放在视触内部，或取代视触）？我的选择</h4>
+        <p>
+          <b>结论</b>：我建议 <b>在视触模组内部加 1 路腔压/气压传感（可选，但很值得）</b>，用于 <b>健康监测 + 法向力 proxy + 接触事件</b>；
+          但 <b>不建议用气压去取代视触</b>（尤其在你要做 teacher labels 的情况下）。
+        </p>
+        <ul>
+          <li>
+            <b>气压擅长什么</b>（它能让系统更“可交付”）：
+            <ul style="margin: 0.3em 0 0 0; padding-left: 1.1em;">
+              <li><b>健康/漏气/老化可观测</b>：腔压基线与动态响应漂移，可直接写成 <code>sensor_health</code> / <code>recalib_required</code>，降低“视触脏了/坏了却不知道”的隐性风险。</li>
+              <li><b>法向力 proxy</b>：对 <code>press</code> 类原语与 slip 预算（\(\mu f_n\)）很实用；还能作为视触几何标签的辅助条件（提高 <code>contact_confidence</code> 鲁棒性）。</li>
+              <li><b>快事件</b>：压力突变可以作为“接触建立/释放”的高频事件通道（比视觉更及时），用于切段与止损旁路。</li>
+            </ul>
+          </li>
+          <li>
+            <b>气压不擅长什么</b>（所以不能当“替代品”）：
+            <ul style="margin: 0.3em 0 0 0; padding-left: 1.1em;">
+              <li><b>接触几何</b>：气压是空间平均的低维信号，很难恢复 <code>contact_patch</code>、边缘/角点、接触点位置等几何真值。</li>
+              <li><b>剪切/微滑移</b>：仅靠气压很难稳定区分 stick/slip/roll；它最多提示“法向变化”，但 slip 的关键在切向与局部模式变化。</li>
+            </ul>
+          </li>
+          <li>
+            <b>推荐用法（与你的 A+C 路线完全兼容）</b>：
+            <ul style="margin: 0.3em 0 0 0; padding-left: 1.1em;">
+              <li><b>Research Mode（teacher）</b>：视触提供几何/接触模式真值；腔压提供法向与健康冗余，让 teacher labels 更稳、更可追责。</li>
+              <li><b>Deploy Mode（不依赖视触）</b>：腔压可以作为“耐久的法向通道”，但要做稳健防滑闭环，仍建议配高频剪切/压力阵列或 <code>wrist_FT</code>；气压不能替代它们的剪切可观测性。</li>
+            </ul>
+          </li>
+        </ul>
+
         <h3 id="pro">3.3 Level-2（工程化 Pro：长时部署与健康管理）</h3>
         <ul>
           <li><b>热与健康监测</b>：<code>temp_motor_i</code>、<code>over_current_count</code>、<code>stall_time_ms</code>。</li>
