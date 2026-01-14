@@ -841,7 +841,7 @@ Level-A  (500–1000Hz):  安全反射（限流、卡死检测、退避）
         </p>
         <ul>
           <li><b>Deploy Mode（长时稳定、量大）</b>：<code>rgb_static</code> / <code>rgb_wrist</code> / <code>q</code> / <code>qdot</code> / <code>current/effort</code>（+ 可选 <code>wrist_FT</code>）</li>
-          <li><b>Research Mode（高分辨、高信息、量小）</b>：在 Deploy schema 上加 <code>visuotactile_img</code> / <code>tactile_depth</code> / <code>contact_patch</code> 等</li>
+          <li><b>Research Mode（高分辨、高信息、量小）</b>：在 Deploy schema 上加视触 teacher 模态。建议采用<b>多点视触</b>（指腹 + 侧边/侧壁为主），对应字段可按通道组织：<code>visuotactile_img*</code> / <code>tactile_depth*</code> / <code>contact_patch*</code>（例如按 <code>vt_pad</code>/<code>vt_side</code> 命名）。</li>
         </ul>
 
         <h4>共通字段（推荐）</h4>
@@ -854,7 +854,7 @@ Level-A  (500–1000Hz):  安全反射（限流、卡死检测、退避）
         <h3 id="teacher-student">7.2 A：Teacher → Student（蒸馏到可部署信号）</h3>
         <p>
           目标：让部署侧只依赖可靠模态（RGB + proprio + current/effort + F/T），但仍能获得“类视触觉”的状态（接触模式、滑移风险、失败模式）。
-          做法是：用 Research Mode 的视触觉生成 teacher labels，再训练一个只吃 Deploy 模态的 Student estimator。
+          做法是：用 Research Mode 的视触 teacher 生成 teacher labels（建议多点视触：指腹 + 侧边/侧壁覆盖侧向受力与形变），再训练一个只吃 Deploy 模态的 Student estimator。
         </p>
         <h4>Teacher labels（最小集合）</h4>
         <ul>
@@ -862,6 +862,10 @@ Level-A  (500–1000Hz):  安全反射（限流、卡死检测、退避）
           <li><b>失败语义</b>：<code>failure_mode</code>（jam/slip/occlusion/misalignment/overforce…）</li>
           <li><b>RM-in-loop</b>：<code>progress</code>、<code>quality</code>、<code>recoverability</code></li>
         </ul>
+        <p>
+          <b>补充（与电手套/电皮肤的 teacher 更对齐）</b>：若你的 student 目标是拟合“包覆材料在外力变化下的侧向形变”，
+          teacher 侧就不能只看单一指腹视角——建议把 teacher 的几何/接触模式标签基于 <b>pad + side</b> 两个（或以上）视触通道联合生成，并对侧向形变/脱离边缘等情况显式给出更高权重或单独事件标签。
+        </p>
         <h4>部署侧推理（Student 输出给 policy）</h4>
         <ul>
           <li><b>输入</b>：Deploy 模态（RGB + q/qdot + current/effort + 可选 wrist_FT）</li>
@@ -1091,7 +1095,7 @@ Level-A  (500–1000Hz):  安全反射（限流、卡死检测、退避）
           <li><b>阶段 1（2–4 周）</b>：MVS + Replay Validation + 规则 RM。</li>
           <li><b>阶段 2（2–4 周）</b>：规则伪标签训练成轻量 RM（替换阈值）。</li>
           <li><b>阶段 3（1–2 月）</b>：加 2 个剪切/压力指尖，强化 Level-B 防滑。</li>
-          <li><b>阶段 4（长期）</b>：加 1 个视触觉 + 1 个手腕 F/T，形成“因果判定 + 老师传感”。</li>
+          <li><b>阶段 4（长期）</b>：加 1 组多点视触（至少指腹 + 侧边/侧壁，用于 teacher）+ 1 个手腕 F/T，形成“因果判定 + 老师传感”。</li>
         </ul>
 
         <h2 id="refs">参考链接</h2>
