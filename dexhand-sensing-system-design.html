@@ -400,6 +400,119 @@ Level-A  (500–1000Hz):  安全反射（限流、卡死检测、退避）
           <li><b>输出</b>：teacher labels 的估计值（作为 VLA policy 的“可观测因果状态”）</li>
         </ul>
 
+        <h4 id="state-taxonomy">7.2.1 因果状态空间（state taxonomy）：VLA 真正在学什么</h4>
+        <p>
+          从第一性原理出发，DexHand 不是“更复杂的夹爪”，而是机器人把语义意图转成可控的<b>物理因果</b>的接口。
+          因此 policy 需要的不是“更多传感器”，而是一个可部署、可对齐、可回放的<b>因果状态</b>：
+        </p>
+        <ul>
+          <li><b>接触几何（contact geometry）</b>：是否接触、接触点/接触面、接触面积、接触法向方向（或等价特征）</li>
+          <li><b>力学因果（wrench / constraints）</b>：对物体施加的 \(w\)（或其可观测 proxy）、外部约束反力（推/拉/扭/撬）</li>
+          <li><b>摩擦状态（friction state）</b>：<code>contact_mode</code>（stick/slip/roll）、<code>slip_risk</code></li>
+          <li><b>失败语义（failure semantics）</b>：<code>failure_mode</code>（jam/slip/occlusion/misalignment/overforce…）</li>
+          <li><b>可恢复性（recoverability）</b>：是否处于“可自救窗口”，以及推荐的恢复原语 <code>primitive</code></li>
+        </ul>
+        <p>
+          这解释了 A（Teacher→Student）的必要性：Research Mode 的视触觉提供高信息的“因果真值”，而 Deploy Mode 则要把这些真值蒸馏成可部署信号。
+        </p>
+
+        <h4 id="teacher-labeling">7.2.2 Teacher labels 的产生机制（视触 → 标注 → 版本化）</h4>
+        <p>
+          这一步的目标是让 label <b>可计算、可复现、可版本化</b>，否则 teacher label 会变成不可追责的“拍脑袋标签”。
+          推荐把每次生成 teacher label 的实现写成一个可追踪版本：<code>teacher_version</code>（commit hash / semantic version）+ <code>teacher_config</code>（阈值/窗口大小等）。
+        </p>
+        <table>
+          <thead>
+            <tr>
+              <th>label</th>
+              <th>定义（第一性）</th>
+              <th>视触可计算 proxy（示例）</th>
+              <th>输出形式</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>contact_confidence</code></td>
+              <td>“是否接触”的置信度</td>
+              <td>接触 patch 面积是否显著：<code>area(contact_patch) &gt; A_min</code></td>
+              <td>0–1</td>
+            </tr>
+            <tr>
+              <td><code>contact_patch</code></td>
+              <td>接触区域（几何真值）</td>
+              <td>由视触深度/形变图阈值得到二值 mask；可进一步取 centroid/主方向</td>
+              <td>mask + stats</td>
+            </tr>
+            <tr>
+              <td><code>contact_mode</code></td>
+              <td>接触处于 stick/slip/roll（摩擦边界）</td>
+              <td>
+                (1) 若 <code>contact_confidence</code> 低 → no_contact；\n
+                (2) 估计接触 patch 的切向位移/光流能量 \(v_t\)；\n
+                (3) 若 \(v_t &gt; v_{slip}\) 且法向压入持续存在 → slip；否则 stick；\n
+                (4) 若存在绕接触点显著旋转且切向位移小 → roll（可选）
+              </td>
+              <td>枚举/one-hot</td>
+            </tr>
+            <tr>
+              <td><code>slip_risk</code></td>
+              <td>\(P(\\text{slip within }\\Delta t)\)</td>
+              <td>用短窗口特征回归：<code>v_t</code>、接触面积变化、法向压入变化、effort/current 残差（如果同步）</td>
+              <td>0–1</td>
+            </tr>
+            <tr>
+              <td><code>failure_mode</code></td>
+              <td>失败的物理原因分类</td>
+              <td>
+                jam：<code>current↑</code> + <code>qdot≈0</code>；\n
+                slip：<code>contact_mode=slip</code>；\n
+                misalignment：接触 patch 偏置且 progress 停滞；\n
+                occlusion：视觉/视触关键观测缺失（可选）
+              </td>
+              <td>多类分类</td>
+            </tr>
+            <tr>
+              <td><code>progress</code></td>
+              <td>子任务进度（用于切段/训练）</td>
+              <td>用规则或小模型：达到关键状态（接触建立、稳定抓取、旋转完成…）</td>
+              <td>0–1</td>
+            </tr>
+            <tr>
+              <td><code>recoverability</code></td>
+              <td>是否处于可自救窗口</td>
+              <td>failure_mode + 接触置信度 + 安全事件组合判定</td>
+              <td>0–1 或 bool</td>
+            </tr>
+          </tbody>
+        </table>
+        <p>
+          注意：视触不必承担高频闭环（handbook 强调其延迟/线缆/耗材/标定成本），但它非常适合在 Research Mode 里提供“几何真值”和“摩擦状态真值”。\n
+          对 Deploy Mode，teacher labels 只作为监督信号，不作为实时传感依赖。
+        </p>
+
+        <h4 id="student-policy-interface">7.2.3 Student → Policy 的接口规格（让部署可控、可验证）</h4>
+        <p>
+          为了让 A 真正可落地，必须把 student 的输出形式“写死”，并规定 policy 如何消费这些输出（否则会出现训练/部署语义不一致）。
+        </p>
+        <ul>
+          <li><b>Student 输入</b>：对齐后的 Deploy 模态（RGB + q/qdot + current/effort + 可选 wrist_FT）</li>
+          <li><b>Student 输出（推荐最小集合）</b>：</li>
+        </ul>
+        <ul>
+          <li><code>contact_mode_logits</code>（3 类：stick/slip/roll）</li>
+          <li><code>slip_risk</code>（0–1）</li>
+          <li><code>failure_mode_logits</code>（多类）</li>
+          <li><code>progress</code>（0–1）</li>
+          <li><code>recoverability</code>（0–1）</li>
+        </ul>
+        <p>
+          <b>Policy 使用约束（示例）</b>：\n
+          - 若 <code>slip_risk</code> 高：优先触发“增大法向/调整接触几何/降速”类原语；\n
+          - 若 <code>failure_mode=jam</code> 且 <code>recoverability</code> 高：触发 backoff + reopen + re-approach；\n
+          - 若 <code>progress</code> 长时间停滞：切换原语（push→wedge→twist…）或触发重新定位。\n
+          这些规则也可以作为早期的 <b>rule-based policy</b>（阶段 1），随后逐步被 VLA policy 学到（阶段 2+）。\n
+        </p>
+
         <h3 id="rm-qc">7.3 C：RM/QC flywheel（把部署数据变成“可用且可追责”的数据）</h3>
         <p>
           视触觉不必进 kHz 闭环，但可以显著提高数据质量与训练效率：QC、更准切段、更准 hard case 挖掘、更可控的恢复触发。
