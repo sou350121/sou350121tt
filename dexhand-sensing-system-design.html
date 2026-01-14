@@ -580,11 +580,11 @@ Level-A  (500–1000Hz):  安全反射（限流、卡死检测、退避）
           这一层的目标是把两类关键信息补齐：<br>
           (1) <b>滑移/摩擦状态</b>（用于 Level-B 的防滑闭环）；<br>
           (2) <b>接触几何真值</b>（用于 Research Mode 的 teacher labels）。<br>
-          为了兼顾 uptime 与信息量，推荐空间布置：<b>“2 + 1 + 1”</b>。
+          为了兼顾 uptime 与信息量，部署侧推荐空间布置：<b>“2 + 1 + 1”</b>；Research（teacher）侧则建议在关键受力面追加“多点视触”（尤其侧边），以覆盖手套材料在外力变化下的侧向形变。
         </p>
         <ul>
           <li><b>2 个指尖高频剪切/压力阵列（100–200Hz）</b>：拇指 + 食指（防滑闭环主力）。</li>
-          <li><b>1 个指尖高信息几何（视触觉 30–60Hz）</b>：拇指或食指（接触点/面积/边缘/微滑动）。</li>
+          <li><b>1 个指尖高信息几何（视触觉 30–60Hz）</b>：拇指或食指（指腹接触点/面积/边缘/微滑动）。<b>Research 可追加：同指的侧边/侧壁视触</b>（捕捉侧向形变与剪切/扭转模式）。</li>
           <li><b>1 个手腕 6D F/T（≥200Hz）</b>：推/拉/扭/撬的因果判定（外部力矩 / 约束反力）。</li>
         </ul>
         <p>
@@ -611,6 +611,17 @@ Level-A  (500–1000Hz):  安全反射（限流、卡死检测、退避）
         <blockquote>
           <p><b>一句话</b>：视触提供高信息“真值”，但真值受材料影响；所以 teacher 必须版本化 + 输出置信度，student 必须学“物理因果”而不是“胶的纹理”。</p>
         </blockquote>
+
+        <h4 id="teacher-multipoint-vt">Teacher：为什么需要“更多位置的视触”（指腹 + 侧边）来仿手套</h4>
+        <p>
+          你提到的关键点很重要：当外力方向变化（推/拉/扭/侧向摩擦）时，手套/电皮肤这种“包覆材料”会在<b>侧边</b>产生明显形变（鼓起、折皱、接触面积迁移），
+          而这些形变对电传感（电容/电阻阵列）的读数影响很大。若 teacher 只看指腹一个视触面，student 很容易学到“指腹局部视角下的伪规律”，在侧向受力/边缘接触时失效。
+        </p>
+        <ul>
+          <li><b>建议的 teacher 视触布置（Research Mode）</b>：至少覆盖拇指/食指的 <b>指腹（pad）</b> + <b>侧边（sidewall/侧面受力面）</b>；对经常做扭转/撬动的任务，再加一个“指尖边缘/角点”视触面。</li>
+          <li><b>teacher 要产出的额外信息</b>：除 <code>contact_patch</code> 外，再加 <code>contact_patch_stats</code>（面积/质心/主方向）与“侧边形变特征”（可先用规则：侧边 patch 面积/位移能量），用于监督 student 学到更稳的接触模式与风险。</li>
+          <li><b>落地注意</b>：多点视触会引入更多材料/温度/老化变量，因此更需要 <code>gel_id</code>/<code>temp_gel</code>/<code>teacher_version</code>/<code>teacher_uncertainty</code> 做版本化与降权训练。</li>
+        </ul>
 
         <h4 id="placement-heuristic">布置启发式（在复杂环境里如何选“装哪里”）</h4>
         <ul>
@@ -993,6 +1004,12 @@ Level-A  (500–1000Hz):  安全反射（限流、卡死检测、退避）
           <li><code>progress</code>（0–1）</li>
           <li><code>recoverability</code>（0–1）</li>
         </ul>
+        <p>
+          <b>电传感的盲区：为什么“拉力（tension）”难直接感到？如何补齐？</b><br>
+          多数电触觉/电手套对“压入/接触面积变化”（法向）很敏感，但对<strong>拉离/张力</strong>本身没有对称的直接通道（没有“负压力”这一物理量），
+          往往只能通过“接触逐渐消失/边缘先脱离”的事件间接体现。这会导致仅靠电触觉很难稳定估计 pull load。<br>
+          <b>工程解法（推荐优先级）</b>： (1) 加 <code>wrist_FT</code> 或关节力矩/腱张力传感，提供外力/拉力的可观测 proxy；(2) 用 <code>q/qdot + current/effort</code> 做模型外力估计（把摩擦/内阻作为不确定度处理）；(3) 把“脱离/将脱离”事件化为 <code>detach_risk</code>/<code>recoverability</code>，让 policy 在拉力任务中优先走“先建立足够法向，再拉”的原语序列。
+        </p>
         <p>
           <b>Policy 使用约束（示例）</b>：
         </p>
