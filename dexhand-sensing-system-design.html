@@ -218,6 +218,7 @@
           <h2 id="toc">目录</h2>
           <ol>
             <li><a href="#core">核心三问（直击要害）</a></li>
+            <li><a href="#buyer-demand">买家视角：为什么 VLA 公司会“需要”RM/critic</a></li>
             <li><a href="#kpi">系统目标与 KPI（把方向锁死）</a></li>
             <li><a href="#arch">总体架构（传感栈 × 多频闭环 × 数据闭环）</a></li>
             <li><a href="#contact-system">接触系统的状态空间 × 可观测性（Teacher/Student 分工）</a></li>
@@ -246,6 +247,17 @@
         <p>
           本文的 A（Teacher→Student）+ C（RM/QC flywheel）就是围绕这三问：Research Mode 用视触觉提供高信息真值，Deploy Mode 用可部署信号近似这些真值并形成闭环。
         </p>
+
+        <h3 id="buyer-demand">买家视角：为什么 VLA 公司会“需要”RM/critic</h3>
+        <p>
+          DexHand 的核心客户是 VLA 公司/科研团队：他们买的不是“多几个传感器”，而是<strong>可持续迭代的能力</strong>——能把真实世界交互变成可训练、可复现、可评估的 dataset，并能进入 post-training/self-improvement 的飞轮。
+          因此你必须把 RM/critic 做成“系统默认能力”（哪怕最初是规则版），否则手很容易被当成一次性采数工具，需求与复购都会弱。
+        </p>
+        <ul>
+          <li><b>VLA 训练真痛点不是缺模型，而是缺“可用数据”</b>：多模态对齐、可回放、失败可解释；RM/critic 用于 QC、切段、hard-case 挖掘与数据加权。</li>
+          <li><b>前沿公开路线也在用“复盘/critic”</b>：例如 π*0.6 的 Recap（post-training / Offline RL 复盘）、以及用 critic 提升长时程精细操作数据质量的路线（见 handbook 对照链接）。</li>
+          <li><b>对 DexHand 的商业意义</b>：你交付的是“能进入客户训练闭环的数据底座”——可追责（replay）、可量化（SR/IR/ER + failure distribution）、可规模化（自动 triage），这比单点性能更难替代。</li>
+        </ul>
 
         <h2 id="kpi">1) 系统目标与 KPI（把方向锁死）</h2>
         <p>
