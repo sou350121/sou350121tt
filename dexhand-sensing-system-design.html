@@ -207,9 +207,12 @@
         <blockquote>
           <p>
             这是一份“可落地的系统设计文档”：从 <b>任务 → 力学因果 → 可观测信号 → 多频闭环 → 数据闭环（RM-in-loop）</b> 一次讲清楚，
-            并给出从 MVS 到“超越人类能力”的路线图。
+            并给出从 MVS 到“超越人类能力”的迭代路线。
           </p>
         </blockquote>
+        <p>
+          <b>读者导览（面试/快速理解）</b>：先看 <a href="#multirate-table">2.1</a>（多频闭环与必需信号）→ <a href="#contact-system">2.2</a>（可观测性与 Teacher/Student 分工）→ <a href="#stack-decision">3.0</a>（决策逻辑与工程取舍）→ <a href="#teacher-student">7.2</a>（Teacher→Student 落地）→ <a href="#rm">6)</a>（RM-in-loop）。
+        </p>
 
         <div class="toc">
           <h2 id="toc">目录</h2>
@@ -244,7 +247,7 @@
 
         <h2 id="kpi">1) 系统目标与 KPI（把方向锁死）</h2>
         <p>
-          DexHand 的 sensing system 不应追求“传感器越多越好”，而应追求 <b>长时稳定 + 可自救 + 数据可复现</b>。
+          DexHand 的 sensing system 不应追求“传感器越多越好”，而应追求 <b>长时稳定 + 可自救 + 数据可复现</b>（把交付与迭代能力做出来）。
         </p>
         <ul>
           <li><b>稳定 KPI</b>：连续运行 \(T\) 分钟内，<code>recover_event</code> 次数、<code>human_intervention</code> 次数、<code>drop</code> 次数。</li>
@@ -261,7 +264,7 @@
         <h2 id="arch">2) 总体架构（传感栈 × 多频闭环 × 数据闭环）</h2>
         <p>三件事必须同时成立：</p>
         <ul>
-          <li><b>传感栈分层</b>：高频低带宽信号兜底；少量高信息传感器负责“理解接触”。</li>
+          <li><b>传感栈分层</b>：高频低带宽信号兜底；少量高信息传感器负责“把接触讲清楚”。</li>
           <li><b>多频闭环分工</b>：kHz 止损、100–200Hz 防滑、5–15Hz 原语切换。</li>
           <li><b>数据闭环</b>：部署数据自动切段、打标签、挑 hard cases，再反哺训练（RM-in-loop）。</li>
         </ul>
@@ -405,7 +408,7 @@ Level-A  (500–1000Hz):  安全反射（限流、卡死检测、退避）
           </li>
         </ul>
 
-        <p>设计原则（压缩成 5 条）：</p>
+        <h4 id="multirate-principles">2.1.2 设计原则（压缩成 5 条）</h4>
         <ul>
           <li><b>P1 Timestamp-at-source</b>：各模态在产生瞬间打统一时钟戳（PTP 优先）。</li>
           <li><b>P2 多频闭环</b>：不要用 30Hz 视觉硬扛 kHz 接触稳定；必须分层。</li>
