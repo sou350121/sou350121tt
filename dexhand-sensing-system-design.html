@@ -41,25 +41,60 @@
         background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
       }
-      .doc h1, .doc h2, .doc h3, .doc h4 {
+      .doc h1, .doc h2, .doc h3, .doc h4, .doc h5 {
         color: #150c21;
-        margin: 1.0em 0 0.4em 0;
         line-height: 1.35em;
+        font-weight: 600;
       }
-      .doc h1 { font-size: 2.0em; }
-      .doc h2 { font-size: 1.55em; border-bottom: 2px solid rgba(20,110,190,0.25); padding-bottom: 0.35em; }
-      .doc h3 { font-size: 1.25em; color: #146ebe; }
+      .doc h1 {
+        font-size: 2.0em;
+        margin: 1.2em 0 0.6em 0;
+      }
+      .doc h2 {
+        font-size: 1.55em;
+        border-bottom: 2px solid rgba(20,110,190,0.25);
+        padding-bottom: 0.35em;
+        margin: 1.8em 0 0.8em 0;
+      }
+      .doc h3 {
+        font-size: 1.25em;
+        color: #146ebe;
+        margin: 1.5em 0 0.6em 0;
+      }
+      .doc h4 {
+        font-size: 1.1em;
+        color: #1e5a8e;
+        margin: 1.3em 0 0.5em 0;
+      }
+      .doc h5 {
+        font-size: 1.0em;
+        color: #2c5f7f;
+        margin: 1.1em 0 0.5em 0;
+        font-weight: 600;
+      }
       .doc p, .doc li {
         color: #495057;
         line-height: 1.8;
+        margin: 0.5em 0;
+      }
+      .doc p {
+        margin: 0.8em 0;
+      }
+      .doc ul, .doc ol {
+        margin: 0.8em 0 1.0em 1.8em;
       }
       .doc ul {
         list-style: disc;
-        margin-left: 1.3em;
       }
       .doc ol {
         list-style: decimal;
-        margin-left: 1.3em;
+      }
+      .doc li {
+        margin: 0.4em 0;
+      }
+      .doc ul ul, .doc ol ul, .doc ul ol, .doc ol ol {
+        margin-top: 0.4em;
+        margin-bottom: 0.4em;
       }
       .doc code {
         font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
@@ -69,39 +104,54 @@
         padding: 0.05em 0.35em;
         border-radius: 6px;
       }
+      .doc pre {
+        margin: 1.2em 0;
+      }
       .doc pre code {
         display: block;
-        padding: 1em 1.2em;
+        padding: 1.2em 1.4em;
         overflow: auto;
-        background: #0b1220;
-        color: #e5e7eb;
+        background: #0f1419;
+        color: #e6edf3;
         border: 1px solid rgba(20, 110, 190, 0.35);
         border-radius: 10px;
+        line-height: 1.6;
+        font-size: 0.9em;
       }
       .doc blockquote {
         border-left: 4px solid rgba(20, 110, 190, 0.5);
-        padding-left: 1em;
-        margin: 1em 0;
+        padding: 0.8em 1.2em;
+        margin: 1.2em 0;
+        background: rgba(20, 110, 190, 0.04);
+        border-radius: 6px;
         color: #4b5563;
+      }
+      .doc blockquote p {
+        margin: 0.4em 0;
       }
       .doc table {
         width: 100%;
-        margin-top: 1em;
-        margin-bottom: 1em;
+        margin: 1.5em 0;
         border: 1px solid rgba(17, 24, 39, 0.12);
         border-radius: 10px;
         overflow: hidden;
         border-collapse: collapse;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
       }
       .doc th, .doc td {
-        padding: 0.7em 0.8em;
+        padding: 0.85em 1.0em;
         border-bottom: 1px solid rgba(17, 24, 39, 0.10);
         vertical-align: top;
         text-align: left;
+        line-height: 1.6;
       }
       .doc th {
         background: rgba(20, 110, 190, 0.08);
         font-weight: 700;
+        font-size: 0.95em;
+      }
+      .doc tbody tr:hover {
+        background: rgba(20, 110, 190, 0.03);
       }
       /* Primitives table: more readable and "doc-like" */
       .doc table.primitives-table {
@@ -154,10 +204,13 @@
         background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
         border-left-color: #4a9eff;
       }
-      body.dark-theme .doc h1, body.dark-theme .doc h2, body.dark-theme .doc h3, body.dark-theme .doc h4 {
+      body.dark-theme .doc h1, body.dark-theme .doc h2, body.dark-theme .doc h3, body.dark-theme .doc h4, body.dark-theme .doc h5 {
         color: #ffffff;
       }
       body.dark-theme .doc h2 { border-bottom-color: rgba(74, 158, 255, 0.25); }
+      body.dark-theme .doc h3 { color: #4a9eff; }
+      body.dark-theme .doc h4 { color: #6ab0ff; }
+      body.dark-theme .doc h5 { color: #85bcff; }
       body.dark-theme .doc p, body.dark-theme .doc li { color: #e2e8f0; }
       body.dark-theme .page-subtitle { color: #b0b0b0; }
       body.dark-theme .doc code {
@@ -165,9 +218,15 @@
         border-color: rgba(148,163,184,0.25);
         color: #e2e8f0;
       }
+      body.dark-theme .doc blockquote {
+        background: rgba(74, 158, 255, 0.08);
+        border-left-color: rgba(74, 158, 255, 0.5);
+        color: #cbd5e1;
+      }
       body.dark-theme .doc table { border-color: rgba(148,163,184,0.18); }
       body.dark-theme .doc th { background: rgba(74, 158, 255, 0.12); }
       body.dark-theme .doc th, body.dark-theme .doc td { border-bottom-color: rgba(148,163,184,0.18); }
+      body.dark-theme .doc tbody tr:hover { background: rgba(74, 158, 255, 0.08); }
       body.dark-theme .doc table.primitives-table tbody tr:nth-child(odd) {
         background: rgba(255, 255, 255, 0.03);
       }
@@ -308,13 +367,65 @@
           <li><b>数据闭环</b>：部署数据自动切段、打标签、挑 hard cases，再反哺训练（RM-in-loop）。</li>
         </ul>
 
-        <pre><code>Level-C  (5–15Hz):      语义策略 / 原语切换（push/pull/wedge/twist…）
-  ↓  下发参数/约束
-Level-B  (60–200Hz):    触觉协调（防滑、夹持力调度、微调接触几何）
-  ↓  夹持/姿态微调
-Level-A  (500–1000Hz):  安全反射（限流、卡死检测、退避）
+        <h4 id="multirate-arch-diagram">2.0.1 多频闭环架构图</h4>
+        <pre><code>┌─────────────────────────────────────────────────────────────────────────────────┐
+│                            <b>多频分层闭环架构</b>                                    │
+└─────────────────────────────────────────────────────────────────────────────────┘
 
-旁路数据闭环：timestamp → 对齐 → episode 切段 → RM 打分 → hard cases → 再训练</code></pre>
+  ╔═══════════════════════════════════════════════════════════════════════════╗
+  ║  <b>Level-C: 语义策略层 (5–15Hz)</b>                                           ║
+  ║  ┌─────────────────────────────────────────────────────────────────────┐  ║
+  ║  │ 输入: RGB (static+wrist) + 任务状态 + wrist_FT 统计特征           │  ║
+  ║  │ 处理: VLA Policy / 原语切换 (push/pull/twist/regrasp...)           │  ║
+  ║  │ 输出: 子目标 + 原语参数 + Level-A/B 约束 (力限/速度限)            │  ║
+  ║  └─────────────────────────────────────────────────────────────────────┘  ║
+  ╚═══════════════════════════════════════════════════════════════════════════╝
+                                     │
+                        下发：primitive + params + constraints
+                                     ↓
+  ╔═══════════════════════════════════════════════════════════════════════════╗
+  ║  <b>Level-B: 触觉协调层 (60–200Hz)</b>                                         ║
+  ║  ┌─────────────────────────────────────────────────────────────────────┐  ║
+  ║  │ <b>B1: 防滑/夹持</b>                     <b>B2: 精细力控 (Level-B-Force)</b>  │  ║
+  ║  │ • 输入: current/effort + q/qdot    • 输入: wrist_FT (6D) + q/qdot  │  ║
+  ║  │ • 控制: 夹持力调度、防滑响应       • 控制: 阻抗/导纳 (twist/insert)  │  ║
+  ║  │ • 输出: 关节闭合量微调             • 输出: 末端 compliance 调整      │  ║
+  ║  └─────────────────────────────────────────────────────────────────────┘  ║
+  ╚═══════════════════════════════════════════════════════════════════════════╝
+                                     │
+                        微调：夹持力/姿态/接触几何
+                                     ↓
+  ╔═══════════════════════════════════════════════════════════════════════════╗
+  ║  <b>Level-A: 安全反射层 (500–1000Hz)</b>                                       ║
+  ║  ┌─────────────────────────────────────────────────────────────────────┐  ║
+  ║  │ 输入: q/qdot + current/effort + 温度/限位/故障事件                 │  ║
+  ║  │ 检测: stall (qdot≈0 且 current↑) / jam / 过流 / 越界              │  ║
+  ║  │ 响应: 限流、力矩限幅、backoff (卸载/退避)                          │  ║
+  ║  │ 输出: 关节力矩指令 (带安全限幅) → 执行器                          │  ║
+  ║  └─────────────────────────────────────────────────────────────────────┘  ║
+  ╚═══════════════════════════════════════════════════════════════════════════╝
+                                     │
+                                执行层 ↓
+                      ┌────────────────────────────┐
+                      │  执行器 (电机/驱动器)      │
+                      │  → 物理世界 (接触/力/约束) │
+                      └────────────────────────────┘
+
+  ╔═══════════════════════════════════════════════════════════════════════════╗
+  ║  <b>旁路：数据闭环 (RM-in-loop)</b>                                            ║
+  ║  ┌─────────────────────────────────────────────────────────────────────┐  ║
+  ║  │ 所有层数据 → timestamp 对齐 → episode 切段 → RM 打分/QC             │  ║
+  ║  │          ↓                                                           │  ║
+  ║  │  hard cases 挖掘 → Teacher labels → Student 训练 → 反哺 Policy      │  ║
+  ║  └─────────────────────────────────────────────────────────────────────┘  ║
+  ╚═══════════════════════════════════════════════════════════════════════════╝
+
+<b>关键设计原则：</b>
+  • 频率分层：高频兜底安全 (A)，中频稳定接触 (B)，低频策略决策 (C)
+  • 信号分工：q/qdot + current/effort (必选底座) → wrist_FT (精细力控) → 视触觉 (teacher)
+  • 延迟容忍：Level-A &lt;10ms，Level-B 10–30ms，Level-C &gt;50ms
+  • 可降级：B2 失效 → 回退 B1；B 失效 → 只走简单任务 (MVS baseline)
+</code></pre>
 
         <h3 id="multirate-table">2.1 多频闭环 × 传感信号：速查表</h3>
         <p>
@@ -819,12 +930,83 @@ Level-A  (500–1000Hz):  安全反射（限流、卡死检测、退避）
           此时 <code>current/effort</code> 的弱 proxy 不足，<b>必须引入 <code>wrist_FT</code>（6D F/T）</b>。
         </p>
 
-        <h5>闭环结构</h5>
-        <pre><code>输入: wrist_FT (6D) + 指尖法向/切向力（可选） + q/qdot
-      ↓
-控制律: impedance/admittance control
-      ↓
-输出: 末端位置/力的 compliance 调整（或关节力矩指令）</code></pre>
+        <h5>精细力控闭环结构图</h5>
+        <pre><code>┌─────────────────────────────────────────────────────────────────────────────┐
+│                      <b>精细力控闭环 (Level-B-Force)</b>                         │
+│              适用任务: twist / insertion / pry / fine press / pull            │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  <b>传感输入层</b>                                                                │
+└─────────────────────────────────────────────────────────────────────────────┘
+     ┌─────────────────┐   ┌───────────────────┐   ┌──────────────────┐
+     │  wrist_FT (6D)  │   │ 指尖力 (可选)     │   │  q / qdot        │
+     │  [Fx,Fy,Fz,     │   │ 法向 + 切向 ×2    │   │  关节位置/速度   │
+     │   τx,τy,τz]     │   │                   │   │                  │
+     └────────┬────────┘   └─────────┬─────────┘   └────────┬─────────┘
+              │                      │                       │
+              └──────────────────────┴───────────────────────┘
+                                     │
+                             实时测量 (60–200Hz)
+                                     ↓
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  <b>状态估计 & 误差计算</b>                                                       │
+└─────────────────────────────────────────────────────────────────────────────┘
+     ┌────────────────────────────────────────────────────────────────┐
+     │  • 接触力/力矩估计: F_contact, τ_contact                       │
+     │  • 误差计算:                                                    │
+     │    - twist:    e_τz = τz_cmd - τz_measured                     │
+     │    - press:    e_Fz = Fz_cmd - Fz_measured                     │
+     │    - insertion: e_F = [Fx,Fy,Fz] - [Fx_cmd, Fy_cmd, Fz_cmd]   │
+     │  • 风险评估: slip_risk, jam_risk (从 Student 或规则)           │
+     └────────────────────────────────────────────────────────────────┘
+                                     │
+                                误差信号 ↓
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  <b>控制律选择 & 参数调整</b>                                                     │
+└─────────────────────────────────────────────────────────────────────────────┘
+     ┌────────────────────────────────────────────────────────────────┐
+     │  <b>控制律类型:</b>                                                  │
+     │  ┌──────────────────────────────────────────────────────────┐  │
+     │  │  阻抗控制 (Impedance):  τ = K(x_d - x) + B(ẋ_d - ẋ) + F_ext │
+     │  │  导纳控制 (Admittance): ẍ = M⁻¹(F_ext - Kx - Bẋ)           │
+     │  │  混合控制 (Hybrid):     位置主方向 + 力从方向              │
+     │  └──────────────────────────────────────────────────────────┘  │
+     │                                                                 │
+     │  <b>任务特定映射:</b>                                                │
+     │  • twist      → τz 闭环 + slip_risk 补偿 (增大 Fz 预紧)       │
+     │  • insertion  → Fz 限幅 + Fx/Fy 对中 (阻抗控制)                │
+     │  • press      → Fz 闭环 (PID 或力限幅)                          │
+     │  • pry        → τ 限幅 + 姿态微调                               │
+     └────────────────────────────────────────────────────────────────┘
+                                     │
+                              控制指令 ↓
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  <b>输出 & 执行</b>                                                              │
+└─────────────────────────────────────────────────────────────────────────────┘
+     ┌────────────────────────────────────────────────────────────────┐
+     │  输出形式:                                                       │
+     │  • 末端 compliance 调整 (Δx_ee, Δorientation)                   │
+     │  • 或关节力矩指令 (τ_joint) → Level-A 安全限幅                  │
+     │                                                                 │
+     │  安全约束 (Level-C 下发):                                        │
+     │  • F_max, τ_max (力/力矩上限)                                   │
+     │  • slip_risk_threshold (触发增大 Fz)                            │
+     │  • jam 检测 → 立即触发 backoff                                  │
+     └────────────────────────────────────────────────────────────────┘
+                                     │
+                                执行层 ↓
+                      ┌────────────────────────────┐
+                      │  Level-A (安全反射)        │
+                      │  → 执行器 → 物理世界       │
+                      └────────────────────────────┘
+
+<b>关键要点:</b>
+  • wrist_FT 必选：twist/insertion/pry 无法用 current/effort 替代（精度差 10–100×）
+  • 阻抗 vs 导纳：阻抗控制适合刚性环境（insertion），导纳适合柔性/未知刚度
+  • slip_risk 补偿：当 slip_risk &gt; 阈值时，自动增大法向预紧 Fz
+  • 可降级：wrist_FT 失效 → 回退简单任务（不做精细力控）
+</code></pre>
 
         <h5>典型控制律示例</h5>
         <table>
