@@ -229,6 +229,7 @@
             <li><a href="#sync">时间同步与数据管线（可训练 / 可复现 / 可追责）</a></li>
             <li><a href="#maintain">标定、健康监测与可维护性</a></li>
             <li><a href="#roadmap">最小落地版与迭代路线图（走向超越人类）</a></li>
+            <li><a href="#feasibility">可行性与未来性（面向 VLA 的评估结论）</a></li>
             <li><a href="#refs">参考链接</a></li>
           </ol>
         </div>
@@ -1113,6 +1114,78 @@ Level-A  (500–1000Hz):  安全反射（限流、卡死检测、退避）
           <li><b>阶段 2（2–4 周）</b>：规则伪标签训练成轻量 RM（替换阈值）。</li>
           <li><b>阶段 3（1–2 月）</b>：加 2 个剪切/压力指尖，强化 Level-B 防滑。</li>
           <li><b>阶段 4（长期）</b>：加 1 组多点视触（至少指腹 + 侧边/侧壁，用于 teacher）+ 1 个手腕 F/T，形成“因果判定 + 老师传感”。</li>
+        </ul>
+
+        <h2 id="feasibility">10) 可行性与未来性（面向 VLA 的评估结论）</h2>
+        <p>
+          本节给出一个“面试可复述”的结论：这套 DexHand Sensing System 方案的<strong>底座（多频闭环 + MVS）</strong>成熟且可快速交付；
+          完整版（Teacher→Student + RM-in-loop）具有很强的“前沿 VLA 对齐度”，但需要以标签质量与 domain gap 为中心做 6–12 个月工程迭代。
+        </p>
+
+        <h3 id="feasibility-why">10.1 核心架构的可行性（为什么能跑）</h3>
+        <ul>
+          <li><b>多频闭环分层（Level‑A/B/C）</b>：把 kHz 止损与 100Hz 接触稳定留给控制闭环，把 VLA 放在 5–15Hz 的原语接口上，符合前沿 VLA 的推理延迟与动作生成范式约束（Token/Diffusion/Flow）。</li>
+          <li><b>Teacher→Student（A）</b>：Research 用多点视触（pad+side）提供接触几何/接触模式真值，Student 仅吃 Deploy 模态推理出低维因果状态，避免部署依赖脆弱 teacher 硬件。</li>
+          <li><b>RM-in-loop（C）</b>：把 RM 定位为 data QC 与 hard-case triage（而非 RL reward），与 VLA 的“高质量数据 + 可靠评估”痛点对齐。</li>
+        </ul>
+
+        <h3 id="trl">10.2 关键模块成熟度（TRL/风险速览）</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>模块</th>
+              <th>成熟度（直观）</th>
+              <th>主要风险</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>多频闭环 + proprio（q/qdot）</td>
+              <td>高</td>
+              <td>低（工程成熟）</td>
+            </tr>
+            <tr>
+              <td><code>current/effort</code> 触觉代理</td>
+              <td>中高</td>
+              <td>中（需针对具体手/任务标定，避免误触发）</td>
+            </tr>
+            <tr>
+              <td>多点视触 teacher（pad+side）</td>
+              <td>中</td>
+              <td>高（材料/温度/污染/老化导致标签漂移，需要版本化 + 不确定度）</td>
+            </tr>
+            <tr>
+              <td>Teacher→Student 蒸馏</td>
+              <td>中</td>
+              <td>高（domain gap：Research→Deploy 分布偏移）</td>
+            </tr>
+            <tr>
+              <td>RM-in-loop 自动 QC</td>
+              <td>中低</td>
+              <td>高（指标带偏风险；建议 RM 只做 triage，验收用部署 KPI）</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3 id="mvs-feasibility">10.3 MVS（最小可行版本）为什么很值钱</h3>
+        <p>
+          MVS（2 路 RGB + q/qdot + current/effort + 同步对齐 + Replay Validation）能快速把系统从“demo”推进到“可回放、可追责、可迭代”。
+          对 VLA 来说，这一步解决的是数据质量与评估协议的地基问题：没有 replay_ok 与失败分布，你无法严谨筛选 checkpoint，也无法做可靠 A/B。
+        </p>
+
+        <h3 id="risks">10.4 最大风险与对应对策（抓住真正会翻车的点）</h3>
+        <ul>
+          <li><b>Teacher 标签一致性</b>：把标签定义写成可执行代码（阈值 + 时间窗 + 版本号），并做跨环境/跨批次一致性检查；低置信样本降权。</li>
+          <li><b>Domain gap（Research→Deploy）</b>：Research 装 teacher 后改变动力学边界的风险要显式评估（A/B 交错测试）；训练侧做 domain randomization / 自监督对齐；部署侧坚持只吃可长期信号。</li>
+          <li><b>RM 指标带偏</b>：RM 先用规则起步，只做排序/筛选；最终验收绑定 SR/IR/ER + 失败类型分布 + 置信区间，并采用交错 A/B 与 reset-free 协议。</li>
+        </ul>
+
+        <h3 id="execution-plan">10.5 建议的落地节奏（面试可讲）</h3>
+        <ul>
+          <li><b>Week 1–2</b>：MVS + 时间同步 + Replay Validation（先证明数据管线能跑）。</li>
+          <li><b>Week 3–4</b>：规则 teacher（用阈值/窗口先生成 <code>contact_mode</code>/<code>slip_risk</code> 的伪标签）。</li>
+          <li><b>Week 5–8</b>：训练 Student，量化 teacher→student 信息损失，并把输出接到 recover primitives 做闭环验收。</li>
+          <li><b>Month 3+</b>：接入多点视触 teacher（pad+side）做真 teacher；交错 A/B 验证数据质量与 KPI 提升。</li>
         </ul>
 
         <h2 id="refs">参考链接</h2>
