@@ -345,6 +345,102 @@ Level-A  (500–1000Hz):  安全反射（限流、卡死检测、退避）
           因而 slip detection 也是在估计：是否进入 sliding，以及离边界有多近（<code>slip_risk</code>）。
         </p>
 
+        <h3 id="primitives">5.1 物理原语（Physical Primitives）词汇表</h3>
+        <p>
+          下面把文中出现的“物理原语”统一成可落地的定义：每个词对应你想改变的物理量（wrench/约束/接触模式），以及它依赖的关键可观测信号。
+          这些原语既可以作为早期 rule-based policy，也可以作为 VLA policy 的高层动作空间（primitive switching）。
+        </p>
+        <table>
+          <thead>
+            <tr>
+              <th>原语</th>
+              <th>直白定义（你在物理上做什么）</th>
+              <th>目标（改变什么）</th>
+              <th>关键观测（最低配）</th>
+              <th>常见失败/触发恢复</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>press</code></td>
+              <td>沿接触法向“压下去”，建立/维持法向力</td>
+              <td>提高 \(f_n\)，增加摩擦预算（降低 slip_risk）</td>
+              <td><code>current/effort</code>（法向 proxy）、<code>q/qdot</code></td>
+              <td>过力/卡死（jam）→ <code>backoff</code>；滑移仍高→转 <code>wedge</code>/<code>regrasp</code></td>
+            </tr>
+            <tr>
+              <td><code>pull</code></td>
+              <td>沿某方向“拉”，尝试解除约束或拉出物体</td>
+              <td>控制切向力 \(f_t\)，改变约束反力</td>
+              <td><code>wrist_FT</code>（最好）、<code>current/effort</code></td>
+              <td>滑移/脱手→增大 <code>press</code> 或 <code>regrasp</code></td>
+            </tr>
+            <tr>
+              <td><code>push</code></td>
+              <td>沿某方向“推”，让物体/机构进入更可控的约束状态</td>
+              <td>改变接触约束与几何关系（让任务更可解）</td>
+              <td><code>rgb_wrist</code> + <code>current/effort</code>（接触/阻力 proxy）</td>
+              <td>顶死/卡住→ <code>backoff</code>；偏斜→ <code>re-approach</code></td>
+            </tr>
+            <tr>
+              <td><code>wedge</code></td>
+              <td>“楔入/撬开”式接触：用边缘/角点制造几何杠杆</td>
+              <td>把不可见/难抓的几何变成可抓（解锁/起缝）</td>
+              <td><code>wrist_FT</code>（强烈建议）、<code>current/effort</code></td>
+              <td>过力/损伤风险→限力；进入 slip→转 <code>press</code>/<code>regrasp</code></td>
+            </tr>
+            <tr>
+              <td><code>twist</code></td>
+              <td>绕轴旋转（例如拧盖/旋钮）</td>
+              <td>控制 \(\tau\)（扭矩）并维持接触模式为 stick</td>
+              <td><code>wrist_FT</code>（最好）、<code>current/effort</code>（扭矩 proxy）</td>
+              <td>滑移→先 <code>press</code> 提升摩擦；卡死→ <code>backoff</code> + 重新对齐</td>
+            </tr>
+            <tr>
+              <td><code>pry</code></td>
+              <td>“撬”：绕支点施加力矩，解除卡扣/粘连</td>
+              <td>改变约束反力与接触点（高风险原语）</td>
+              <td><code>wrist_FT</code>（必要）、安全限位/温度</td>
+              <td>风险高：需要限力/限扭；触发 safety_trip→立刻 <code>backoff</code></td>
+            </tr>
+            <tr>
+              <td><code>drag</code></td>
+              <td>贴着表面“拖拽/扫过”以定位或产生摩擦信息</td>
+              <td>用可控滑移获取信息/对齐（信息驱动原语）</td>
+              <td><code>rgb_wrist</code> + <code>current/effort</code>；（有触觉更好）</td>
+              <td>摩擦过大→减速/减力；抓取不稳→先 <code>press</code></td>
+            </tr>
+            <tr>
+              <td><code>regrasp</code></td>
+              <td>重新抓（松开→调整接触点→再抓）</td>
+              <td>把接触几何重置到更稳定区域</td>
+              <td><code>rgb_wrist</code> + <code>q/qdot</code> + <code>current/effort</code></td>
+              <td>重复失败→切换 <code>wedge</code> 或改变 approach 方向</td>
+            </tr>
+            <tr>
+              <td><code>backoff</code></td>
+              <td>后退/卸载力（退避）</td>
+              <td>快速止损，解除 jam/过力风险（Level-A 常用）</td>
+              <td><code>current/effort</code> + <code>qdot</code> + 安全事件</td>
+              <td>退避后若仍异常→标记 <code>sensor_health</code> 或请求人工介入</td>
+            </tr>
+            <tr>
+              <td><code>reopen</code></td>
+              <td>张开手指/减小夹持（释放接触）</td>
+              <td>解除卡住/重置接触</td>
+              <td><code>q</code> + <code>current/effort</code></td>
+              <td>若释放无效→可能几何卡死，转 <code>backoff</code> + 改路径</td>
+            </tr>
+            <tr>
+              <td><code>re-approach</code></td>
+              <td>重新接近（换角度/路径再次进入接触）</td>
+              <td>降低 misalignment/occlusion，获得更好接触几何</td>
+              <td><code>rgb_static</code>/<code>rgb_wrist</code> + <code>q</code></td>
+              <td>重复 misalignment→调整目标姿态或先 <code>drag</code> 探索</td>
+            </tr>
+          </tbody>
+        </table>
+
         <h2 id="rm">6) RM-in-loop：自动切段、挑 hard cases、触发自恢复</h2>
         <p>
           把 RM 当成“质量裁判”：部署时不仅做任务，还能自动生成高价值训练数据，并减少人工介入。
