@@ -160,6 +160,7 @@
         <div class="toc">
           <h2 id="toc">目录</h2>
           <ol>
+            <li><a href="#core">核心三问（直击要害）</a></li>
             <li><a href="#kpi">系统目标与 KPI（把方向锁死）</a></li>
             <li><a href="#arch">总体架构（传感栈 × 多频闭环 × 数据闭环）</a></li>
             <li><a href="#stack">传感栈分层（MVS → Pro）与推荐布置</a></li>
@@ -172,6 +173,19 @@
             <li><a href="#refs">参考链接</a></li>
           </ol>
         </div>
+
+        <h2 id="core">核心三问（直击要害）</h2>
+        <p>
+          在复杂环境和大量变量中，最容易跑偏的是“堆传感器/堆模型”。从第一性原理出发，DexHand 作为“物理因果接口”，系统必须随时回答三件事：
+        </p>
+        <ol>
+          <li><b>接触发生了吗，接触在哪里？</b>（contact geometry：接触点/接触面/面积/法向）</li>
+          <li><b>接触状态是否稳定，下一段时间会不会失败？</b>（contact_mode、slip_risk、jam_risk）</li>
+          <li><b>如果要恢复，应切换到哪个物理原语？</b>（primitive / recoverability：backoff、regrasp、wedge、twist…）</li>
+        </ol>
+        <p>
+          本文的 A（Teacher→Student）+ C（RM/QC flywheel）就是围绕这三问：Research Mode 用视触觉提供高信息真值，Deploy Mode 用可部署信号近似这些真值并形成闭环。
+        </p>
 
         <h2 id="kpi">1) 系统目标与 KPI（把方向锁死）</h2>
         <p>
@@ -447,10 +461,12 @@ Level-A  (500–1000Hz):  安全反射（限流、卡死检测、退避）
               <td><code>contact_mode</code></td>
               <td>接触处于 stick/slip/roll（摩擦边界）</td>
               <td>
-                (1) 若 <code>contact_confidence</code> 低 → no_contact；\n
-                (2) 估计接触 patch 的切向位移/光流能量 \(v_t\)；\n
-                (3) 若 \(v_t &gt; v_{slip}\) 且法向压入持续存在 → slip；否则 stick；\n
-                (4) 若存在绕接触点显著旋转且切向位移小 → roll（可选）
+                <ol style="margin:0; padding-left: 1.1em;">
+                  <li>若 <code>contact_confidence</code> 低 → no_contact</li>
+                  <li>估计接触 patch 的切向位移/光流能量 \(v_t\)</li>
+                  <li>若 \(v_t &gt; v_{slip}\) 且法向压入持续存在 → slip；否则 stick</li>
+                  <li>若存在绕接触点显著旋转且切向位移小 → roll（可选）</li>
+                </ol>
               </td>
               <td>枚举/one-hot</td>
             </tr>
@@ -464,10 +480,12 @@ Level-A  (500–1000Hz):  安全反射（限流、卡死检测、退避）
               <td><code>failure_mode</code></td>
               <td>失败的物理原因分类</td>
               <td>
-                jam：<code>current↑</code> + <code>qdot≈0</code>；\n
-                slip：<code>contact_mode=slip</code>；\n
-                misalignment：接触 patch 偏置且 progress 停滞；\n
-                occlusion：视觉/视触关键观测缺失（可选）
+                <ul style="margin:0; padding-left: 1.1em;">
+                  <li>jam：<code>current↑</code> + <code>qdot≈0</code></li>
+                  <li>slip：<code>contact_mode=slip</code></li>
+                  <li>misalignment：接触 patch 偏置且 progress 停滞</li>
+                  <li>occlusion：视觉/视触关键观测缺失（可选）</li>
+                </ul>
               </td>
               <td>多类分类</td>
             </tr>
@@ -486,7 +504,7 @@ Level-A  (500–1000Hz):  安全反射（限流、卡死检测、退避）
           </tbody>
         </table>
         <p>
-          注意：视触不必承担高频闭环（handbook 强调其延迟/线缆/耗材/标定成本），但它非常适合在 Research Mode 里提供“几何真值”和“摩擦状态真值”。\n
+          注意：视触不必承担高频闭环（handbook 强调其延迟/线缆/耗材/标定成本），但它非常适合在 Research Mode 里提供“几何真值”和“摩擦状态真值”。<br>
           对 Deploy Mode，teacher labels 只作为监督信号，不作为实时传感依赖。
         </p>
 
@@ -506,11 +524,15 @@ Level-A  (500–1000Hz):  安全反射（限流、卡死检测、退避）
           <li><code>recoverability</code>（0–1）</li>
         </ul>
         <p>
-          <b>Policy 使用约束（示例）</b>：\n
-          - 若 <code>slip_risk</code> 高：优先触发“增大法向/调整接触几何/降速”类原语；\n
-          - 若 <code>failure_mode=jam</code> 且 <code>recoverability</code> 高：触发 backoff + reopen + re-approach；\n
-          - 若 <code>progress</code> 长时间停滞：切换原语（push→wedge→twist…）或触发重新定位。\n
-          这些规则也可以作为早期的 <b>rule-based policy</b>（阶段 1），随后逐步被 VLA policy 学到（阶段 2+）。\n
+          <b>Policy 使用约束（示例）</b>：
+        </p>
+        <ul>
+          <li>若 <code>slip_risk</code> 高：优先触发“增大法向/调整接触几何/降速”类原语</li>
+          <li>若 <code>failure_mode=jam</code> 且 <code>recoverability</code> 高：触发 backoff + reopen + re-approach</li>
+          <li>若 <code>progress</code> 长时间停滞：切换原语（push→wedge→twist…）或触发重新定位</li>
+        </ul>
+        <p>
+          这些规则也可以作为早期的 <b>rule-based policy</b>（阶段 1），随后逐步被 VLA policy 学到（阶段 2+）。
         </p>
 
         <h3 id="rm-qc">7.3 C：RM/QC flywheel（把部署数据变成“可用且可追责”的数据）</h3>
@@ -522,6 +544,21 @@ Level-A  (500–1000Hz):  安全反射（限流、卡死检测、退避）
           <li><b>切段</b>：用 <code>progress</code>/<code>failure_mode</code> 进行 episode/subtask segmentation</li>
           <li><b>hard case</b>：用 <code>slip_risk</code>、接触模式变化、恢复触发点做 hard case mining</li>
           <li><b>恢复触发</b>：<code>recoverability</code> + <code>failure_mode</code> → 选择 recovery primitive（不要求视触觉进入 kHz）</li>
+        </ul>
+
+        <h4 id="replay-checklist">7.3.1 Replay Validation（最关键 QC）—可执行 checklist</h4>
+        <p>目标：把“能不能训练”从主观判断变成硬指标。</p>
+        <ul>
+          <li><b>必须记录</b>：<code>cmd_joint_target</code>（命令流）与 <code>measured_q/measured_effort</code>（执行流），并带 <code>sync_status</code></li>
+          <li><b>重放方式</b>：同一初始条件下重放命令流（或重放关键子段）</li>
+          <li><b>判定指标</b>：
+            <ul style="margin: 0.3em 0 0 0; padding-left: 1.1em;">
+              <li>末端/关节轨迹误差（例如 \(\|q_{replay}-q_{ref}\|\) 的阈值）</li>
+              <li>成败一致性（success label 一致）</li>
+              <li>关键事件一致性（safety_trip/jam 事件是否一致）</li>
+            </ul>
+          </li>
+          <li><b>产出</b>：写入 <code>replay_ok</code>（bool）与 <code>replay_score</code>（0–1，可选）</li>
         </ul>
 
         <h4 id="ac-mermaid">A+C 数据流（示意图）</h4>
