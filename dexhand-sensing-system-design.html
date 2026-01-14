@@ -859,6 +859,45 @@ Level-A  (500–1000Hz):  安全反射（限流、卡死检测、退避）
   Train --> Student
   Train --> Policy</code></pre>
 
+        <h3 id="compat">7.4 传感系统工程化：接口契约 + 采集适配（不被单一数采方案取代）</h3>
+        <p>
+          这一小节专门回答你“传感系统专业”视角的两个问题：<br>
+          (1) <b>传感系统到底交付什么</b>（不只是传感器，而是一整条从设备到数据、从数据到闭环的工程链路）；<br>
+          (2) <b>为什么这套方案兼容主流数采范式</b>（ROS/自研 logger/学界数据集格式），并且不会被任何单一数采方案取代。
+        </p>
+
+        <h4 id="sensor-contract">7.4.1 传感系统的“交付物”不是硬件清单，而是接口契约</h4>
+        <p>
+          对硬件交付型公司来说，真正可复用、可规模化的传感系统交付物是：<b>信号契约（signal contract） + 时间契约（time contract） + 健康/标定契约（health &amp; calibration contract）</b>。
+          有了契约，硬件可以迭代，数据仍然可训练、可回放、可对齐；客户换一种数采方式也不会把体系推倒重来。
+        </p>
+        <ul>
+          <li><b>Signal contract</b>：每个通道有明确的单位、坐标系、采样率/带宽、量程、饱和语义（例如 <code>effort_saturated</code>）、以及最关键的 <code>quality_flag</code>（dropout/clip/noise）。</li>
+          <li><b>Time contract</b>：timestamp-at-source + 统一时钟（PTP 优先），并强制记录两条动作流（<code>cmd_*</code> 与 <code>measured_*</code>）。</li>
+          <li><b>Health &amp; calibration contract</b>：<code>calib_version/calib_hash</code>、<code>sensor_health</code>、<code>recalib_required</code> 是一等公民；任何“耗材化/会漂”的通道都必须可被系统识别与降级。</li>
+        </ul>
+        <p>
+          这也是为什么你的 <b>Deploy = 子集、Research = 超集</b> 能成立：Deploy 只承诺长期可靠契约；Research 允许插拔 teacher 模态（例如视触/电手套），但不改变 Deploy 的闭环依赖。
+        </p>
+
+        <h4 id="data-compat">7.4.2 与主流数采方案兼容：Schema-first + Adapter layer</h4>
+        <p>
+          “主流数采方案”往往只解决其中一段：要么擅长<strong>记录</strong>（如 rosbag），要么擅长<strong>训练输入</strong>（如 TFRecord/RLDS/WebDataset），要么擅长<strong>仿真基准</strong>（如 ManiSkill/Isaac 的 episode 格式）。
+          你的方案把不可替代的部分放在中间：<b>统一 schema + 同步对齐 + 事件/标签体系 + Replay Validation</b>。因此它不会被任何单一格式/工具“完全取代”，只需要写 adapter 即可互通。
+        </p>
+        <ul>
+          <li><b>上游兼容（怎么采都行）</b>：ROS1/ROS2（rosbag）、自研 logger、厂内 PLC/驱动日志、遥操作流、实验室脚本采集……都可以先落到统一 schema。</li>
+          <li><b>下游兼容（怎么训都行）</b>：同一份 canonical dataset 可导出到 HDF5 / NPZ / TFRecord（RLDS）/ WebDataset（tar shards）等，供不同训练栈使用。</li>
+          <li><b>关键点</b>：适配器做“格式转换”，但不碰“因果定义”——<code>contact_mode</code>/<code>slip_risk</code>/<code>failure_mode</code>/<code>progress</code>/<code>recoverability</code> 的定义与版本化是体系核心。</li>
+        </ul>
+        <p>
+          结合你们当前的“电手套”也完全兼容：把手套作为 Research Mode 的额外模态（例如 <code>glove_electro_raw</code> / <code>glove_contact_map</code>），用于 Teacher labeler 生成更稳的 teacher labels；
+          但 Deploy Mode 的 Student 仍只吃可长期信号（RGB + proprio + current/effort + 可选 F/T/耐久触觉），从而避免“交付版被手套绑死”。
+        </p>
+        <blockquote>
+          <p><b>一句话</b>：这套方案不是在押注某个记录格式（rosbag/HDF5/TFRecord），而是在押注“可复现的因果状态与标签体系”。格式会变，因果与契约不变。</p>
+        </blockquote>
+
         <h2 id="maintain">8) 标定、健康监测与可维护性</h2>
         <ul>
           <li><b>版本化标定资产</b>：<code>calib_version</code> / <code>calib_hash</code> 写进每条 episode metadata。</li>
