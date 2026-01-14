@@ -831,6 +831,19 @@ Level-A  (500–1000Hz):  安全反射（限流、卡死检测、退避）
           <li><code>progress</code>、<code>quality</code>、<code>recoverability</code>、<code>failure_mode</code></li>
           <li>（强烈建议）<code>primitive</code> / <code>contact_mode</code> / <code>slip_risk</code>：把物理因果写进标签体系</li>
         </ul>
+        <p>
+          <b>面向 VLA 的对齐说明：RM 在前沿里通常以“critic/复盘”形态出现</b>。<br>
+          在具身/机器人学习前沿，很多团队并不把 RM 当作“在线 RL 的奖励函数”直接驱动真机探索（风险与不稳定性太大），而是把它用在三件更稳、更可交付的事上：
+        </p>
+        <ul>
+          <li><b>数据筛选与加权（quality filtering / critic scoring）</b>：给轨迹打分、剔除低质量/不可复现数据、挑 hard cases（对应本文的 <code>quality</code>/<code>progress</code>/<code>failure_mode</code>）。</li>
+          <li><b>复盘式自我改进（post-training / Offline RL / Recap）</b>：从成功与失败轨迹中学习“哪一步错了”，把失败当一等数据（对应本文的 <code>recoverability</code> 与 failure segmentation）。</li>
+          <li><b>安全与可追责优先</b>：RM 先做 triage（排序/筛选/触发复核与恢复），最终验收仍绑定部署 KPI（SR/IR/ER + 失败分布 + 置信区间）。</li>
+        </ul>
+        <p>
+          <b>公开对照（handbook）</b>：
+          π*0.6 的 <b>Recap</b> 属于典型的 post-training / Offline RL 复盘范式；GR‑RL 体现了用 critic 筛选/提升长时程精细操作数据质量的思路；Reward Discovery 则对应“自动发现/进化奖励函数”的研究路线。
+        </p>
 
         <h2 id="sync">7) 时间同步与数据管线（可训练 / 可复现 / 可追责）</h2>
         <ul>
@@ -1126,7 +1139,7 @@ Level-A  (500–1000Hz):  安全反射（限流、卡死检测、退避）
         <ul>
           <li><b>多频闭环分层（Level‑A/B/C）</b>：把 kHz 止损与 100Hz 接触稳定留给控制闭环，把 VLA 放在 5–15Hz 的原语接口上，符合前沿 VLA 的推理延迟与动作生成范式约束（Token/Diffusion/Flow）。</li>
           <li><b>Teacher→Student（A）</b>：Research 用多点视触（pad+side）提供接触几何/接触模式真值，Student 仅吃 Deploy 模态推理出低维因果状态，避免部署依赖脆弱 teacher 硬件。</li>
-          <li><b>RM-in-loop（C）</b>：把 RM 定位为 data QC 与 hard-case triage（而非 RL reward），与 VLA 的“高质量数据 + 可靠评估”痛点对齐。</li>
+          <li><b>RM-in-loop（C）</b>：把 RM 定位为 data QC 与 hard-case triage（而非在线 RL reward），与前沿的 critic/Recap（post-training）路线对齐，并与 VLA 的“高质量数据 + 可靠评估”痛点对齐。</li>
         </ul>
 
         <h3 id="trl">10.2 关键模块成熟度（TRL/风险速览）</h3>
@@ -1210,6 +1223,26 @@ Level-A  (500–1000Hz):  安全反射（限流、卡死检测、退避）
           <li>
             触觉传感器路线与工程取舍（handbook）：
             <a href="https://github.com/sou350121/vla-interview-handbook/blob/main/product/sensors.md" target="_blank" rel="noopener noreferrer">product/sensors.md</a>
+          </li>
+          <li>
+            触觉与 VLA（handbook）：
+            <a href="https://github.com/sou350121/vla-interview-handbook/blob/main/theory/tactile_vla.md" target="_blank" rel="noopener noreferrer">theory/tactile_vla.md</a>
+          </li>
+          <li>
+            前沿：π*0.6 Recap（post-training / Offline RL 复盘）：
+            <a href="https://github.com/sou350121/vla-interview-handbook/blob/main/theory/pi0_6_dissection.md" target="_blank" rel="noopener noreferrer">theory/pi0_6_dissection.md</a>
+          </li>
+          <li>
+            前沿：RL/critic/Recap 综述（handbook）：
+            <a href="https://github.com/sou350121/vla-interview-handbook/blob/main/theory/reinforcement_learning.md" target="_blank" rel="noopener noreferrer">theory/reinforcement_learning.md</a>
+          </li>
+          <li>
+            前沿：数据飞轮与跨模态迁移（含 Reward Discovery / Recap 线索）：
+            <a href="https://github.com/sou350121/vla-interview-handbook/blob/main/theory/frontier/data_flywheel_and_cross_modal.md" target="_blank" rel="noopener noreferrer">theory/frontier/data_flywheel_and_cross_modal.md</a>
+          </li>
+          <li>
+            前沿：Reward Discovery（奖励函数自主发现）：
+            <a href="https://github.com/sou350121/vla-interview-handbook/blob/main/theory/frontier/reward_discovery_rl.md" target="_blank" rel="noopener noreferrer">theory/frontier/reward_discovery_rl.md</a>
           </li>
         </ul>
       </div>
