@@ -340,6 +340,27 @@ Level-A  (500–1000Hz):  安全反射（限流、卡死检测、退避）
                 缺它会导致：你只能看到电流大，但无法区分“正常高负载”与“卡死/顶住”，恢复动作也无法验证是否生效。
               </li>
               <li>
+                <b>术语澄清：stall vs jam（都是什么、差在哪）</b>：
+                <ul style="margin: 0.3em 0 0 0; padding-left: 1.1em;">
+                  <li>
+                    <b>stall（停转/堵转）</b>：<b>从电机/驱动视角</b>看“命令在推，但轴/关节几乎不动”。典型特征是 <code>|qdot|</code> 很小，同时 <code>current/effort</code> 持续偏高（或快速上升）。
+                    它可能是“暂时的”（例如短暂碰到障碍/静摩擦峰值）。
+                  </li>
+                  <li>
+                    <b>jam（卡死/卡滞）</b>：<b>从机构/接触视角</b>看“被几何约束锁住/楔住/顶死”，导致运动无法继续或极难继续。
+                    jam 往往伴随：<code>stall</code> + 事件持续时间更长 + 反复发生/需要退避才解除，且经常与 <code>misalignment</code> 或外部约束有关。
+                  </li>
+                  <li>
+                    <b>为什么要分清</b>：Level‑A 要做的是“止损与保护”，所以更关心 <b>stall 是否进入危险窗口</b>（过流/过热/结构受力）；
+                    Level‑C/恢复逻辑更关心 <b>jam 的物理原因与解锁路径</b>（backoff、reopen、re-approach、换原语）。
+                  </li>
+                  <li>
+                    <b>可执行的最小判定（示例）</b>：在窗口 \(\Delta t\) 内若 <code>|qdot| &lt; v_{min}</code> 且 <code>current/effort &gt; \tau_{min}</code> → 标记 <code>stall</code>；
+                    若 <code>stall_time_ms</code> 超过阈值或退避后重复出现 → 升级为 <code>jam_state</code> 并触发更强的恢复原语/人工介入。
+                  </li>
+                </ul>
+              </li>
+              <li>
                 <b><code>current/effort</code></b>：止损的第一响应（限流/扭矩限幅）、摩擦/碰撞/过载的最直接 proxy。
                 缺它会导致：止损只能靠低频视觉或高层判断，等你“看到”时往往已经损坏。
               </li>
