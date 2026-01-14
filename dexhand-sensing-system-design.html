@@ -365,6 +365,11 @@ Level-A  (500–1000Hz):  安全反射（限流、卡死检测、退避）
               <li>
                 <b>任务状态</b>：至少要有子任务/原语阶段（例如 <code>primitive</code>、<code>subtask</code>、<code>target_state</code>），否则你无法把同一段数据切成可训练的 episode，也无法评估 progress。
               </li>
+              <li>
+                <b>视触觉在哪里？</b>：视触觉通常 <b>不作为 Level-C 的“必需输入”</b>，而是作为 <b>Research Mode 的 teacher/诊断信号</b>——在接触发生后提供 <code>contact_patch</code> / <code>contact_mode</code> / <code>slip_risk</code> 等高信息真值，
+                再通过 <b>Teacher→Student</b> 蒸馏为部署可用的低维状态供 policy 使用。<br>
+                换句话说：Level‑C 必需的是“看得见场景并知道自己在做什么”（RGB + task state）；视触觉负责“把接触讲清楚”（teacher labels + 复盘），不和 5–15Hz 的策略层抢主入口。
+              </li>
             </ul>
           </li>
         </ul>
