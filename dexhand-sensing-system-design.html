@@ -316,6 +316,59 @@ Level-A  (500–1000Hz):  安全反射（限流、卡死检测、退避）
           </tbody>
         </table>
 
+        <h4 id="multirate-required-signals">2.1.1 “必需信号（建议）”逐项解释（为什么缺了就会翻车）</h4>
+        <p>
+          这里的“必需”指的是：<b>它们构成每一层闭环的最小可观测因果集合</b>——能止损、能自恢复、能回放追责。
+          不是说没有其它传感就做不了研究，而是说没有这些信号，你就很难把系统做成“可交付”的长期稳定系统。
+        </p>
+        <ul>
+          <li>
+            <b>Level-A（500–1000Hz）</b>：
+            <ul style="margin: 0.3em 0 0 0; padding-left: 1.1em;">
+              <li>
+                <b><code>q/qdot</code></b>：用于检测 <b>stall/jam</b>（<code>qdot≈0</code>）、越界趋势（逼近软硬限位）、以及“退避是否真的在动”。
+                缺它会导致：你只能看到电流大，但无法区分“正常高负载”与“卡死/顶住”，恢复动作也无法验证是否生效。
+              </li>
+              <li>
+                <b><code>current/effort</code></b>：止损的第一响应（限流/扭矩限幅）、摩擦/碰撞/过载的最直接 proxy。
+                缺它会导致：止损只能靠低频视觉或高层判断，等你“看到”时往往已经损坏。
+              </li>
+              <li>
+                <b>温度/限位/故障事件</b>：长期交付必须把“保护触发”事件化（<code>safety_trip</code>）并写入回放，否则你无法追责“是策略错还是驱动保护触发”。
+              </li>
+            </ul>
+          </li>
+          <li>
+            <b>Level-B（60–200Hz）</b>：
+            <ul style="margin: 0.3em 0 0 0; padding-left: 1.1em;">
+              <li>
+                <b><code>current/effort</code>（触觉代理）</b>：在没有高频触觉阵列的情况下，它是“接触状态变化”的最低配观测（夹持变强/变弱、阻力突变、微滑动引发的扰动）。
+                缺它会导致：你只能靠视觉判断接触稳定，而视觉对 slip/misalignment 往往滞后且不可用（遮挡/光照）。
+              </li>
+              <li>
+                <b><code>q/qdot</code></b>：把 effort/current 的变化解释成“接触导致”还是“主动运动导致”（同样的电流变化，在不同 <code>qdot</code> 下物理意义不同）。
+                缺它会导致：防滑与夹持调度会变成误触发（把主动加速当滑移，把静止摩擦当卡死）。
+              </li>
+            </ul>
+          </li>
+          <li>
+            <b>Level-C（5–15Hz）</b>：
+            <ul style="margin: 0.3em 0 0 0; padding-left: 1.1em;">
+              <li>
+                <b><code>rgb_static</code></b>：提供全局上下文（目标/障碍/可行 approach），决定“进入接触前”的策略。
+                缺它会导致：策略只能局部贪心，容易在复杂场景里反复试错、效率差。
+              </li>
+              <li>
+                <b><code>rgb_wrist</code></b>：提供近场视角（遮挡更少、接触瞬间可见），对“对齐/重新接近（re-approach）”非常关键。
+                缺它会导致：对齐主要靠猜，misalignment 变多，恢复路径成本上升。
+              </li>
+              <li>
+                <b>任务状态</b>：至少要有子任务/原语阶段（例如 <code>primitive</code>、<code>subtask</code>、<code>target_state</code>），否则你无法把同一段数据切成可训练的 episode，也无法评估 progress。
+              </li>
+            </ul>
+          </li>
+        </ul>
+
         <p>设计原则（压缩成 5 条）：</p>
         <ul>
           <li><b>P1 Timestamp-at-source</b>：各模态在产生瞬间打统一时钟戳（PTP 优先）。</li>
@@ -858,45 +911,6 @@ Level-A  (500–1000Hz):  安全反射（限流、卡死检测、退避）
   HardCases --> Train[Retrain]
   Train --> Student
   Train --> Policy</code></pre>
-
-        <h3 id="compat">7.4 传感系统工程化：接口契约 + 采集适配（不被单一数采方案取代）</h3>
-        <p>
-          这一小节专门回答你“传感系统专业”视角的两个问题：<br>
-          (1) <b>传感系统到底交付什么</b>（不只是传感器，而是一整条从设备到数据、从数据到闭环的工程链路）；<br>
-          (2) <b>为什么这套方案兼容主流数采范式</b>（ROS/自研 logger/学界数据集格式），并且不会被任何单一数采方案取代。
-        </p>
-
-        <h4 id="sensor-contract">7.4.1 传感系统的“交付物”不是硬件清单，而是接口契约</h4>
-        <p>
-          对硬件交付型公司来说，真正可复用、可规模化的传感系统交付物是：<b>信号契约（signal contract） + 时间契约（time contract） + 健康/标定契约（health &amp; calibration contract）</b>。
-          有了契约，硬件可以迭代，数据仍然可训练、可回放、可对齐；客户换一种数采方式也不会把体系推倒重来。
-        </p>
-        <ul>
-          <li><b>Signal contract</b>：每个通道有明确的单位、坐标系、采样率/带宽、量程、饱和语义（例如 <code>effort_saturated</code>）、以及最关键的 <code>quality_flag</code>（dropout/clip/noise）。</li>
-          <li><b>Time contract</b>：timestamp-at-source + 统一时钟（PTP 优先），并强制记录两条动作流（<code>cmd_*</code> 与 <code>measured_*</code>）。</li>
-          <li><b>Health &amp; calibration contract</b>：<code>calib_version/calib_hash</code>、<code>sensor_health</code>、<code>recalib_required</code> 是一等公民；任何“耗材化/会漂”的通道都必须可被系统识别与降级。</li>
-        </ul>
-        <p>
-          这也是为什么你的 <b>Deploy = 子集、Research = 超集</b> 能成立：Deploy 只承诺长期可靠契约；Research 允许插拔 teacher 模态（例如视触/电手套），但不改变 Deploy 的闭环依赖。
-        </p>
-
-        <h4 id="data-compat">7.4.2 与主流数采方案兼容：Schema-first + Adapter layer</h4>
-        <p>
-          “主流数采方案”往往只解决其中一段：要么擅长<strong>记录</strong>（如 rosbag），要么擅长<strong>训练输入</strong>（如 TFRecord/RLDS/WebDataset），要么擅长<strong>仿真基准</strong>（如 ManiSkill/Isaac 的 episode 格式）。
-          你的方案把不可替代的部分放在中间：<b>统一 schema + 同步对齐 + 事件/标签体系 + Replay Validation</b>。因此它不会被任何单一格式/工具“完全取代”，只需要写 adapter 即可互通。
-        </p>
-        <ul>
-          <li><b>上游兼容（怎么采都行）</b>：ROS1/ROS2（rosbag）、自研 logger、厂内 PLC/驱动日志、遥操作流、实验室脚本采集……都可以先落到统一 schema。</li>
-          <li><b>下游兼容（怎么训都行）</b>：同一份 canonical dataset 可导出到 HDF5 / NPZ / TFRecord（RLDS）/ WebDataset（tar shards）等，供不同训练栈使用。</li>
-          <li><b>关键点</b>：适配器做“格式转换”，但不碰“因果定义”——<code>contact_mode</code>/<code>slip_risk</code>/<code>failure_mode</code>/<code>progress</code>/<code>recoverability</code> 的定义与版本化是体系核心。</li>
-        </ul>
-        <p>
-          结合你们当前的“电手套”也完全兼容：把手套作为 Research Mode 的额外模态（例如 <code>glove_electro_raw</code> / <code>glove_contact_map</code>），用于 Teacher labeler 生成更稳的 teacher labels；
-          但 Deploy Mode 的 Student 仍只吃可长期信号（RGB + proprio + current/effort + 可选 F/T/耐久触觉），从而避免“交付版被手套绑死”。
-        </p>
-        <blockquote>
-          <p><b>一句话</b>：这套方案不是在押注某个记录格式（rosbag/HDF5/TFRecord），而是在押注“可复现的因果状态与标签体系”。格式会变，因果与契约不变。</p>
-        </blockquote>
 
         <h2 id="maintain">8) 标定、健康监测与可维护性</h2>
         <ul>
