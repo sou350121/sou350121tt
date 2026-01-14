@@ -515,6 +515,22 @@ Level-A  (500–1000Hz):  安全反射（限流、卡死检测、退避）
           为什么不是“全指视触觉”：全铺会把带宽、布线、耐久、标定维护成本拉爆；
           “少量高信息老师 + 少量高频工兵 + 本体信号兜底”更接近工程最优解。
         </p>
+
+        <h4 id="visuotactile-materials-front">视触的材料物理学（提前说明：为什么它更适合当 teacher）</h4>
+        <p>
+          视触（gel-based）把“接触边界条件”映射为可观测的形变/光学纹理，这正是它能给出高信息几何/接触模式真值的原因。
+          但这条映射<strong>强依赖材料状态</strong>：粘弹性/滞回、蠕变、温度、老化、污染会让同一个接触在不同时间/不同胶体批次下呈现不同“表观形变”。
+          因此工程上最稳的用法是：<b>把视触当 Research Mode 的 teacher（提供近真值与诊断），而不是把它当 Deploy Mode 的闭环主力</b>。
+        </p>
+        <ul>
+          <li><b>粘弹性/滞回</b>：同样压入深度，上升段/下降段响应不同 → teacher label 更应基于时间窗特征与变化率，而非单帧阈值。</li>
+          <li><b>蠕变/应力松弛</b>：持续接触时形变会随时间漂移 → <code>contact_confidence</code>/<code>slip_risk</code> 需要显式窗口 \(\Delta t\)。</li>
+          <li><b>温度/老化/污染</b>：模量与光学特征漂移 → 必须把 gel 视为耗材，并把“材料状态”写进 metadata（见 8)）。</li>
+        </ul>
+        <blockquote>
+          <p><b>一句话</b>：视触提供高信息“真值”，但真值受材料影响；所以 teacher 必须版本化 + 输出置信度，student 必须学“物理因果”而不是“胶的纹理”。</p>
+        </blockquote>
+
         <h4 id="placement-heuristic">布置启发式（在复杂环境里如何选“装哪里”）</h4>
         <ul>
           <li><b>先给拇指/食指</b>：它们承担最多的主动接触与相对运动（也是 slip/jam 最频发的位置）</li>
@@ -560,6 +576,10 @@ Level-A  (500–1000Hz):  安全反射（限流、卡死检测、退避）
         <p>
           <b>落地要点</b>：把“耗材化/会坏”写进系统。<br>
           视触觉（凝胶/表皮）与线缆在长期部署中就是耗材；因此需要把 <code>sensor_health</code>、<code>recalib_required</code>、以及更换后的 <code>calib_version</code> 当作数据的一等公民写进 episode metadata。
+        </p>
+        <p>
+          <b>视触相关（建议新增到 episode metadata）</b>：<code>gel_id</code> / <code>gel_batch</code> / <code>temp_gel</code> / <code>precondition_ok</code>（开机预调理脚本是否通过）；
+          同时 teacher 侧建议记录 <code>teacher_version</code> 与 <code>teacher_uncertainty</code>（或置信度），避免“材料状态漂了但标签看起来还很自信”。
         </p>
 
         <h2 id="loops">4) 三层闭环（Level-A/B/C）与职责边界</h2>
@@ -870,6 +890,33 @@ Level-A  (500–1000Hz):  安全反射（限流、卡死检测、退避）
           注意：视触不必承担高频闭环（handbook 强调其延迟/线缆/耗材/标定成本），但它非常适合在 Research Mode 里提供“几何真值”和“摩擦状态真值”。<br>
           对 Deploy Mode，teacher labels 只作为监督信号，不作为实时传感依赖。
         </p>
+
+        <h4 id="materials-physics">7.2.2.1 材料/接触物理学：为什么“视触 teacher”必须做版本化与去材料化</h4>
+        <p>
+          视触（gel-based）之所以“信息量大”，是因为它把接触边界条件（法向压力、剪切、曲率、边缘）映射成可观测的形变/光学纹理；
+          但这条映射<strong>不是常数</strong>，而是强烈依赖材料与环境：粘弹性、蠕变、滞回、温度、老化、污染都会改变同一个接触在传感器里的“表观形变”。
+          因此在 Teacher→Student 里，视触更适合承担 <b>teacher（近真值）</b> 而不是 <b>线上依赖</b>，并且 teacher 必须显式建模“不确定度”和“版本”。
+        </p>
+        <ul>
+          <li>
+            <b>关键材料效应（会让 teacher label 漂）</b>：
+            <ul style="margin: 0.3em 0 0 0; padding-left: 1.1em;">
+              <li><b>粘弹性/滞回</b>：同样的压入深度，上升段与下降段形变不同；短窗口特征比单帧更可靠（否则会把“材料滞回”误判成接触模式变化）。</li>
+              <li><b>蠕变/应力松弛</b>：保持接触时形变会随时间漂移；因此 <code>contact_confidence</code>/<code>slip_risk</code> 更应基于 \(\Delta t\) 窗口内的变化率与稳态残差。</li>
+              <li><b>温度与老化</b>：模量变化会导致 <code>A_min</code>、<code>v_{slip}</code> 等阈值随批次/寿命变化；必须把 <code>gel_id</code>/<code>gel_batch</code>/<code>temp_gel</code>、以及 <code>calib_version</code> 记录为 metadata。</li>
+              <li><b>表面污染/润滑</b>：会改变摩擦与光学特征（例如高光/雾化），需要输出 <code>contact_confidence</code> 与 <code>teacher_uncertainty</code>，并在 RM/QC 中触发复核。</li>
+            </ul>
+          </li>
+          <li>
+            <b>Teacher→Student 映射的工程原则（让 student 学到“物理因果”而不是“胶的纹理”）</b>：
+            <ul style="margin: 0.3em 0 0 0; padding-left: 1.1em;">
+              <li><b>输出低维因果状态 + 不确定度</b>：teacher 输出 <code>contact_mode</code>/<code>slip_risk</code>/<code>contact_patch_stats</code> 同时输出 <code>teacher_uncertainty</code>（或置信度），student 训练时对低置信样本降权。</li>
+              <li><b>做“去材料化”的特征</b>：尽量用归一化/比值/变化率（例如 patch 面积的相对变化、切向位移能量的归一化）而不是绝对像素强度；减少对 gel 批次/光照的敏感性。</li>
+              <li><b>预处理/预调理（pre-conditioning）</b>：每次开机或更换 gel，先跑固定的压入/滑动脚本做“材料状态初始化”，并写入 <code>precondition_ok</code>。</li>
+              <li><b>把材料当作 nuisance 变量</b>：在 teacher config 里显式记录（gel/温度/光照/镜头），必要时按 batch 分组校准阈值，避免跨批次直接共享阈值。</li>
+            </ul>
+          </li>
+        </ul>
 
         <h4 id="student-policy-interface">7.2.3 Student → Policy 的接口规格（让部署可控、可验证）</h4>
         <p>
