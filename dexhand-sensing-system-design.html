@@ -341,6 +341,90 @@ Level-A  (500–1000Hz):  安全反射（限流、卡死检测、退避）
           <li><b>闭环信息（要快）</b>：Level-A/Level-B 需要 60–1000Hz、低延迟、可长期运行 → 优先用 proprio + effort/current +（可选）wrist F/T 或耐久触觉阵列</li>
           <li><b>老师信息（要准）</b>：Research Mode 用视触觉给几何/接触模式真值 → 通过 A（Teacher→Student）蒸馏到部署可用的状态</li>
         </ul>
+
+        <h4 id="stack-feasibility">可行性论证（为什么这套分层“真的能跑”）</h4>
+        <p>
+          这套分层成立的第一性原因是：<b>闭环控制需要的是“可长期、低延迟、可回放的因果信号”，而不是“看见一切几何细节”</b>。
+          在长时部署里，视触觉（凝胶/表皮/光学）很难满足 uptime 与维护成本约束，因此它更适合承担“老师信息”（生成近真值标签），而不是承担“闭环主力”。
+        </p>
+        <p>
+          你最容易失明的三类因果（slip / jam / misalignment）本质更接近<b>事件检测 + 模式切换 + 风险评估</b>问题：
+          <code>q/qdot</code> 与 <code>current/effort</code> 能提供强一致的“动力学扰动证据”（可回放、可追责），再叠加（可选）<code>wrist_FT</code> 或耐久触觉阵列，就能把“止损与恢复”做得足够可靠。
+          研究模式下再用视触觉给出接触几何/接触模式真值，通过 Teacher→Student 蒸馏为部署可用的状态（如 <code>slip_risk</code>、<code>jam_state</code>、<code>misalign_class</code>、<code>contact_mode</code>），从而实现<b>研究上限</b>与<b>部署稳定</b>的同时满足。
+        </p>
+        <p>
+          <b>RM-in-loop 的关键作用</b>不是“给一个总分”，而是把连续流变成可用数据：
+          自动切段、挑 hard cases、触发复核/重采样，保证 teacher 标签与部署失败代价函数对齐，避免数据飞轮被噪声带偏。
+        </p>
+
+        <h4 id="stack-conditions">成立条件清单（不满足就会翻车）</h4>
+        <ul>
+          <li><b>时间与回放</b>：所有关键通道必须 <b>timestamp-at-source</b>，并且可对齐回放；否则 slip/jam 的因果会被“不同步”学错。</li>
+          <li><b>闭环职责边界</b>：Level-A/B 只负责“止损与恢复”（安全/防滑/解卡/退避），不承担高分辨几何重建；高分辨几何只用于 teacher。</li>
+          <li><b>可部署状态定义</b>：Teacher 输出必须被压缩成部署可用、可验收的低维状态（事件/模式/风险/余量），而不是把毫米级几何硬塞进部署回路。</li>
+          <li><b>恢复动作空间</b>：必须有明确的 recover primitives（如 <code>backoff</code>/<code>regrasp</code>/<code>re-approach</code> 等），并把触发条件写成规则或可学习门控；只检测不恢复等于不可用。</li>
+          <li><b>域移管理</b>：Research 视触装配不能显著改变控制与摩擦边界；或训练时显式做分布对齐/随机化，否则 Teacher→Student 会学到“研究特有”的伪特征。</li>
+          <li><b>传感健康是一等公民</b>：<code>sensor_health</code>/<code>calib_version</code>/<code>recalib_required</code> 必须进数据与策略输入；长期部署里“传感器退化”是常态，不建模就会默默劣化。</li>
+          <li><b>验收指标绑定失败代价</b>：以误报/漏报、恢复成功率、平均止损时间、任务成功率等硬指标为准；RM 只做 triage（排序/筛选），不能替代验收。</li>
+        </ul>
+
+        <h4 id="stack-failure-mitigations">失败模式与对策（工程上最常见的坑）</h4>
+        <table>
+          <thead>
+            <tr>
+              <th>失败模式</th>
+              <th>典型现象</th>
+              <th>根因</th>
+              <th>怎么发现（可观测信号）</th>
+              <th>对策（可落地）</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Teacher/Student 标签不一致</td>
+              <td>学生模型学不稳、上线后误报/漏报高</td>
+              <td>标签定义不工程化（人/场景之间不一致）</td>
+              <td>同一片段不同版本 teacher 输出差异大；RM 复核分歧段</td>
+              <td>把标签写成“阈值 + 时间窗 + 版本号”；RM 专门挖“分歧段”做复标</td>
+            </tr>
+            <tr>
+              <td>Research→Deploy 域移</td>
+              <td>研究效果好、部署崩盘</td>
+              <td>视触装配改变动力学/摩擦；或训练分布偏置</td>
+              <td>部署数据上的状态分布漂移（统计特征/失败类型变了）</td>
+              <td>老师只做标注不改控制边界；训练做随机化/对齐；部署端以 proprio/effort 为主</td>
+            </tr>
+            <tr>
+              <td>多模态不同步导致“学错因果”</td>
+              <td>slip/jam 预测提前/滞后，触发恢复无效</td>
+              <td>相机/触觉/本体时间戳不一致，alignment 漂</td>
+              <td>回放对齐后事件峰值错位；同一事件跨源延迟不稳定</td>
+              <td>timestamp-at-source + 对齐校准；事件标签用窗口而不是单帧点</td>
+            </tr>
+            <tr>
+              <td>闭环过度依赖“老师传感”</td>
+              <td>视触坏了/脏了就失明</td>
+              <td>把高信息但不耐久的信号当主闭环输入</td>
+              <td>一旦遮挡/污染，性能断崖式下降</td>
+              <td>老师信号只用于训练/标注；部署闭环只依赖可长期信号，并有健康降级路径</td>
+            </tr>
+            <tr>
+              <td>RM 指标带偏数据飞轮</td>
+              <td>数据越采越“好看但没用”</td>
+              <td>RM 学到了表象特征，未对齐失败代价函数</td>
+              <td>RM 高分片段并不提升部署 KPI；hard cases 被遗漏</td>
+              <td>RM 只做 triage；用部署 KPI 做闭环；定期插入挑战集做校准</td>
+            </tr>
+            <tr>
+              <td>传感器漂移/退化未建模</td>
+              <td>慢性劣化、很久才被发现</td>
+              <td>触觉耗材化、标定变化、线缆接触不良</td>
+              <td><code>sensor_health</code> 统计漂移；失败率随时间上升</td>
+              <td>把健康/标定版本写进数据；策略对健康做门控与降级；定期自动自检</td>
+            </tr>
+          </tbody>
+        </table>
+
         <h3 id="mvs">3.1 Level-0（MVS：最小可行传感）</h3>
         <p>目标：低成本获得“接触判别能力 + 可复现数据”。</p>
         <ul>
