@@ -217,6 +217,7 @@
             <li><a href="#core">核心三问（直击要害）</a></li>
             <li><a href="#kpi">系统目标与 KPI（把方向锁死）</a></li>
             <li><a href="#arch">总体架构（传感栈 × 多频闭环 × 数据闭环）</a></li>
+            <li><a href="#contact-system">接触系统的状态空间 × 可观测性（Teacher/Student 分工）</a></li>
             <li><a href="#stack">传感栈分层（MVS → Pro）与推荐布置</a></li>
             <li><a href="#loops">三层闭环（Level-A/B/C）与职责边界</a></li>
             <li><a href="#causality">人形视角：手是“物理因果接口”</a></li>
@@ -382,6 +383,42 @@ Level-A  (500–1000Hz):  安全反射（限流、卡死检测、退避）
           <li><b>P4 可维护优先</b>：触觉（尤其视触觉）是易损件；维护成本会直接反噬 uptime。</li>
           <li><b>P5 先跑 MVS</b>：先做到“可复现采数 + 自恢复”，再升级传感器，而不是一开始堆满硬件。</li>
         </ul>
+
+        <h3 id="contact-system">2.2 深度梳理：接触系统的状态空间 × 可观测性（为什么必须 Teacher/Student 分工）</h3>
+        <p>
+          灵巧操作的难点不在“动作学得不够像”，而在于<strong>接触是一类强非线性、强历史依赖、部分不可观测</strong>的系统：
+          同样的 <code>current/effort</code> 扰动可能来自不同的接触几何；同样的视触形变也可能因为材料状态变化而不同。
+          因此一个可交付的系统必须把“要学什么”定义成<b>可对齐、可回放、可验收的因果状态</b>，而不是把传感器当作目标。
+        </p>
+        <ul>
+          <li>
+            <b>因果状态（policy 真正需要的最小集合）</b>：
+            <ul style="margin: 0.3em 0 0 0; padding-left: 1.1em;">
+              <li><b>几何类</b>：是否接触、接触 patch（面积/位置/主方向）、相对偏置（misalignment）。</li>
+              <li><b>力学类</b>：法向预算与切向负载（等价于摩擦边界 \(\|f_t\|\le \mu f_n\) 的余量）、外部约束反力（push/pull/twist/pry）。</li>
+              <li><b>摩擦/失效类</b>：<code>contact_mode</code>（stick/slip/roll）、<code>slip_risk</code>、<code>jam_state</code>、<code>recoverability</code>。</li>
+            </ul>
+          </li>
+          <li>
+            <b>为什么 Deploy 侧不追“几何真值”</b>：在复杂接触下，几何往往不可由低维本体信号唯一反演（ill-posed）；
+            但 slip/jam/过载这类<strong>失效事件与风险</strong>在 <code>q/qdot</code> 与 <code>current/effort</code> 上具有更稳定的一致签名，适合做闭环止损与恢复。
+          </li>
+          <li>
+            <b>为什么视触适合当 teacher</b>：视触能提供高信息的几何/接触模式真值，但它的观测会被材料与环境扰动：
+            \[
+              y_{vt} = f(x_{contact},\, m_{gel},\, T,\, age,\, contam)
+            \]
+            其中 \(m_{gel}\)（批次/模量）、\(T\)（温度）、age（老化）、contam（污染/润滑）都会改变“同一个接触”的表观形变。
+            所以视触应承担“真值通路”（Research/Teacher），并用版本化 + 置信度把不确定性显式化（见 7.2.2 与 8)）。
+          </li>
+          <li>
+            <b>Teacher→Student 的真实含义</b>：蒸馏的不是“视触图像”，而是把 teacher 的高信息真值压缩成部署可用状态；
+            让 student 在 Deploy 信号里学到与这些状态对应的动力学签名与风险边界，从而把研究上限转化为交付稳定性。
+          </li>
+        </ul>
+        <blockquote>
+          <p><b>落地检查</b>：如果你能用 Deploy 信号稳定输出 <code>slip_risk</code>/<code>jam_state</code>/<code>recoverability</code>，并驱动 recover primitives 提升 KPI，那么这套分工就是“能跑”的；几何真值则留给 teacher 去提供与校准。</p>
+        </blockquote>
 
         <h2 id="stack">3) 传感栈分层（MVS → Pro）与推荐布置</h2>
         <p>
