@@ -521,6 +521,18 @@ Level-A（安全层）：保持本方案设计
           <li><b>安全 KPI</b>：过流/过温/软硬限位触发次数、近碰撞次数。</li>
           <li><b>VLA 对齐 KPI（建议加上）</b>：<code>intervention_rate</code>（单位时间/步的人工接管频率）、<code>executable_rate</code>（动作可执行率：IK/限位/自碰撞不过关的比例）。</li>
         </ul>
+        <h4>Level-B-Force 稳定性约束（必须）</h4>
+        <ul>
+          <li><b>外环频率</b>：100–200Hz（force-profile）；<b>内环伺服</b>：≥1kHz（位置/力矩/限流）。</li>
+          <li><b>外环允许更新项</b>：<code>admittance/impedance</code> 参数、<code>Δx_ee/ΔR_ee</code> 或目标 <code>wrench</code>，并必须带 <b>阻尼注入/能量约束（passivity guard）</b>。</li>
+          <li><b>安全触发</b>：任意时刻若 <code>F &gt; F_max</code> 或 <code>|τ| &gt; τ_max</code> → 立即 <code>backoff/stop</code> 并记录 <code>recover_event</code>。</li>
+        </ul>
+        <h4>精细力控 KPI（与 Replay/QC 并列）</h4>
+        <ul>
+          <li><b>force_tracking_error / torque_tracking_error</b>：均值 + P95（按原语分桶：twist / insertion / pry）。</li>
+          <li><b>peak_lateral_force</b>（插入类）或 <b>peak_torque</b>（扭动类）：峰值 + 超限次数（per 100 episodes）。</li>
+          <li><b>回归要求</b>：相同 challenge set 在模型/控制更新后，上述 KPI 不退化（退化需解释并回滚）。</li>
+        </ul>
         <blockquote>
           <p>
             直觉：工程胜负手不是单次成功率，而是“长时稳定 + 快速自救 + 可复现数据飞轮”。
@@ -1694,6 +1706,13 @@ Level-A（安全层）：保持本方案设计
           对 <code>twist</code>/<code>insertion</code>/<code>pry</code> 等精细力控任务，Level-B 需要切换到力控子模式，要求更精确的力/力矩闭环。
           此时 <code>current/effort</code> 的弱 proxy 不足，<b>必须引入 <code>wrist_FT</code>（6D F/T）</b>。
         </p>
+        <h5>多指力分配（Force Distribution / Internal Force）</h5>
+        <ul>
+          <li><b>外环职责</b>：Level-B-Force 负责 “外环 wrench/compliance 目标”，但多指执行需要力分配器把目标转换为各指夹持/接触动作。</li>
+          <li><b>最小可落地（Rule-based）</b>：拇指+食指作为<b>主控对</b>承担法向/切向调节，其余手指低增益跟随支撑；通过 <code>stability_margin/slip_risk</code> 调整 <b>internal force</b>，并对脆弱物体设 <code>F_normal_max</code>。</li>
+          <li><b>进阶可选（QP/约束优化）</b>：输入目标 wrench、接触指集合、法向方向估计、摩擦先验/在线估计、各指力/速上限；输出每指目标法向/切向（或夹持增益），最小化内力并满足摩擦锥与安全约束。</li>
+          <li><b>责任边界</b>：若无指尖力/触觉，仅启用 Rule-based 的“主控对 + 安全上限”，避免不可靠的 per‑finger 闭环。</li>
+        </ul>
 
         <h5>精细力控闭环结构图</h5>
         <pre><code>┌─────────────────────────────────────────────────────────────────────────────┐
@@ -2200,6 +2219,18 @@ Level-A（安全层）：保持本方案设计
             </tr>
           </tbody>
         </table>
+        <h5 id="contact-wrench-definition">contact_wrench 的定义与可辨识范围（责任边界）</h5>
+        <ul>
+          <li>
+            <b>层级清晰化</b>：
+            <ul style="margin:0.3em 0 0 0; padding-left: 1.1em;">
+              <li><b><code>wrist_wrench</code></b>：手腕 6D F/T 量测到的总合力/力矩（wrist/tool frame）。</li>
+              <li><b><code>contact_wrench</code>（近似）</b>：在“单主接触 / 单指主导”的任务窗口内，将 <code>wrist_wrench</code> 通过 <code>tool_tf</code> + <code>gravity_comp</code> 变换/补偿后，近似为主要接触点的等效 wrench。</li>
+            </ul>
+          </li>
+          <li><b>多接触不可唯一分解</b>：multi-contact 时只输出总 wrench + 可辨识方向特征（如 <code>misalign_direction</code>、<code>jam_risk</code>、<code>torque_sign</code>）；per‑finger wrench 交给指尖传感或 teacher 估计模块。</li>
+          <li><b>门控条件</b>：仅在 <code>contact_confidence ≥ τ</code> 且处于可辨识接触模式时，<code>contact_wrench</code> 才用于闭环参数更新。</li>
+        </ul>
         <p>
           注意：视触不必承担高频闭环（handbook 强调其延迟/线缆/耗材/标定成本），但它非常适合在 Research Mode 里提供“几何真值”和“摩擦状态真值”。<br>
           对 Deploy Mode，teacher labels 只作为监督信号，不作为实时传感依赖。
