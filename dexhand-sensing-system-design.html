@@ -306,7 +306,7 @@
             <li>
               <b>工程化：可训练 / 可复现 / 可追责</b>
               <ul>
-                <li><a href="#sync">时间同步与数据管线</a> / <a href="#maintain">标定与健康监测</a></li>
+                <li><a href="#sync">时间同步与数据管线</a> / <a href="#data-collection-workflow">数据采集实施流程</a> / <a href="#maintain">标定与健康监测</a></li>
               </ul>
             </li>
             <li>
@@ -796,15 +796,16 @@
             </tr>
             <tr>
               <td><b>+视触觉<br>（阶段 4）</b></td>
-              <td>上述 + <b>多点视触（pad+side）</b></td>
+              <td>上述 + <b>多点视触（pad+side）</b><br>+ 可选：温度传感器 ×1–2</td>
               <td>
                 <ul style="margin:0; padding-left: 1.1em;">
                   <li><b>新增</b>：高品质 teacher labels（接触几何/接触模式/力学真值）</li>
                   <li>显著提升 RM/QC 质量（hard case 挖掘更准确）</li>
                   <li>Teacher→Student 蒸馏质量提升</li>
+                  <li><b>（温度可选）</b>材质识别 (metal/plastic/wood/fabric)、热安全检测</li>
                 </ul>
               </td>
-              <td>—（能力谱系完整）</td>
+              <td>—（核心能力完整；场景特定可继续扩展）</td>
             </tr>
           </tbody>
         </table>
@@ -892,8 +893,604 @@
           只有当你<strong>专门设计</strong>了密封腔体/气囊/微流体通道时，“压力传感”才成立，并且它更接近<b>低维法向力 proxy + 健康/漏气监测</b>，依旧不能替代视触的几何真值。
         </p>
         <p>
-          因此在本方案里：法向/接触的最低配仍以 <code>current/effort</code>、（可选）<code>wrist_FT</code>、以及耐久触觉阵列为主；视触负责 teacher labels（几何/接触模式），而不是依赖“气压”做闭环。
+          因此在本方案里：法向/接触的最低配仍以 <code>current/effort</code>、（可选）<code>wrist_FT</code>、以及耐久触觉阵列为主；视触负责 teacher labels（几何/接触模式），而不是依赖"气压"做闭环。
         </p>
+
+        <h4 id="thermal-sensing">3.2.1 温度感知：材质识别 × 安全检测（可选增强）</h4>
+        <p>
+          温度感知通过<b>热导率差异</b>可以区分材质（金属 vs 塑料 vs 织物），并提供安全检测（过热预警）。
+          但它的<b>时间常数慢</b>（0.5–5秒 vs 力学的 1–10毫秒），<strong>无法参与 Level-A/B 的高频闭环</strong>，只能作为 Level-C 的语义输入。
+        </p>
+
+        <h5>温度感知的价值与局限</h5>
+        <table>
+          <thead>
+            <tr>
+              <th>维度</th>
+              <th>价值</th>
+              <th>局限</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><b>材质识别</b></td>
+              <td>
+                通过接触瞬间的温度变化率 (dT/dt) 估计热导率：<br>
+                • 金属 (50–200 W/m·K) → 快速热交换<br>
+                • 塑料/橡胶 (0.1–0.5) → 慢速热交换<br>
+                • 织物 (0.03–0.1) → 极慢热交换
+              </td>
+              <td>
+                需要 0.5–2秒 的接触时间窗口，无法做毫秒级反应
+              </td>
+            </tr>
+            <tr>
+              <td><b>安全检测</b></td>
+              <td>
+                避免抓烫的物体 (&gt;60°C)，检测电机/驱动器过热
+              </td>
+              <td>
+                手套/包覆材料会延长热传导路径，需要差分测量
+              </td>
+            </tr>
+            <tr>
+              <td><b>任务适应</b></td>
+              <td>
+                根据材质调整抓取策略（金属→大预紧力，织物→小预紧力）
+              </td>
+              <td>
+                与视触胶体有矛盾：胶体温度变化会同时影响视触测量和温度测量
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h5>推荐决策树：你的应用需要温度感知吗？</h5>
+        <pre><code>你的应用场景是？
+  │
+  ├─ <b>工业装配 / 实验室操作</b>
+  │   └─ ❌ <b>不需要温度</b>（材质已知，环境可控）
+  │       理由：任务中的物体材质是预先确定的
+  │
+  ├─ <b>家庭服务 / 通用操作</b>
+  │   └─ ⚠️  <b>可选（Phase 4+）</b>
+  │       优先级: wrist_FT &gt; 指尖力 &gt; 温度
+  │       理由：力学闭环是基础能力，温度是锦上添花
+  │       配置：1–2 个 NTC 热敏电阻（指尖侧面 / 手腕）
+  │       用途：材质识别 → 调整抓取参数
+  │
+  └─ <b>厨房 / 医疗 / 安全关键应用</b>
+      └─ ✅ <b>需要温度（Phase 3–4）</b>
+          理由：必须避免烫伤/冻伤，或测量体温
+          配置：方案 A（1–2 个热敏电阻）或方案 B（多点温度阵列）
+          用途：安全检测（过热预警）+ 材质识别
+</code></pre>
+
+        <h5>最小配置方案（如果要纳入）</h5>
+        <p><b>传感器</b>：</p>
+        <ul>
+          <li>1–2 个小型热电偶或 NTC 热敏电阻（成本 $1–5/个）</li>
+          <li>位置：指尖侧面（避开视触胶体）或手腕</li>
+          <li>采样率：1–10Hz（够用，不需要高频）</li>
+        </ul>
+        <p><b>集成到架构</b>：</p>
+        <ul>
+          <li>Level-C 输入：RGB + task state + wrist_FT 统计特征 <b>+ 温度梯度 (T_fingertip - T_ambient)</b></li>
+          <li>输出：<code>material_class</code> (metal/plastic/wood/fabric/ceramic) → 调整抓取参数</li>
+          <li>RM 增加：<code>thermal_safety</code> 判据（过热 → 触发 release）</li>
+        </ul>
+
+        <h5>时间常数对比（为什么温度无法参与高频闭环）</h5>
+        <table>
+          <thead>
+            <tr>
+              <th>模态</th>
+              <th>时间常数</th>
+              <th>适用闭环频率</th>
+              <th>用途</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>力/力矩</td>
+              <td>1–10ms</td>
+              <td>500–1000Hz (Level-A)</td>
+              <td>安全反射、止损</td>
+            </tr>
+            <tr>
+              <td>触觉（压力/剪切）</td>
+              <td>5–20ms</td>
+              <td>60–200Hz (Level-B)</td>
+              <td>防滑、夹持力调度</td>
+            </tr>
+            <tr style="background-color: rgba(255, 193, 7, 0.15);">
+              <td><b>温度</b></td>
+              <td><b>0.5–5s</b></td>
+              <td><b>0.2–2Hz</b></td>
+              <td>材质识别、安全检测（语义特征）</td>
+            </tr>
+            <tr>
+              <td>视觉</td>
+              <td>30–100ms</td>
+              <td>5–30Hz (Level-C)</td>
+              <td>全局几何、策略决策</td>
+            </tr>
+          </tbody>
+        </table>
+        <blockquote>
+          <p>
+            <b>关键洞察</b>：温度的时间常数比力学慢 <b>100–1000 倍</b>，因此它只能作为<strong>语义输入</strong>（Level-C），
+            用于材质分类、任务初始化参数选择、或安全检测，<strong>不参与毫秒级的接触稳定闭环</strong>。
+          </p>
+        </blockquote>
+
+        <h4 id="ultrasonic-sensing">3.2.2 超声感知：非接触探测 × 内部结构（场景特定可选）</h4>
+        <p>
+          超声传感器通过<b>声波反射</b>可以实现非接触距离测量、材料内部结构探测、以及声学特性识别（空心 vs 实心、液体检测）。
+          相比温度，超声的响应速度更快（毫秒级），但需要<b>声学耦合</b>且<b>方向性强</b>，更适合特定任务场景。
+        </p>
+
+        <h5>超声感知的价值与局限</h5>
+        <table>
+          <thead>
+            <tr>
+              <th>应用场景</th>
+              <th>价值</th>
+              <th>局限</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><b>非接触距离测量</b></td>
+              <td>
+                • 手指接近物体前的障碍检测（5–30cm）<br>
+                • 抓取前的距离估计 → 优化 approach 路径<br>
+                • 避免碰撞（尤其在视觉遮挡时）
+              </td>
+              <td>
+                • 空气中衰减大（需要 &lt;30cm）<br>
+                • 方向性强（±15–30°锥角）<br>
+                • 不适合复杂几何（多次反射）
+              </td>
+            </tr>
+            <tr>
+              <td><b>材质/内部结构</b></td>
+              <td>
+                • 空心 vs 实心（声阻抗差异）<br>
+                • 液体检测（瓶子里有没有水）<br>
+                • 厚度测量（墙壁/容器壁厚）<br>
+                • 多层结构识别
+              </td>
+              <td>
+                • 需要接触或极近距离（&lt;1cm）<br>
+                • 需要耦合介质（凝胶/水）或密贴接触<br>
+                • 高频超声（&gt;1MHz）穿透性差
+              </td>
+            </tr>
+            <tr>
+              <td><b>声学特性识别</b></td>
+              <td>
+                • 区分金属/塑料/木材（声速不同）<br>
+                • 识别液体/气体/固体<br>
+                • 结合温度 → 更准确的材质分类
+              </td>
+              <td>
+                • 需要已知参考声速数据库<br>
+                • 表面粗糙度影响反射<br>
+                • 软质材料（织物/海绵）吸声严重
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h5>推荐决策：超声 vs 温度（如何选择）</h5>
+        <pre><code>你的任务需要什么？
+  │
+  ├─ <b>接触前的距离/障碍感知</b>
+  │   └─ ✅ <b>超声更合适</b>（非接触，ms 级响应）
+  │       配置：指尖前端 1–2 个超声测距模块（40kHz，5–30cm 量程）
+  │       用途：approach 优化、避碰、抓取前距离估计
+  │
+  ├─ <b>接触后的材质识别</b>
+  │   └─ ⚖️  <b>温度 + 视觉更简单</b>（超声需要耦合）
+  │       • 温度：热导率 → metal/plastic/fabric
+  │       • 超声：需要密贴接触 → 空心/实心/液体
+  │       建议：优先温度 + RGB；特殊需求（液体检测）才加超声
+  │
+  ├─ <b>内部结构/液体检测</b>（瓶子里有没有水、空心 vs 实心）
+  │   └─ ✅ <b>超声必需</b>（唯一可行方案）
+  │       配置：高频超声探头（1–5MHz）+ 接触式布置
+  │       注意：需要声学耦合（凝胶或水膜）
+  │
+  └─ <b>热安全检测</b>（避免烫伤）
+      └─ ✅ <b>温度必需</b>（超声无法测温）
+</code></pre>
+
+        <h5>最小配置方案（如果要纳入超声）</h5>
+        <p><b>方案 A：非接触测距</b>（推荐用于 approach 优化）</p>
+        <ul>
+          <li>传感器：1–2 个超声测距模块（HC-SR04 类，40kHz，成本 $2–5/个）</li>
+          <li>位置：手腕或指尖前端（朝向接近方向）</li>
+          <li>量程：5–30cm（最佳工作距离）</li>
+          <li>采样率：10–50Hz（够用）</li>
+          <li>用途：Level-C 输入 → approach 路径优化、避碰</li>
+        </ul>
+
+        <p><b>方案 B：接触式材质/液体检测</b>（特殊应用）</p>
+        <ul>
+          <li>传感器：高频超声探头（1–5MHz，成本 $10–50/个）</li>
+          <li>位置：指尖表面（需要与物体密贴）</li>
+          <li>耦合：需要凝胶或水膜（维护成本高）</li>
+          <li>用途：空心/实心判别、液体检测、厚度测量</li>
+          <li><b>工程挑战</b>：耦合介质维护、清洁、耐用性</li>
+        </ul>
+
+        <h5>超声 vs 温度 vs 力学：时间常数对比</h5>
+        <table>
+          <thead>
+            <tr>
+              <th>模态</th>
+              <th>响应时间</th>
+              <th>测量距离</th>
+              <th>主要用途</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>力/力矩</td>
+              <td>1–10ms</td>
+              <td>接触（0mm）</td>
+              <td>闭环控制、止损</td>
+            </tr>
+            <tr>
+              <td><b>超声（测距）</b></td>
+              <td><b>~10ms</b></td>
+              <td><b>5–300mm</b></td>
+              <td>非接触距离、避碰</td>
+            </tr>
+            <tr>
+              <td><b>超声（材质）</b></td>
+              <td><b>~10–50ms</b></td>
+              <td><b>接触（0–1mm）</b></td>
+              <td>内部结构、液体检测</td>
+            </tr>
+            <tr>
+              <td>温度</td>
+              <td>0.5–5s</td>
+              <td>接触（0mm）</td>
+              <td>材质识别（热导率）、安全</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <blockquote>
+          <p>
+            <b>工程建议</b>：
+            <ul style="margin: 0.5em 0; padding-left: 1.5em;">
+              <li>优先级：<b>力学 &gt; wrist_FT &gt; 指尖力 &gt; 温度 &gt; 超声</b></li>
+              <li>超声更适合<strong>特定场景</strong>（复杂环境避碰、液体检测、内部结构探测）</li>
+              <li>通用家庭服务：温度 + RGB 已够用于材质识别；超声是锦上添花</li>
+              <li>厨房/医疗：温度（热安全）优先级高于超声</li>
+              <li>工业/仓储（复杂环境）：超声测距对 approach 优化有明确价值</li>
+            </ul>
+          </p>
+        </blockquote>
+
+        <h5>超声的特定场景深入分析：什么任务真正需要它？</h5>
+        <p>
+          下面用<b>具体任务案例</b>说明超声的独特价值——即<strong>其他传感器做不到或做不好的事</strong>。
+        </p>
+
+        <h6>场景 1：液体容器操作（厨房/服务机器人）</h6>
+        <table>
+          <thead>
+            <tr>
+              <th>任务</th>
+              <th>挑战</th>
+              <th>超声的作用</th>
+              <th>替代方案的局限</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><b>倒水/倒饮料</b></td>
+              <td>
+                • 需要实时监测液位（避免溢出）<br>
+                • 视觉看不到瓶/杯内部<br>
+                • 重量变化滞后且不精确
+              </td>
+              <td>
+                超声探头朝向容器内部，实时测量液面距离：<br>
+                • 距离减小 → 液位上升<br>
+                • 距离稳定 → 液位到达目标<br>
+                • 响应时间：~10ms（足够快）
+              </td>
+              <td>
+                • <b>视觉</b>：遮挡、反光、透明液体难识别<br>
+                • <b>重量</b>：需要力传感器 + 容器标定，滞后<br>
+                • <b>倾斜角估计</b>：误差大，不可靠
+              </td>
+            </tr>
+            <tr>
+              <td><b>检测容器是否空</b></td>
+              <td>
+                抓取前不知道瓶子/盒子里是否有东西
+              </td>
+              <td>
+                轻拍容器 + 超声：<br>
+                • 空容器：声波穿透，回波单一<br>
+                • 有液体：声阻抗变化，回波特征不同<br>
+                • 无需打开/倾斜
+              </td>
+              <td>
+                • <b>重量</b>：需要已知容器自重<br>
+                • <b>视觉</b>：不透明容器看不到<br>
+                • <b>晃动</b>：需要复杂动作，可能洒出
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h6>场景 2：视觉盲区的几何探测（复杂抓取）</h6>
+        <table>
+          <thead>
+            <tr>
+              <th>任务</th>
+              <th>挑战</th>
+              <th>超声的作用</th>
+              <th>为什么视觉/触觉不够</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><b>抓取遮挡物体</b><br>（柜子深处、抽屉里）</td>
+              <td>
+                • 相机视角被遮挡<br>
+                • 物体背面几何不可见<br>
+                • 需要"盲抓"
+              </td>
+              <td>
+                手指上的超声探头：<br>
+                • 在 approach 过程中扫描周围 5–15cm<br>
+                • 检测障碍物（墙壁、其他物体）<br>
+                • 估计目标物体的大致位置和尺寸
+              </td>
+              <td>
+                • <b>视觉</b>：被遮挡，看不到<br>
+                • <b>触觉</b>：需要先接触，来不及调整<br>
+                • <b>wrist_FT</b>：只有接触后才有信号
+              </td>
+            </tr>
+            <tr>
+              <td><b>手掌内侧/手指间探测</b></td>
+              <td>
+                抓取过程中，手掌内侧是相机盲区
+              </td>
+              <td>
+                手掌内侧安装超声：<br>
+                • 检测物体与手掌的距离<br>
+                • 判断是否完全进入抓取区域<br>
+                • 避免夹空
+              </td>
+              <td>
+                • <b>腕部相机</b>：角度有限，手掌内侧仍是盲区<br>
+                • <b>触觉</b>：接触后才知道，已经晚了
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h6>场景 3：软硬度/成熟度估计（非破坏性检测）</h6>
+        <table>
+          <thead>
+            <tr>
+              <th>任务</th>
+              <th>挑战</th>
+              <th>超声的作用</th>
+              <th>触觉方案的问题</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><b>水果成熟度检测</b></td>
+              <td>
+                • 需要判断软硬度（成熟/过熟/生）<br>
+                • 不能捏坏（触觉需要施加力）
+              </td>
+              <td>
+                超声测量声速/衰减：<br>
+                • 硬（生）：声速快，反射强<br>
+                • 软（熟）：声速慢，衰减大<br>
+                • 无需施加压力
+              </td>
+              <td>
+                • <b>触觉</b>：需要捏压 → 可能损坏<br>
+                • <b>视觉</b>：只能看外观，内部软硬度看不出<br>
+                • <b>温度</b>：与成熟度无直接关系
+              </td>
+            </tr>
+            <tr>
+              <td><b>面包新鲜度</b></td>
+              <td>
+                新鲜面包柔软，陈旧面包变硬
+              </td>
+              <td>
+                超声探测内部密度/气孔结构：<br>
+                • 新鲜：多气孔，声波散射<br>
+                • 陈旧：密实，声波穿透性强
+              </td>
+              <td>
+                • <b>触觉</b>：表皮摸起来都差不多<br>
+                • <b>视觉</b>：外观无明显差异
+              </td>
+            </tr>
+            <tr>
+              <td><b>包裹/盒子内容物检测</b></td>
+              <td>
+                • 不能打开看<br>
+                • 需要判断是实心还是空心<br>
+                • 判断是硬物还是软物
+              </td>
+              <td>
+                超声穿透检测：<br>
+                • 空：回波单一且清晰<br>
+                • 硬物：强反射<br>
+                • 软物：吸声，回波弱
+              </td>
+              <td>
+                • <b>重量</b>：需要拿起来，且不知道内容物类型<br>
+                • <b>晃动</b>：并非所有物体都会响<br>
+                • <b>视觉</b>：不透明包装看不到
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h6>场景 4：复杂环境的 approach 优化（工业/仓储）</h6>
+        <table>
+          <thead>
+            <tr>
+              <th>场景</th>
+              <th>挑战</th>
+              <th>超声的作用</th>
+              <th>为什么必须是超声</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><b>货架深处抓取</b></td>
+              <td>
+                • 狭窄空间<br>
+                • 多次碰撞风险<br>
+                • 相机视角受限
+              </td>
+              <td>
+                多方向超声测距：<br>
+                • 前方：目标物体距离<br>
+                • 侧方：与货架壁的距离<br>
+                • 实时调整 approach 轨迹
+              </td>
+              <td>
+                • <b>视觉</b>：深度估计误差大（单目）；遮挡严重<br>
+                • <b>触觉/FT</b>：碰到才知道，已经晚了<br>
+                • <b>激光雷达</b>：成本高、体积大、不适合手指
+              </td>
+            </tr>
+            <tr>
+              <td><b>插拔操作</b><br>（插头、USB、钥匙）</td>
+              <td>
+                • 孔深度不可见<br>
+                • 需要精确对齐<br>
+                • 插入深度反馈
+              </td>
+              <td>
+                插入物前端装超声：<br>
+                • 测量到孔底的距离<br>
+                • 监测插入深度<br>
+                • 检测是否到位
+              </td>
+              <td>
+                • <b>视觉</b>：孔内部看不到<br>
+                • <b>wrist_FT</b>：只能感知阻力，不知道深度<br>
+                • <b>proprio (q)</b>：只知道关节位置，不知道实际插入深度（可能卡住）
+              </td>
+            </tr>
+            <tr>
+              <td><b>夹持力预判</b></td>
+              <td>
+                在接触前估计需要多大夹持力
+              </td>
+              <td>
+                超声估计物体尺寸/形状：<br>
+                • 大物体 → 需要大开合度<br>
+                • 估计接触面积 → 预设夹持力
+              </td>
+              <td>
+                • <b>视觉</b>：尺寸估计有误差；遮挡时更不准<br>
+                • <b>触觉</b>：接触后才知道，可能已经夹坏了
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h6>场景 5：滑移早期预警（补充触觉盲区）</h6>
+        <p><b>任务</b>：在物体开始滑移之前检测风险</p>
+        <ul>
+          <li>
+            <b>触觉的局限</b>：触觉传感器检测的是<strong>已经发生的滑移</strong>（切向力变化、接触 patch 移动）；
+            当触觉检测到滑移时，物体可能已经开始掉落。
+          </li>
+          <li>
+            <b>超声的补充</b>：
+            <ul style="margin: 0.3em 0 0 0; padding-left: 1.1em;">
+              <li>手指侧面装超声，持续测量<strong>手指与物体表面的微小距离变化</strong></li>
+              <li>当距离开始<strong>缓慢增大</strong>（亚毫米级）→ 物体正在"松动"，但还没完全滑移</li>
+              <li>提前 50–200ms 触发预紧力增大 → 避免掉落</li>
+            </ul>
+          </li>
+          <li>
+            <b>为什么触觉做不到</b>：触觉需要接触，但"即将脱离接触"这个状态是触觉的盲区；
+            超声可以测量 0–5mm 的微小间隙，填补这个盲区。
+          </li>
+        </ul>
+
+        <h6>工程实现建议（如果要做超声）</h6>
+        <table>
+          <thead>
+            <tr>
+              <th>场景类别</th>
+              <th>推荐配置</th>
+              <th>成本</th>
+              <th>集成难度</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><b>液体容器操作</b></td>
+              <td>1–2 个超声测距模块（40kHz）<br>安装位置：指尖前端，朝向容器内部</td>
+              <td>$2–5/个</td>
+              <td>低（简单测距）</td>
+            </tr>
+            <tr>
+              <td><b>视觉盲区探测</b></td>
+              <td>2–4 个超声测距模块<br>安装位置：手指侧面、手掌内侧</td>
+              <td>$10–20 总计</td>
+              <td>中（需要多传感器融合）</td>
+            </tr>
+            <tr>
+              <td><b>软硬度/内部结构</b></td>
+              <td>高频超声探头（1–5MHz）<br>安装位置：指尖表面</td>
+              <td>$10–50/个</td>
+              <td>高（需要耦合凝胶、信号处理复杂）</td>
+            </tr>
+            <tr>
+              <td><b>复杂环境 approach</b></td>
+              <td>2–3 个多方向超声测距<br>安装位置：手腕、指尖前端/侧面</td>
+              <td>$5–15 总计</td>
+              <td>中（需要轨迹规划集成）</td>
+            </tr>
+            <tr>
+              <td><b>滑移早期预警</b></td>
+              <td>高精度超声测距（0.1mm 分辨率）<br>安装位置：指尖侧面</td>
+              <td>$10–20/个</td>
+              <td>高（需要高采样率 + 信号滤波）</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <blockquote>
+          <p>
+            <b>总结</b>：超声的核心价值在于<strong>非接触感知</strong>和<strong>内部结构探测</strong>——这是视觉、触觉、温度都做不到的。
+            但它<b>不是通用传感器</b>，只在上述特定任务中才体现明确的投资回报率（ROI）。
+            <br><br>
+            <b>推荐策略</b>：
+            <ul style="margin: 0.5em 0; padding-left: 1.5em;">
+              <li>MVS–Phase 3：专注力学闭环（这是基础）</li>
+              <li>Phase 4：如果有<strong>明确的液体操作/复杂环境需求</strong>，加入超声测距（低成本、低风险）</li>
+              <li>Phase 5+：如果有<strong>特殊需求</strong>（软硬度检测、内部结构），考虑高频超声（高成本、高维护）</li>
+            </ul>
+          </p>
+        </blockquote>
 
         <h3 id="pro">3.3 Level-2（工程化 Pro：长时部署与健康管理）</h3>
         <ul>
@@ -1420,6 +2017,19 @@
               <td>视触剪切形变 → 力（需标定）或 <code>wrist_FT</code> 的 Fx/Fy 分量</td>
               <td>标量或 [fx, fy]（N）</td>
             </tr>
+            <tr style="background-color: rgba(255, 193, 7, 0.08);">
+              <td colspan="4"><b>场景特定增强（可选）</b></td>
+            </tr>
+            <tr>
+              <td><code>material_class</code></td>
+              <td>物体材质分类（基于热导率 + 视觉纹理）</td>
+              <td>
+                • 温度：接触后 dT/dt (0.5–2s 窗口) → 热导率估计<br>
+                • 视觉：RGB 纹理特征（颜色/光泽/纹理）<br>
+                • 联合：融合两者 → 分类 logits
+              </td>
+              <td>枚举：metal / plastic / wood / fabric / ceramic</td>
+            </tr>
           </tbody>
         </table>
         <p>
@@ -1536,6 +2146,973 @@
   Train --> Student
   Train --> Policy</code></pre>
 
+        <h3 id="data-collection-workflow">7.4 数据采集实施流程（VLA公司落地操作指南）</h3>
+        <p>
+          本节面向"买完系统回去要做什么"的实际工程问题：<b>谁来采、怎么采、采什么、如何质控、如何从 Research 过渡到 Deploy</b>。
+          流程按照 <a href="#plan">9.2 迭代路线图</a> 的阶段划分，每个阶段给出可执行的操作清单。
+        </p>
+
+        <h4 id="data-flow-clarification">核心概念澄清：Teacher训练 vs 遥操作手套</h4>
+        <p><b>关键误解澄清</b>：<b>"戴手套"有两个完全不同的含义，不要混淆！</b></p>
+
+        <h5>两种"戴手套"的根本区别</h5>
+        <table>
+          <thead>
+            <tr>
+              <th>概念</th>
+              <th>手套类型</th>
+              <th>数据类型</th>
+              <th>作用</th>
+              <th>是否需要</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="background-color: rgba(76, 175, 80, 0.1);">
+              <td><b>遥操作手套</b></td>
+              <td>Meta Manus / Cyberglove / 数据手套</td>
+              <td>人手关节角度 [θ1, θ2, ..., θ20]</td>
+              <td>控制机器人手的运动轨迹</td>
+              <td>✅ <b>可以用</b>（或用主从手/VR手柄代替）</td>
+            </tr>
+            <tr style="background-color: rgba(244, 67, 54, 0.1);">
+              <td><b>假想的"训练Teacher手套"</b></td>
+              <td>假想的人手触觉传感器</td>
+              <td>人手的接触感受/力感知</td>
+              <td>（误以为）提供Teacher训练ground truth</td>
+              <td>❌ <b>不需要！不存在！</b></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h5>❌ 常见误解（错误流程）</h5>
+        <pre><code>【错误理解】
+人戴触觉手套 → 人手接触感受数据 → 训练Teacher → Teacher处理机器人视触图像
+       ↑                                              ↑
+   (人手数据)                                    (机器人数据)
+       └──────────── 数据来源不匹配！ ────────────┘</code></pre>
+
+        <h5>✅ 实际架构（正确流程）</h5>
+
+        <pre><code>┌─────────────────────────────────────────────────────────────────────────────┐
+│  <b>完整数据采集流程（Teacher→Student架构下）</b>                                    │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+<b>【步骤 1】人类遥操作（控制机器人执行任务）</b>
+┌────────────────────────────────────────────────────────────────┐
+│  操作员                                                         │
+│  ├─ 用主从灵巧手 / VR手柄 / 数据手套（任选一种）               │
+│  └─ 控制机器人手执行任务（抓取/插入/拧瓶盖...）                │
+└──────────────────────────┬─────────────────────────────────────┘
+                           │ 遥操作指令
+                           ↓
+┌─────────────────────────────────────────────────────────────────┐
+│  <b>机器人手</b>（被控制，执行任务）                                  │
+│  ├─ 装有传感器：RGB相机、关节编码器、wrist_FT、指尖力...        │
+│  └─ <b>Research Mode额外装</b>：视触觉传感器（GelSight/DIGIT/uSkin）  │
+└──────────────────────────┬──────────────────────────────────────┘
+                           │ 采集传感器数据
+                           ↓
+
+<b>【步骤 2】机器人传感器采集数据</b>
+┌─────────────────────────────────────────────────────────────────┐
+│  <b>Deploy Mode 数据</b>（可长期稳定运行）                            │
+│  ├─ RGB图像（static + wrist）                                   │
+│  ├─ 关节位置/速度（q / qdot）                                   │
+│  ├─ 电流/力矩（current / effort）                               │
+│  └─ 手腕6D力/力矩（wrist_FT，阶段2.5+）                         │
+└──────────────────────────┬──────────────────────────────────────┘
+                           │
+┌─────────────────────────────────────────────────────────────────┐
+│  <b>Research Mode 数据</b>（额外采集，用于生成Teacher labels）        │
+│  ├─ 上述Deploy模态                                              │
+│  └─ <b>+ 视触觉图像</b>（指腹 + 侧边，多点覆盖）                      │
+└──────────────────────────┬──────────────────────────────────────┘
+                           │
+                           ↓
+
+<b>【步骤 3】Teacher算法处理视触觉数据（机器人数据，不是人手！）</b>
+┌─────────────────────────────────────────────────────────────────┐
+│  <b>Teacher Labeler</b>（算法，运行在服务器上）                       │
+│  输入：视触觉图像（从<b>机器人手指</b>传感器采集）                  │
+│  处理：                                                          │
+│  ├─ 分析接触形变 → <code>contact_mode</code>（stick/slip）              │
+│  ├─ 估计滑移风险 → <code>slip_risk</code>（0-1）                        │
+│  ├─ 检测失败模式 → <code>failure_mode</code>（jam/slip/...）            │
+│  ├─ 计算接触几何 → <code>contact_patch</code> / <code>contact_wrench</code> │
+│  └─ 输出不确定度 → <code>teacher_uncertainty</code>                     │
+│  输出：Teacher labels（监督信号）                                │
+└──────────────────────────┬──────────────────────────────────────┘
+                           │
+                           ↓
+
+<b>【关键问题】Teacher如何训练？Ground Truth从哪来？</b>
+┌─────────────────────────────────────────────────────────────────┐
+│  <b>Teacher训练方法（4种方案，不需要人手数据！）</b>                     │
+└─────────────────────────────────────────────────────────────────┘
+
+<b>方案1：规则为主（70%的labels）</b>
+  简单labels用规则，不需要训练：
+  ├─ contact_confidence = (接触patch面积 > 阈值) ? 1 : 0
+  ├─ contact_mode = (光流能量 > v_slip) ? "slip" : "stick"
+  └─ 纯计算机视觉算法，可计算、可复现
+
+<b>方案2：传感器融合自动标注（20%的labels，推荐！）</b>
+  用机器人自己的可靠传感器作为ground truth：
+  ┌────────────────────────────────────────────────────┐
+  │ 机器人执行任务时同时记录：                          │
+  │ ├─ 视触图像（需要labels）                           │
+  │ └─ <b>wrist_FT（6D力/力矩，可靠传感器，作为GT）</b>       │
+  │                                                    │
+  │ 自动生成训练数据：                                  │
+  │ ├─ wrist_FT检测Fz突降 → slip事件 → 标注视触图像    │
+  │ ├─ wrist_FT.τz卡住+current↑ → jam → 标注为"jam"   │
+  │ └─ contact_wrench: 视触形变+wrist_FT联合估计       │
+  │                                                    │
+  │ 训练Teacher模型：                                   │
+  │ X_train = 视触图像                                 │
+  │ Y_train = wrist_FT推算的力/接触状态（GT）          │
+  └────────────────────────────────────────────────────┘
+  <b>关键</b>：wrist_FT是机器人自己的传感器，不是人手套！
+
+<b>方案3：标定实验（力学模型标定）</b>
+  用标准力传感器建立形变→力的映射：
+  ├─ 施加已知力（1N, 2N, 5N...） → 记录视触形变
+  ├─ 建立初始模型：形变特征 → 力（线性/NN）
+  └─ 用任务数据fine-tune
+
+<b>方案4：少量人工标注（10%，辅助）</b>
+  专家标注<b>机器人</b>的视触视频（不是人手！）：
+  ├─ 观看机器人视触视频 → 标注slip发生时刻
+  ├─ 100-500 episodes足够冷启动
+  └─ 用于训练轻量Teacher模型
+
+
+<b>【步骤 4】Student学习（Deploy模态 → Teacher labels）</b>
+┌─────────────────────────────────────────────────────────────────┐
+│  <b>Student Estimator</b>（神经网络，训练后部署）                     │
+│  输入：<b>只用Deploy模态</b>（RGB + q/qdot + current/effort + wrist_FT）│
+│  监督信号：Teacher labels                                        │
+│  目标：学习从可靠传感器推理出Teacher的输出                       │
+│  输出：部署时可用的状态估计（contact_mode / slip_risk / ...）   │
+└──────────────────────────┬──────────────────────────────────────┘
+                           │
+                           ↓
+
+<b>【步骤 5】Policy训练（Deploy模态 + Student输出）</b>
+┌─────────────────────────────────────────────────────────────────┐
+│  <b>VLA Policy</b>（最终部署的策略）                                  │
+│  输入：Deploy模态 + Student输出的状态估计                        │
+│  训练数据：Deploy Mode episodes（5000+，大量）                  │
+│  输出：机器人动作（关节目标位置/速度）                           │
+└─────────────────────────────────────────────────────────────────┘</code></pre>
+
+        <h5>关键区分：遥操作方式 vs Teacher→Student架构</h5>
+        <table>
+          <thead>
+            <tr>
+              <th>概念</th>
+              <th>作用</th>
+              <th>谁/什么</th>
+              <th>常见误解</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><b>遥操作方式</b></td>
+              <td>人类控制机器人执行任务</td>
+              <td>主从手 / VR手柄 / 数据手套（任选一种）</td>
+              <td>❌ 误以为"数据手套=Teacher"</td>
+            </tr>
+            <tr>
+              <td><b>Teacher</b></td>
+              <td>从视触觉数据生成高质量labels</td>
+              <td><b>视触觉传感器（装在机器人手指上）+ 算法</b></td>
+              <td>❌ 误以为"人戴手套=Teacher"</td>
+            </tr>
+            <tr>
+              <td><b>Student</b></td>
+              <td>从可靠传感器推理Teacher输出</td>
+              <td>神经网络（训练后部署）</td>
+              <td>✅ 正确理解</td>
+            </tr>
+            <tr>
+              <td><b>Policy</b></td>
+              <td>根据传感器输入决策机器人动作</td>
+              <td>VLA模型（最终部署）</td>
+              <td>✅ 正确理解</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h5>三种数据采集模式对比</h5>
+        <table>
+          <thead>
+            <tr>
+              <th>阶段</th>
+              <th>遥操作方式</th>
+              <th>机器人传感器配置</th>
+              <th>Teacher来源</th>
+              <th>数据用途</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><b>阶段 1<br>（MVS冷启动）</b></td>
+              <td>VR手柄 + 规则手势</td>
+              <td>RGB + q/qdot + current/effort</td>
+              <td><b>规则伪标签</b><br>（基于current阈值）</td>
+              <td>训练初始Policy<br>建立数据管线</td>
+            </tr>
+            <tr>
+              <td><b>阶段 2-2.5<br>（加wrist_FT）</b></td>
+              <td>主从灵巧手</td>
+              <td>上述 + wrist_FT（6D）</td>
+              <td><b>规则伪标签</b><br>（升级为轻量RM）</td>
+              <td>训练精细力控Policy<br>（twist/insertion/pry）</td>
+            </tr>
+            <tr>
+              <td><b>阶段 4<br>（Research Mode）</b></td>
+              <td>主从灵巧手</td>
+              <td>上述 + <b>视触觉</b>（pad+side）</td>
+              <td><b>视触觉Teacher算法</b><br>（真Teacher）</td>
+              <td>训练Student estimator<br>生成高质量labels</td>
+            </tr>
+            <tr>
+              <td><b>阶段 4<br>（Deploy Mode）</b></td>
+              <td>主从手 + 自主探索混合</td>
+              <td>RGB + q/qdot + current/effort + wrist_FT<br><b>（无视触觉）</b></td>
+              <td><b>Student输出</b><br>（蒸馏自Teacher）</td>
+              <td>训练最终Policy<br>（大量数据）</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h5>FAQ：常见困惑澄清</h5>
+
+        <h6>Q1: 遥操作要戴Meta Manus手套吗？</h6>
+        <p>
+          <b>A: 可以，但这是遥操作工具，不是Teacher训练数据！</b>
+        </p>
+        <table>
+          <thead>
+            <tr>
+              <th>阶段</th>
+              <th>Meta Manus的作用</th>
+              <th>数据流向</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><b>遥操作阶段</b></td>
+              <td>捕捉人手关节角度 → 控制机器人运动</td>
+              <td>Meta Manus → 机器人关节目标位置</td>
+            </tr>
+            <tr>
+              <td><b>Teacher训练阶段</b></td>
+              <td>❌ <b>不使用</b>Meta Manus数据</td>
+              <td>机器人视触 + 机器人wrist_FT → Teacher模型</td>
+            </tr>
+          </tbody>
+        </table>
+        <p>
+          <b>关键</b>：Meta Manus提供的是<b>运动指令</b>（关节角度），不是<b>力感知</b>。<br>
+          Teacher需要学习的是"<b>机器人</b>视触图像 → 力/接触状态"，ground truth必须来自<b>机器人</b>自己的传感器（wrist_FT）。
+        </p>
+
+        <h6>Q2: 为什么不能用人手套的触觉数据训练Teacher？</h6>
+        <p><b>A: 三个根本原因：</b></p>
+        <ul>
+          <li>
+            <b>输入不匹配</b>：<br>
+            Teacher输入 = 机器人手指gel的形变图像<br>
+            人手套数据 = 人手皮肤的接触感受<br>
+            → 两者物理特性完全不同（gel vs 人皮肤）
+          </li>
+          <li>
+            <b>任务不匹配</b>：<br>
+            Teacher要学：机器人gel形变 → 接触力<br>
+            人手套提供：人皮肤感受 → 人的力感知<br>
+            → 映射关系完全不同
+          </li>
+          <li>
+            <b>已有更好的ground truth</b>：<br>
+            机器人wrist_FT直接测量力/力矩（精度±0.1N）<br>
+            → 不需要绕到人手上去
+          </li>
+        </ul>
+
+        <h6>Q3: 那Meta Manus在整个流程中到底有什么用？</h6>
+        <p><b>A: 只用于遥操作，让机器人执行多样化的任务</b></p>
+        <pre><code>完整流程（用Meta Manus遥操作的情况）：
+
+1. 【遥操作阶段】
+   人戴Meta Manus → 人手动作 → Meta Manus捕捉关节角度
+   → retargeting（人手20 DOF → 机器人16 DOF）
+   → 机器人手执行动作（抓取/拧瓶盖/插入...）
+
+2. 【数据采集阶段】
+   机器人执行任务时，机器人传感器记录：
+   ├─ RGB图像
+   ├─ 关节角度/速度（q/qdot）
+   ├─ wrist_FT（6D力/力矩）← Ground Truth!
+   ├─ current/effort
+   └─ 视触图像（Research Mode）
+
+   ⚠️ 注意：Meta Manus的数据<b>不记录</b>，只是控制机器人运动
+
+3. 【Teacher训练阶段】
+   训练数据：
+   X = 机器人视触图像
+   Y = 机器人wrist_FT（ground truth）
+
+   ⚠️ 注意：完全不使用Meta Manus数据！
+
+4. 【Student训练阶段】
+   X = Deploy模态（RGB + q/qdot + current/effort + wrist_FT）
+   Y = Teacher labels
+
+5. 【Policy训练阶段】
+   X = Deploy模态 + Student输出
+   Y = 任务成功/失败</code></pre>
+
+        <h6>Q4: 简单总结：两种"戴手套"的区别</h6>
+        <table>
+          <thead>
+            <tr>
+              <th>对比维度</th>
+              <th>遥操作手套（Meta Manus）</th>
+              <th>假想的"训练Teacher手套"</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><b>是否真实存在</b></td>
+              <td>✅ 存在，可以买</td>
+              <td>❌ 不存在，不需要</td>
+            </tr>
+            <tr>
+              <td><b>数据类型</b></td>
+              <td>人手关节角度</td>
+              <td>（假想的）人手触觉/力</td>
+            </tr>
+            <tr>
+              <td><b>作用</b></td>
+              <td>控制机器人运动轨迹</td>
+              <td>（误以为）提供Teacher训练GT</td>
+            </tr>
+            <tr>
+              <td><b>数据流向</b></td>
+              <td>人手套 → 机器人关节</td>
+              <td>（不存在）</td>
+            </tr>
+            <tr>
+              <td><b>Teacher训练是否使用</b></td>
+              <td>❌ <b>不使用</b></td>
+              <td>❌ <b>不使在/不需要</b></td>
+            </tr>
+            <tr>
+              <td><b>实际GT来源</b></td>
+              <td colspan="2" style="text-align:center;"><b>机器人wrist_FT + 规则 + 标定实验</b></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h5>实际采集流程示例（阶段4 Research Mode）</h5>
+        <ol>
+          <li><b>操作员用主从灵巧手控制机器人手去拧瓶盖</b></li>
+          <li><b>机器人手指上的视触觉传感器</b>采集接触形变图像（30Hz）</li>
+          <li><b>同时记录</b>：RGB、q/qdot、current/effort、wrist_FT（Deploy模态）</li>
+          <li><b>Teacher算法</b>分析视触觉图像 → 生成 <code>contact_mode=slip</code>、<code>slip_risk=0.8</code></li>
+          <li><b>事后训练Student</b>：输入Deploy模态（RGB+proprio+FT）→ 预测 <code>slip_risk=0.8</code></li>
+          <li><b>部署时</b>：机器人手上<b>不装视触觉</b>，只用Student从Deploy模态推理slip_risk</li>
+        </ol>
+
+        <h4 id="day0">Day 0：系统初始设置（开箱到第一条数据）</h4>
+        <p><b>目标</b>：验证硬件、建立数据管线、完成首次标定，产出第一条可回放的 episode。</p>
+
+        <h5>硬件检查清单（MVS最小配置）</h5>
+        <table>
+          <thead>
+            <tr>
+              <th>检查项</th>
+              <th>验证方法</th>
+              <th>产出/记录</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>2 路 RGB 相机</td>
+              <td>采集 10 帧，检查分辨率、帧率、曝光一致性</td>
+              <td><code>camera_calib_v1.yaml</code>（内参/外参/畸变）</td>
+            </tr>
+            <tr>
+              <td>关节位置/速度</td>
+              <td>运动全行程，检查 <code>q/qdot</code> 连续性、无跳变</td>
+              <td><code>joint_limits.yaml</code>（软硬限位）</td>
+            </tr>
+            <tr>
+              <td>电流/力矩 proxy</td>
+              <td>空载/负载对比，建立 <code>current_baseline</code></td>
+              <td><code>current_calib_v1.json</code>（零点/增益）</td>
+            </tr>
+            <tr>
+              <td>时间同步</td>
+              <td>检查 PTP/NTP 状态，timestamp 对齐误差 &lt; 5ms</td>
+              <td><code>sync_status: ok</code> 写入 metadata</td>
+            </tr>
+            <tr>
+              <td>Level-A 安全反射</td>
+              <td>触发过流/过热/碰撞，验证 <code>backoff</code> 响应</td>
+              <td><code>safety_config_v1.yaml</code></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h5>Day 0 产出（必须完成才能进入阶段 1）</h5>
+        <ul>
+          <li><code>calib_version: v1.0.0</code>（标定文件版本化，写入 git/hash）</li>
+          <li>第一条可回放 episode（<code>replay_ok: true</code>）</li>
+          <li>数据 schema 定义（<code>episode_schema_v1.json</code>）</li>
+          <li>Replay Validation 脚本（自动化验证 <code>replay_ok</code>）</li>
+        </ul>
+
+        <h4 id="stage1-collection">阶段 1（2–4 周）：MVS 基础数据采集</h4>
+        <p>
+          <b>硬件配置</b>：2 路 RGB + q/qdot + current/effort<br>
+          <b>能力范围</b>：简单抓取、pick-and-place、粗防滑<br>
+          <b>数据目标</b>：1000–3000 episodes（成功率 60–80%），建立数据质量基线
+        </p>
+
+        <h5>采集流程（谁来采）</h5>
+        <table>
+          <thead>
+            <tr>
+              <th>采集方式</th>
+              <th>适用场景</th>
+              <th>数据量占比</th>
+              <th>质量特点</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><b>遥操作（teleoperation）</b></td>
+              <td>冷启动、复杂任务、hard cases</td>
+              <td>30–50%</td>
+              <td>高质量，但慢（5–10 episodes/小时）</td>
+            </tr>
+            <tr>
+              <td><b>规则策略（scripted policy）</b></td>
+              <td>简单抓取、标准场景</td>
+              <td>30–40%</td>
+              <td>一致性高，但泛化弱</td>
+            </tr>
+            <tr>
+              <td><b>自主探索（w/ RM 筛选）</b></td>
+              <td>阶段 2+ 解锁，用于数据飞轮</td>
+              <td>20–30%（阶段 1 占比低）</td>
+              <td>量大，需 RM QC</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h5>遥操作硬件接口方案（真人示范如何实现？）</h5>
+        <p><b>核心问题</b>：是否需要真人戴数据手套？<b>答案：不是必须，取决于任务复杂度与预算</b>。</p>
+
+        <blockquote style="border-left: 4px solid #ff9800; background-color: rgba(255, 152, 0, 0.1); padding: 1em; margin: 1em 0;">
+          <p><b>⚠️ 重要澄清：遥操作手套 ≠ Teacher训练数据</b></p>
+          <p>
+            本节讨论的数据手套（Meta Manus/Cyberglove等）<b>只用于遥操作</b>（控制机器人运动），<br>
+            <b>不用于训练Teacher</b>（Teacher的ground truth来自机器人自己的wrist_FT传感器）。<br>
+            详见 <a href="#data-flow-clarification">7.4 核心概念澄清</a>。
+          </p>
+        </blockquote>
+
+        <table>
+          <thead>
+            <tr>
+              <th>方案</th>
+              <th>实现方式</th>
+              <th>成本</th>
+              <th>采集效率</th>
+              <th>数据质量</th>
+              <th>推荐场景</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><b>1. 主从灵巧手<br>（leader-follower）</b></td>
+              <td>
+                操作员戴上一只与机器人手相同的"主手"<br>
+                主手动作实时映射到机器人手（follower）<br>
+                <em>不需要数据手套</em>，直接用主手的关节编码器
+              </td>
+              <td>中高<br>（需要第二只手）</td>
+              <td>⭐⭐⭐⭐⭐<br>直观、快速</td>
+              <td>⭐⭐⭐⭐⭐<br>最接近目标动作</td>
+              <td><b>灵巧操作、精细力控</b><br>阶段 2+ 推荐</td>
+            </tr>
+            <tr>
+              <td><b>2. VR 手柄<br>+ IK</b></td>
+              <td>
+                操作员用 VR 手柄控制手腕位姿<br>
+                手指通过按键/扳机触发预定义手势<br>
+                逆运动学（IK）解算关节角度<br>
+                <em>不需要手套</em>
+              </td>
+              <td>低<br>（VR 手柄几千元）</td>
+              <td>⭐⭐⭐<br>需要训练</td>
+              <td>⭐⭐⭐<br>手指动作受限</td>
+              <td><b>简单抓取、pick-and-place</b><br>阶段 1 推荐（冷启动）</td>
+            </tr>
+            <tr>
+              <td><b>3. 数据手套<br>（data glove）</b></td>
+              <td>
+                操作员戴上带传感器的手套<br>
+                捕捉手指关节角度<br>
+                映射（retargeting）到机器人手<br>
+                <b>需要解决：手指数量/长度/自由度差异</b>
+              </td>
+              <td>中高<br>（专业手套 5–30 万）</td>
+              <td>⭐⭐⭐⭐<br>自然，但需 retargeting</td>
+              <td>⭐⭐⭐⭐<br>取决于 retargeting 质量</td>
+              <td><b>灵巧操作、需要采集大量数据</b><br>阶段 2–3（若预算允许）</td>
+            </tr>
+            <tr>
+              <td><b>4. 视觉捕捉<br>+ 重定向</b></td>
+              <td>
+                用相机捕捉人手动作（MediaPipe/OptiTrack）<br>
+                重定向（retargeting）到机器人手<br>
+                <em>不需要手套</em>，非接触式<br>
+                <b>难点：遮挡、精度、延迟</b>
+              </td>
+              <td>低–中<br>（相机/动捕系统）</td>
+              <td>⭐⭐<br>retargeting 复杂</td>
+              <td>⭐⭐⭐<br>遮挡时失效</td>
+              <td><b>离线示范采集</b><br>用于预训练，不适合实时闭环</td>
+            </tr>
+            <tr>
+              <td><b>5. 键盘/3D鼠标<br>+ 手势库</b></td>
+              <td>
+                操作员用键盘/3D鼠标控制手腕<br>
+                手指通过快捷键触发预定义手势<br>
+                （open/close/pinch/...）<br>
+                <em>不需要手套</em>
+              </td>
+              <td>极低<br>（几百元）</td>
+              <td>⭐<br>慢且不直观</td>
+              <td>⭐⭐<br>只能做简单动作</td>
+              <td><b>预算极低时的备选</b><br>仅适合阶段 1 简单抓取</td>
+            </tr>
+            <tr>
+              <td><b>6. 不需要人类示范<br>（自主探索）</b></td>
+              <td>
+                用规则策略/RL 让机器人自主探索<br>
+                RM 筛选高质量数据<br>
+                <b>前提：已有初始 policy 或规则库</b>
+              </td>
+              <td>低<br>（无额外硬件）</td>
+              <td>⭐⭐⭐⭐⭐<br>可 7×24 采集</td>
+              <td>⭐⭐⭐<br>需要 RM QC</td>
+              <td><b>数据飞轮阶段</b><br>阶段 2+ 与人类示范混合使用</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h5>推荐决策树：我该用哪种遥操作方式？</h5>
+        <pre><code>你的预算与任务复杂度？
+  │
+  ├─ 预算紧张（&lt;10万） + 任务简单（pick-and-place）
+  │   └─ ✅ <b>VR 手柄 + IK</b>（阶段 1 首选）
+  │       ├─ 优点：成本低、上手快、足够冷启动
+  │       └─ 缺点：手指动作受限（只能做简单手势）
+  │
+  ├─ 预算中等（10–50万） + 任务复杂（灵巧操作）
+  │   └─ ✅ <b>主从灵巧手</b>（阶段 2+ 首选）
+  │       ├─ 优点：最直观、数据质量最高、无 retargeting 问题
+  │       └─ 缺点：需要购买/制造第二只手
+  │
+  ├─ 预算充足（&gt;50万） + 需要大量采集
+  │   └─ ✅ <b>数据手套</b> 或 <b>主从手</b>（二选一）
+  │       ├─ 数据手套：适合人手→机器人手 retargeting 研究
+  │       └─ 主从手：更直接，数据质量更稳定
+  │
+  └─ 已有初始 policy（阶段 2+）
+      └─ ✅ <b>自主探索 + RM 筛选</b>（数据飞轮）
+          ├─ 20–30% 用人类示范补充 hard cases
+          └─ 70–80% 用自主探索扩充数据量</code></pre>
+
+        <h5>主从灵巧手方案详解（阶段 1–2 推荐）</h5>
+        <p>
+          <b>为什么推荐主从手？</b><br>
+          对于灵巧手采集，<b>主从手</b>（leader-follower）是工业界最成熟的方案（Tesla Optimus、Figure、1X 等都在用）：
+        </p>
+        <ul>
+          <li><b>无需 retargeting</b>：主手与从手是同一型号，关节角度直接复制，无映射误差</li>
+          <li><b>力反馈可选</b>：可以把从手的 <code>current/effort</code> 反馈到主手，操作员能"感受"接触力</li>
+          <li><b>延迟低</b>：局域网内可做到 &lt;10ms，适合实时闭环操作</li>
+          <li><b>数据质量稳定</b>：避免了数据手套的"人手→机器人手"映射不确定性</li>
+        </ul>
+
+        <p><b>实现要点</b>：</p>
+        <ol>
+          <li>主手可以是"透明模式"（zero-torque，操作员轻松移动）或"阻抗模式"（模拟从手接触阻力）</li>
+          <li>主手不需要装传感器（只需关节编码器），从手才装全套传感器（RGB/F/T/触觉）</li>
+          <li>采集时记录：主手 <code>q_leader</code>、从手 <code>q_follower</code> + 从手传感器数据</li>
+          <li>回放验证：重放 <code>q_leader</code> 到从手，检查 <code>replay_ok</code></li>
+        </ol>
+
+        <h5>数据手套方案的陷阱（慎用）</h5>
+        <p><b>为什么不首选数据手套作为遥操作工具？</b></p>
+        <ul>
+          <li>
+            <b>Retargeting 问题</b>：人手（5 指 × 4 DOF = 20 DOF）→ 机器人手（例如 Allegro：16 DOF）<br>
+            映射不唯一，需要优化求解，引入延迟与不确定性
+          </li>
+          <li>
+            <b>手指长度/比例差异</b>：人手抓杯子 OK，映射到短指机器人手可能碰撞/够不到
+          </li>
+          <li>
+            <b>手套标定漂移</b>：弯曲传感器（flex sensor）或 IMU 会漂移，需要频繁重新标定
+          </li>
+          <li>
+            <b>无力反馈</b>：操作员感受不到接触力，容易过力或脱手
+          </li>
+          <li>
+            <b>⚠️ 澄清：这些问题只针对遥操作</b>：数据手套<b>不用于</b>训练Teacher（Teacher用机器人wrist_FT训练）
+          </li>
+        </ul>
+        <p>
+          <b>适用场景</b>：若你的研究重点是"人类示范 → 机器人策略迁移"，或需要采集<b>大量</b>不同操作员的数据（数据多样性），
+          则数据手套有价值。但若只是为了"快速采集高质量数据训练 policy"，主从手更直接。
+        </p>
+
+        <h5>阶段 1 最小成本方案（VR 手柄 + 规则手势）</h5>
+        <p><b>预算 &lt;1 万时的冷启动方案</b>：</p>
+        <ol>
+          <li>用 <b>Meta Quest / HTC Vive 手柄</b>（~3000–5000 元）控制手腕 6D 位姿</li>
+          <li>手指用 5–10 个预定义手势：
+            <ul style="margin: 0.3em 0 0 0; padding-left: 1.1em;">
+              <li><code>open</code>（张开）</li>
+              <li><code>close</code>（合拢）</li>
+              <li><code>pinch</code>（捏取，拇指+食指）</li>
+              <li><code>power_grasp</code>（包络抓取）</li>
+              <li><code>precision_grasp</code>（精密抓取，三指）</li>
+            </ul>
+          </li>
+          <li>操作员用扳机/按键切换手势，IK 解算关节角度</li>
+          <li><b>局限</b>：只能做简单抓取，无法做精细操作（twist/insertion/pry）</li>
+          <li><b>足够阶段 1 冷启动</b>：采集 1000+ episodes 简单抓取，训练初始 policy，再过渡到主从手或自主探索</li>
+        </ol>
+
+        <h5>实际采集团队配置建议</h5>
+        <table>
+          <thead>
+            <tr>
+              <th>阶段</th>
+              <th>遥操作方式</th>
+              <th>人员配置</th>
+              <th>每日产出</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>阶段 1<br>（2–4 周）</td>
+              <td>VR 手柄 + 规则手势</td>
+              <td>1–2 名操作员 + 1 名工程师（监控数据质量）</td>
+              <td>40–80 episodes/天<br>（每人 5–10 episodes/小时 × 4–8 小时）</td>
+            </tr>
+            <tr>
+              <td>阶段 2<br>（4–6 周）</td>
+              <td>主从灵巧手</td>
+              <td>2–3 名操作员（轮班）+ 1 名工程师</td>
+              <td>80–150 episodes/天<br>（主从手效率更高）</td>
+            </tr>
+            <tr>
+              <td>阶段 3+<br>（数据飞轮）</td>
+              <td>70% 自主探索 + 30% 人类示范</td>
+              <td>1 名操作员（补充 hard cases）+ 1 名工程师（RM 监控）</td>
+              <td>200–500 episodes/天<br>（自主探索 7×24 运行）</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h5>每条 episode 必须记录的字段（episode metadata）</h5>
+        <pre><code>{
+  "episode_id": "ep_20260115_001234",
+  "task": "pick_cup",
+  "collection_method": "teleoperation",  # teleoperation / scripted / autonomous
+  "calib_version": "v1.0.0",
+  "sync_status": "ok",                   # ok / degraded / failed
+  "replay_ok": true,                     # Replay Validation 结果
+  "success": true,                       # 任务是否成功
+  "failure_mode": null,                  # jam / slip / occlusion / timeout / ...
+  "duration_sec": 12.5,
+  "sensor_health": {"rgb_static": "ok", "rgb_wrist": "ok", "current": "ok"},
+  "timestamp_start": 1736899234.567,
+  "git_commit": "a1b2c3d"                # 代码版本
+}</code></pre>
+
+        <h5>阶段 1 数据质量控制（每天/每周执行）</h5>
+        <ol>
+          <li><b>Replay Validation</b>：抽查 10% episodes，<code>replay_ok</code> 通过率 &gt; 90%</li>
+          <li><b>失败分布统计</b>：<code>failure_mode</code> 统计（哪类失败最多？是否需要调整采集策略？）</li>
+          <li><b>成功率监控</b>：按任务类型分组，SR（Success Rate）&gt; 60%；若 SR 持续下降→检查标定漂移</li>
+          <li><b>传感器健康</b>：每天开机前检查 <code>sensor_health</code>，异常立即重新标定</li>
+        </ol>
+
+        <h5>阶段 1 产出（进入阶段 2 的前置条件）</h5>
+        <ul>
+          <li>1000+ 可复现 episodes（<code>replay_ok: true</code>）</li>
+          <li>规则 RM v1.0（基于 current/effort 阈值的 <code>contact_mode</code>/<code>slip_risk</code> 伪标签）</li>
+          <li>失败分布 baseline（后续用于 A/B 对比）</li>
+        </ul>
+
+        <h4 id="stage2-collection">阶段 2–2.5（6–10 周）：加入 wrist_FT，解锁精细力控</h4>
+        <p>
+          <b>硬件新增</b>：1 个手腕 6D F/T 传感器（≥200Hz）<br>
+          <b>新增能力</b>：<code>twist</code>（拧瓶盖）、<code>insertion</code>（精密插入）、<code>pry</code>（撬开）、<code>pull</code>（拉力闭环）<br>
+          <b>数据目标</b>：每类新任务 200–500 episodes
+        </p>
+
+        <h5>wrist_FT 标定流程（Day 1）</h5>
+        <ol>
+          <li><b>零点标定</b>：手空载静止，采集 1000 帧 → 计算 <code>wrist_FT_zero_offset</code></li>
+          <li><b>重力补偿标定</b>：手臂多姿态（6–10 个姿态），建立重力模型 → <code>gravity_comp_model_v1.json</code></li>
+          <li><b>已知负载验证</b>：抓取已知质量物体（100g, 500g, 1kg），验证 Fz 读数误差 &lt; 5%</li>
+          <li><b>扭矩标定</b>（可选）：用标准力矩扳手施加已知扭矩，验证 τz 读数</li>
+        </ol>
+
+        <h5>精细力控任务的采集要点</h5>
+        <table>
+          <thead>
+            <tr>
+              <th>任务原语</th>
+              <th>关键采集信号</th>
+              <th>成功判据（自动标注）</th>
+              <th>推荐采集方式</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>twist</code></td>
+              <td><code>wrist_FT.τz</code> + 角度变化</td>
+              <td>旋转达标 且 <code>slip_risk &lt; 0.3</code></td>
+              <td>遥操作（初期），脚本（标准瓶盖）</td>
+            </tr>
+            <tr>
+              <td><code>insertion</code></td>
+              <td><code>wrist_FT</code> (6D) + 深度</td>
+              <td>插入深度达标 且 无 <code>jam</code></td>
+              <td>遥操作 + RM 辅助对中</td>
+            </tr>
+            <tr>
+              <td><code>pry</code></td>
+              <td><code>wrist_FT</code> (6D) + 安全限位</td>
+              <td>约束解除 且 无 <code>safety_trip</code></td>
+              <td>遥操作（高风险，慢速采集）</td>
+            </tr>
+            <tr>
+              <td><code>pull</code></td>
+              <td><code>wrist_FT.Fz</code> + 位移</td>
+              <td>拉力达标 且 无脱手</td>
+              <td>脚本（简单）+ 遥操作（复杂）</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h5>阶段 2.5 数据质量升级</h5>
+        <ul>
+          <li><b>新增 teacher label</b>：<code>contact_wrench</code>（6D 力/力矩）、<code>twist_phase</code>、<code>insertion_phase</code></li>
+          <li><b>RM 升级</b>：从规则阈值 → 轻量学习模型（基于阶段 1 数据训练，替换硬编码阈值）</li>
+          <li><b>自动切段</b>：用 <code>progress</code>/<code>primitive</code> 做 subtask segmentation（一条 episode 切成多个 subtask）</li>
+        </ul>
+
+        <h5>阶段 2.5 产出</h5>
+        <ul>
+          <li>精细力控任务库：每类任务 200+ episodes</li>
+          <li><code>wrist_FT_calib_v2.json</code>（含重力补偿）</li>
+          <li>RM v2.0（轻量模型，替换规则阈值）</li>
+        </ul>
+
+        <h4 id="stage3-4-collection">阶段 3–4（2–6 月）：指尖力 + 视触觉 Teacher</h4>
+        <p>
+          <b>阶段 3 硬件新增</b>：2 个指尖 3 轴力传感器<br>
+          <b>阶段 4 硬件新增</b>：多点视触觉（指腹 + 侧边，Research Mode only）<br>
+          <b>目标</b>：形成完整 Teacher→Student 数据飞轮
+        </p>
+
+        <h5>Research Mode vs Deploy Mode 数据采集策略</h5>
+        <table>
+          <thead>
+            <tr>
+              <th>模式</th>
+              <th>传感器配置</th>
+              <th>采集目的</th>
+              <th>数据量</th>
+              <th>质量要求</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><b>Deploy Mode</b></td>
+              <td>RGB + q/qdot + current/effort + wrist_FT（+ 指尖力）</td>
+              <td>量产数据，训练 Policy + Student</td>
+              <td>大（5000+）</td>
+              <td><code>replay_ok</code> + SR 基线</td>
+            </tr>
+            <tr>
+              <td><b>Research Mode</b></td>
+              <td>Deploy 配置 + 多点视触（pad+side）</td>
+              <td>生成高质量 teacher labels</td>
+              <td>中（1000–2000）</td>
+              <td>Teacher label 置信度 + 覆盖 hard cases</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h5>视触觉 Teacher 标定与数据采集（阶段 4）</h5>
+        <ol>
+          <li>
+            <b>Teacher 标定（每次更换 gel 必做）</b>：
+            <ul style="margin: 0.3em 0 0 0; padding-left: 1.1em;">
+              <li>记录 <code>gel_id</code> / <code>gel_batch</code> / <code>gel_install_date</code></li>
+              <li>预调理（pre-conditioning）：运行标准压入/滑动脚本，验证 <code>precondition_ok</code></li>
+              <li>标定接触阈值：<code>A_min</code>（最小接触面积）、<code>v_slip</code>（滑移速度阈值）</li>
+              <li>版本化：<code>teacher_version: v2.1.0</code> + <code>teacher_config</code>（阈值参数）</li>
+            </ul>
+          </li>
+          <li>
+            <b>采集策略（Research Mode）</b>：
+            <ul style="margin: 0.3em 0 0 0; padding-left: 1.1em;">
+              <li>优先采集 Deploy Mode 中失败率高的任务（hard cases）</li>
+              <li>每条 episode 同时记录 Deploy 模态 + 视触觉图像</li>
+              <li>Teacher labeler 实时生成 <code>contact_mode</code> / <code>slip_risk</code> / <code>contact_patch</code> / <code>teacher_uncertainty</code></li>
+              <li>低置信样本（<code>teacher_uncertainty &gt; 0.3</code>）标记为待复核</li>
+            </ul>
+          </li>
+          <li>
+            <b>Teacher→Student 训练</b>：
+            <ul style="margin: 0.3em 0 0 0; padding-left: 1.1em;">
+              <li>输入：Deploy 模态（RGB + q/qdot + current/effort + wrist_FT）</li>
+              <li>监督信号：Teacher labels（带不确定度加权）</li>
+              <li>验证：在 Deploy Mode 数据上测试 Student 输出与 RM 规则的一致性</li>
+              <li>闭环验收：把 Student 输出接到 recovery primitives，测量 SR/IR 提升</li>
+            </ul>
+          </li>
+        </ol>
+
+        <h5>阶段 4 产出（完整数据飞轮）</h5>
+        <ul>
+          <li>Teacher labeler v1.0（可版本化、可复现）</li>
+          <li>Student estimator v1.0（Deploy Mode 可用）</li>
+          <li>Research Mode 数据集（1000–2000 episodes，带高质量 teacher labels）</li>
+          <li>Deploy Mode 数据集（5000+ episodes，用于训练 Policy）</li>
+          <li>RM v3.0（学习型 critic，用于 QC 与 hard case mining）</li>
+        </ul>
+
+        <h4 id="data-qa-protocol">跨阶段数据质量保障协议</h4>
+        <p><b>每日检查（自动化脚本）</b>：</p>
+        <ul>
+          <li><code>replay_ok</code> 通过率（目标 &gt; 90%）</li>
+          <li><code>sync_status</code> 异常率（目标 &lt; 5%）</li>
+          <li><code>sensor_health</code> 异常计数（任何异常立即触发重新标定）</li>
+        </ul>
+
+        <p><b>每周复盘（人工 + RM 辅助）</b>：</p>
+        <ul>
+          <li>失败分布变化（是否出现新 failure_mode？）</li>
+          <li>SR/IR/ER 趋势（是否下降？→ 检查标定漂移或环境变化）</li>
+          <li>Hard cases 挖掘（RM 排序后人工复核 top-20）</li>
+        </ul>
+
+        <p><b>阶段切换验收（A/B 对比）</b>：</p>
+        <ul>
+          <li>新硬件加入后，先在<b>交错模式</b>下采集 100 episodes（50 用新配置，50 用旧配置）</li>
+          <li>对比 SR/IR/ER + 失败分布，验证新硬件带来的能力提升</li>
+          <li>若新配置 SR 显著下降→检查标定或动力学变化（例如加 wrist_FT 后质量/惯量改变）</li>
+        </ul>
+
+        <h4 id="data-management">数据管理与版本控制</h4>
+        <h5>数据存储结构（推荐）</h5>
+        <pre><code>data/
+├── raw/                          # 原始采集数据（不可修改）
+│   ├── stage1_mvs/
+│   │   ├── ep_20260115_001234/   # 每个 episode 一个文件夹
+│   │   │   ├── metadata.json     # episode metadata
+│   │   │   ├── rgb_static.mp4    # 视频或图像序列
+│   │   │   ├── rgb_wrist.mp4
+│   │   │   ├── proprio.h5        # q/qdot/current/effort 时间序列
+│   │   │   └── commands.h5       # cmd_joint_target（命令流）
+│   │   └── ...
+│   ├── stage2_wrist_ft/
+│   └── stage4_research_mode/
+├── processed/                    # 处理后数据（对齐、标注）
+│   ├── aligned/                  # 时间对齐后
+│   ├── labeled/                  # Teacher labels
+│   └── filtered/                 # QC 筛选后（replay_ok=true）
+├── calibration/                  # 标定文件（版本化）
+│   ├── v1.0.0/
+│   │   ├── camera_calib_v1.yaml
+│   │   ├── current_calib_v1.json
+│   │   └── calib_hash.txt        # git commit hash
+│   └── v2.0.0/
+└── models/                       # RM / Student / Policy checkpoints
+    ├── rm_v1.0.ckpt
+    ├── student_v1.0.ckpt
+    └── policy_v1.0.ckpt</code></pre>
+
+        <h5>版本控制实践</h5>
+        <ul>
+          <li><b>标定文件</b>：每次重新标定 → 新版本号 + git commit</li>
+          <li><b>Episode metadata</b>：必须记录 <code>calib_version</code> / <code>teacher_version</code> / <code>git_commit</code></li>
+          <li><b>Teacher labeler</b>：代码版本化（git tag），配置文件版本化（semantic version）</li>
+          <li><b>数据集发布</b>：每个阶段结束后发布"冻结版本"（例如 <code>dataset_stage1_v1.0</code>），用于后续 A/B 对比</li>
+        </ul>
+
+        <h4 id="common-pitfalls">常见采集陷阱与对策</h4>
+        <table>
+          <thead>
+            <tr>
+              <th>陷阱</th>
+              <th>表现</th>
+              <th>根因</th>
+              <th>对策</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><b>标定漂移</b></td>
+              <td>SR 逐渐下降，<code>slip_risk</code> 误报增加</td>
+              <td>温度变化、gel 老化、零点漂移</td>
+              <td>每天开机预调理；每周重新标定零点；记录 <code>gel_batch</code> 与使用时长</td>
+            </tr>
+            <tr>
+              <td><b>Teacher 过拟合 gel</b></td>
+              <td>Student 在新批次 gel 上性能下降</td>
+              <td>Teacher labels 对材料特性敏感</td>
+              <td>输出 <code>teacher_uncertainty</code>；低置信样本降权；做"去材料化"特征（归一化/比值）</td>
+            </tr>
+            <tr>
+              <td><b>时间对齐失败</b></td>
+              <td><code>replay_ok: false</code> 比例高</td>
+              <td>传感器时钟不同步、Ring Buffer 溢出</td>
+              <td>验证 PTP 状态；减小 Ring Buffer 窗口；timestamp-at-source</td>
+            </tr>
+            <tr>
+              <td><b>RM 指标带偏</b></td>
+              <td>RM 分数高但 SR 不提升</td>
+              <td>RM 学到了"看起来好"而不是"真的好"</td>
+              <td>验收绑定部署 KPI（SR/IR/ER）；RM 只做排序/筛选，不做唯一判据</td>
+            </tr>
+            <tr>
+              <td><b>Hard cases 采集不足</b></td>
+              <td>Policy 在边缘情况失败</td>
+              <td>遥操作偏好简单任务，复杂情况数据少</td>
+              <td>RM hard case mining → 优先采集失败场景；专门安排"刁钻场景"采集日</td>
+            </tr>
+          </tbody>
+        </table>
+
         <h2 id="maintain">8) 标定、健康监测与可维护性</h2>
         <ul>
           <li><b>版本化标定资产</b>：<code>calib_version</code> / <code>calib_hash</code> 写进每条 episode metadata。</li>
@@ -1564,7 +3141,15 @@
           <li><b>阶段 3（1–2 月）</b>：加 2 个指尖 3 轴力传感器（法向 + 切向），强化精细夹持。<br>
             <em>新增能力</em>：脆弱物抓取（毫牛级法向控制）、精细防滑（直接测量指尖摩擦状态）。</li>
           <li><b>阶段 4（长期）</b>：加多点视触觉（至少指腹 + 侧边/侧壁，用于 teacher），形成完整数据飞轮。<br>
-            <em>新增能力</em>：高品质 teacher labels（接触几何/接触模式/力学真值）、显著提升 RM/QC 质量。</li>
+            <b>可选增强</b>：加 1–2 个温度传感器（指尖侧面/手腕），用于材质识别与安全检测。<br>
+            <em>新增能力</em>：
+            <ul style="margin: 0.3em 0; padding-left: 1.5em;">
+              <li>高品质 teacher labels（接触几何/接触模式/力学真值）</li>
+              <li>显著提升 RM/QC 质量</li>
+              <li>（温度）材质分类 (metal/plastic/wood/fabric) → 调整抓取策略</li>
+              <li>（温度）热安全检测（过热预警，避免烫伤/损坏）</li>
+            </ul>
+            <em>适用场景</em>：通用家庭服务（温度可选）、厨房/医疗应用（温度推荐）。</li>
         </ul>
         <blockquote>
           <p>
