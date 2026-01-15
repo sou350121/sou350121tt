@@ -2152,6 +2152,188 @@
           流程按照 <a href="#plan">9.2 迭代路线图</a> 的阶段划分，每个阶段给出可执行的操作清单。
         </p>
 
+        <h4 id="data-flow-clarification">核心概念澄清：Teacher ≠ 人戴手套</h4>
+        <p><b>常见误解</b>：认为"真人戴数据手套 → 训练Teacher → Teacher训练Student"</p>
+        <p><b>实际架构</b>：</p>
+
+        <pre><code>┌─────────────────────────────────────────────────────────────────────────────┐
+│  <b>完整数据采集流程（Teacher→Student架构下）</b>                                    │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+<b>【步骤 1】人类遥操作（控制机器人执行任务）</b>
+┌────────────────────────────────────────────────────────────────┐
+│  操作员                                                         │
+│  ├─ 用主从灵巧手 / VR手柄 / 数据手套（任选一种）               │
+│  └─ 控制机器人手执行任务（抓取/插入/拧瓶盖...）                │
+└──────────────────────────┬─────────────────────────────────────┘
+                           │ 遥操作指令
+                           ↓
+┌─────────────────────────────────────────────────────────────────┐
+│  <b>机器人手</b>（被控制，执行任务）                                  │
+│  ├─ 装有传感器：RGB相机、关节编码器、wrist_FT、指尖力...        │
+│  └─ <b>Research Mode额外装</b>：视触觉传感器（GelSight/DIGIT/uSkin）  │
+└──────────────────────────┬──────────────────────────────────────┘
+                           │ 采集传感器数据
+                           ↓
+
+<b>【步骤 2】机器人传感器采集数据</b>
+┌─────────────────────────────────────────────────────────────────┐
+│  <b>Deploy Mode 数据</b>（可长期稳定运行）                            │
+│  ├─ RGB图像（static + wrist）                                   │
+│  ├─ 关节位置/速度（q / qdot）                                   │
+│  ├─ 电流/力矩（current / effort）                               │
+│  └─ 手腕6D力/力矩（wrist_FT，阶段2.5+）                         │
+└──────────────────────────┬──────────────────────────────────────┘
+                           │
+┌─────────────────────────────────────────────────────────────────┐
+│  <b>Research Mode 数据</b>（额外采集，用于生成Teacher labels）        │
+│  ├─ 上述Deploy模态                                              │
+│  └─ <b>+ 视触觉图像</b>（指腹 + 侧边，多点覆盖）                      │
+└──────────────────────────┬──────────────────────────────────────┘
+                           │
+                           ↓
+
+<b>【步骤 3】Teacher算法处理视触觉数据（不是人！）</b>
+┌─────────────────────────────────────────────────────────────────┐
+│  <b>Teacher Labeler</b>（算法，运行在服务器上）                       │
+│  输入：视触觉图像（从机器人手指传感器采集）                      │
+│  处理：                                                          │
+│  ├─ 分析接触形变 → <code>contact_mode</code>（stick/slip）              │
+│  ├─ 估计滑移风险 → <code>slip_risk</code>（0-1）                        │
+│  ├─ 检测失败模式 → <code>failure_mode</code>（jam/slip/...）            │
+│  ├─ 计算接触几何 → <code>contact_patch</code> / <code>contact_wrench</code> │
+│  └─ 输出不确定度 → <code>teacher_uncertainty</code>                     │
+│  输出：Teacher labels（监督信号）                                │
+└──────────────────────────┬──────────────────────────────────────┘
+                           │
+                           ↓
+
+<b>【步骤 4】Student学习（Deploy模态 → Teacher labels）</b>
+┌─────────────────────────────────────────────────────────────────┐
+│  <b>Student Estimator</b>（神经网络，训练后部署）                     │
+│  输入：<b>只用Deploy模态</b>（RGB + q/qdot + current/effort + wrist_FT）│
+│  监督信号：Teacher labels                                        │
+│  目标：学习从可靠传感器推理出Teacher的输出                       │
+│  输出：部署时可用的状态估计（contact_mode / slip_risk / ...）   │
+└──────────────────────────┬──────────────────────────────────────┘
+                           │
+                           ↓
+
+<b>【步骤 5】Policy训练（Deploy模态 + Student输出）</b>
+┌─────────────────────────────────────────────────────────────────┐
+│  <b>VLA Policy</b>（最终部署的策略）                                  │
+│  输入：Deploy模态 + Student输出的状态估计                        │
+│  训练数据：Deploy Mode episodes（5000+，大量）                  │
+│  输出：机器人动作（关节目标位置/速度）                           │
+└─────────────────────────────────────────────────────────────────┘</code></pre>
+
+        <h5>关键区分：遥操作方式 vs Teacher→Student架构</h5>
+        <table>
+          <thead>
+            <tr>
+              <th>概念</th>
+              <th>作用</th>
+              <th>谁/什么</th>
+              <th>常见误解</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><b>遥操作方式</b></td>
+              <td>人类控制机器人执行任务</td>
+              <td>主从手 / VR手柄 / 数据手套（任选一种）</td>
+              <td>❌ 误以为"数据手套=Teacher"</td>
+            </tr>
+            <tr>
+              <td><b>Teacher</b></td>
+              <td>从视触觉数据生成高质量labels</td>
+              <td><b>视触觉传感器（装在机器人手指上）+ 算法</b></td>
+              <td>❌ 误以为"人戴手套=Teacher"</td>
+            </tr>
+            <tr>
+              <td><b>Student</b></td>
+              <td>从可靠传感器推理Teacher输出</td>
+              <td>神经网络（训练后部署）</td>
+              <td>✅ 正确理解</td>
+            </tr>
+            <tr>
+              <td><b>Policy</b></td>
+              <td>根据传感器输入决策机器人动作</td>
+              <td>VLA模型（最终部署）</td>
+              <td>✅ 正确理解</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h5>三种数据采集模式对比</h5>
+        <table>
+          <thead>
+            <tr>
+              <th>阶段</th>
+              <th>遥操作方式</th>
+              <th>机器人传感器配置</th>
+              <th>Teacher来源</th>
+              <th>数据用途</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><b>阶段 1<br>（MVS冷启动）</b></td>
+              <td>VR手柄 + 规则手势</td>
+              <td>RGB + q/qdot + current/effort</td>
+              <td><b>规则伪标签</b><br>（基于current阈值）</td>
+              <td>训练初始Policy<br>建立数据管线</td>
+            </tr>
+            <tr>
+              <td><b>阶段 2-2.5<br>（加wrist_FT）</b></td>
+              <td>主从灵巧手</td>
+              <td>上述 + wrist_FT（6D）</td>
+              <td><b>规则伪标签</b><br>（升级为轻量RM）</td>
+              <td>训练精细力控Policy<br>（twist/insertion/pry）</td>
+            </tr>
+            <tr>
+              <td><b>阶段 4<br>（Research Mode）</b></td>
+              <td>主从灵巧手</td>
+              <td>上述 + <b>视触觉</b>（pad+side）</td>
+              <td><b>视触觉Teacher算法</b><br>（真Teacher）</td>
+              <td>训练Student estimator<br>生成高质量labels</td>
+            </tr>
+            <tr>
+              <td><b>阶段 4<br>（Deploy Mode）</b></td>
+              <td>主从手 + 自主探索混合</td>
+              <td>RGB + q/qdot + current/effort + wrist_FT<br><b>（无视触觉）</b></td>
+              <td><b>Student输出</b><br>（蒸馏自Teacher）</td>
+              <td>训练最终Policy<br>（大量数据）</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h5>为什么不需要"人戴手套训练Teacher"？</h5>
+        <ul>
+          <li>
+            <b>Teacher的输入是机器人手指上的视触觉传感器</b>，不是人手的传感器<br>
+            → Teacher看到的是"机器人手指接触物体时的形变"，不是"人手接触物体的感觉"
+          </li>
+          <li>
+            <b>人类遥操作的目的是让机器人执行任务</b>，不是训练Teacher<br>
+            → 人类控制机器人去抓杯子，机器人手指上的视触觉传感器采集形变图像，Teacher算法分析图像生成labels
+          </li>
+          <li>
+            <b>数据手套只是遥操作的一种方式</b>（而且不推荐）<br>
+            → 主从手更直接：操作员"戴"上主手（另一只机器人手），主手动作直接复制到从手
+          </li>
+        </ul>
+
+        <h5>实际采集流程示例（阶段4 Research Mode）</h5>
+        <ol>
+          <li><b>操作员用主从灵巧手控制机器人手去拧瓶盖</b></li>
+          <li><b>机器人手指上的视触觉传感器</b>采集接触形变图像（30Hz）</li>
+          <li><b>同时记录</b>：RGB、q/qdot、current/effort、wrist_FT（Deploy模态）</li>
+          <li><b>Teacher算法</b>分析视触觉图像 → 生成 <code>contact_mode=slip</code>、<code>slip_risk=0.8</code></li>
+          <li><b>事后训练Student</b>：输入Deploy模态（RGB+proprio+FT）→ 预测 <code>slip_risk=0.8</code></li>
+          <li><b>部署时</b>：机器人手上<b>不装视触觉</b>，只用Student从Deploy模态推理slip_risk</li>
+        </ol>
+
         <h4 id="day0">Day 0：系统初始设置（开箱到第一条数据）</h4>
         <p><b>目标</b>：验证硬件、建立数据管线、完成首次标定，产出第一条可回放的 episode。</p>
 
