@@ -144,6 +144,7 @@
         vertical-align: top;
         text-align: left;
         line-height: 1.6;
+        color: #1f2937;
       }
       .doc th {
         background: rgba(20, 110, 190, 0.08);
@@ -223,10 +224,20 @@
         border-left-color: rgba(74, 158, 255, 0.5);
         color: #cbd5e1;
       }
-      body.dark-theme .doc table { border-color: rgba(148,163,184,0.18); }
-      body.dark-theme .doc th { background: rgba(74, 158, 255, 0.12); }
+      body.dark-theme .doc table {
+        border-color: rgba(148,163,184,0.18);
+        background: rgba(15, 23, 42, 0.35);
+      }
+      body.dark-theme .doc th {
+        background: rgba(74, 158, 255, 0.18);
+        color: #e2e8f0;
+      }
+      body.dark-theme .doc td {
+        color: #e2e8f0;
+      }
       body.dark-theme .doc th, body.dark-theme .doc td { border-bottom-color: rgba(148,163,184,0.18); }
       body.dark-theme .doc tbody tr:hover { background: rgba(74, 158, 255, 0.08); }
+      body.dark-theme .doc tbody tr:nth-child(odd) { background: rgba(255, 255, 255, 0.02); }
       body.dark-theme .doc table.primitives-table tbody tr:nth-child(odd) {
         background: rgba(255, 255, 255, 0.03);
       }
