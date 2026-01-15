@@ -2152,9 +2152,46 @@
           流程按照 <a href="#plan">9.2 迭代路线图</a> 的阶段划分，每个阶段给出可执行的操作清单。
         </p>
 
-        <h4 id="data-flow-clarification">核心概念澄清：Teacher ≠ 人戴手套</h4>
-        <p><b>常见误解</b>：认为"真人戴数据手套 → 训练Teacher → Teacher训练Student"</p>
-        <p><b>实际架构</b>：</p>
+        <h4 id="data-flow-clarification">核心概念澄清：Teacher训练 vs 遥操作手套</h4>
+        <p><b>关键误解澄清</b>：<b>"戴手套"有两个完全不同的含义，不要混淆！</b></p>
+
+        <h5>两种"戴手套"的根本区别</h5>
+        <table>
+          <thead>
+            <tr>
+              <th>概念</th>
+              <th>手套类型</th>
+              <th>数据类型</th>
+              <th>作用</th>
+              <th>是否需要</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="background-color: rgba(76, 175, 80, 0.1);">
+              <td><b>遥操作手套</b></td>
+              <td>Meta Manus / Cyberglove / 数据手套</td>
+              <td>人手关节角度 [θ1, θ2, ..., θ20]</td>
+              <td>控制机器人手的运动轨迹</td>
+              <td>✅ <b>可以用</b>（或用主从手/VR手柄代替）</td>
+            </tr>
+            <tr style="background-color: rgba(244, 67, 54, 0.1);">
+              <td><b>假想的"训练Teacher手套"</b></td>
+              <td>假想的人手触觉传感器</td>
+              <td>人手的接触感受/力感知</td>
+              <td>（误以为）提供Teacher训练ground truth</td>
+              <td>❌ <b>不需要！不存在！</b></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h5>❌ 常见误解（错误流程）</h5>
+        <pre><code>【错误理解】
+人戴触觉手套 → 人手接触感受数据 → 训练Teacher → Teacher处理机器人视触图像
+       ↑                                              ↑
+   (人手数据)                                    (机器人数据)
+       └──────────── 数据来源不匹配！ ────────────┘</code></pre>
+
+        <h5>✅ 实际架构（正确流程）</h5>
 
         <pre><code>┌─────────────────────────────────────────────────────────────────────────────┐
 │  <b>完整数据采集流程（Teacher→Student架构下）</b>                                    │
@@ -2193,10 +2230,10 @@
                            │
                            ↓
 
-<b>【步骤 3】Teacher算法处理视触觉数据（不是人！）</b>
+<b>【步骤 3】Teacher算法处理视触觉数据（机器人数据，不是人手！）</b>
 ┌─────────────────────────────────────────────────────────────────┐
 │  <b>Teacher Labeler</b>（算法，运行在服务器上）                       │
-│  输入：视触觉图像（从机器人手指传感器采集）                      │
+│  输入：视触觉图像（从<b>机器人手指</b>传感器采集）                  │
 │  处理：                                                          │
 │  ├─ 分析接触形变 → <code>contact_mode</code>（stick/slip）              │
 │  ├─ 估计滑移风险 → <code>slip_risk</code>（0-1）                        │
@@ -2207,6 +2244,48 @@
 └──────────────────────────┬──────────────────────────────────────┘
                            │
                            ↓
+
+<b>【关键问题】Teacher如何训练？Ground Truth从哪来？</b>
+┌─────────────────────────────────────────────────────────────────┐
+│  <b>Teacher训练方法（4种方案，不需要人手数据！）</b>                     │
+└─────────────────────────────────────────────────────────────────┘
+
+<b>方案1：规则为主（70%的labels）</b>
+  简单labels用规则，不需要训练：
+  ├─ contact_confidence = (接触patch面积 > 阈值) ? 1 : 0
+  ├─ contact_mode = (光流能量 > v_slip) ? "slip" : "stick"
+  └─ 纯计算机视觉算法，可计算、可复现
+
+<b>方案2：传感器融合自动标注（20%的labels，推荐！）</b>
+  用机器人自己的可靠传感器作为ground truth：
+  ┌────────────────────────────────────────────────────┐
+  │ 机器人执行任务时同时记录：                          │
+  │ ├─ 视触图像（需要labels）                           │
+  │ └─ <b>wrist_FT（6D力/力矩，可靠传感器，作为GT）</b>       │
+  │                                                    │
+  │ 自动生成训练数据：                                  │
+  │ ├─ wrist_FT检测Fz突降 → slip事件 → 标注视触图像    │
+  │ ├─ wrist_FT.τz卡住+current↑ → jam → 标注为"jam"   │
+  │ └─ contact_wrench: 视触形变+wrist_FT联合估计       │
+  │                                                    │
+  │ 训练Teacher模型：                                   │
+  │ X_train = 视触图像                                 │
+  │ Y_train = wrist_FT推算的力/接触状态（GT）          │
+  └────────────────────────────────────────────────────┘
+  <b>关键</b>：wrist_FT是机器人自己的传感器，不是人手套！
+
+<b>方案3：标定实验（力学模型标定）</b>
+  用标准力传感器建立形变→力的映射：
+  ├─ 施加已知力（1N, 2N, 5N...） → 记录视触形变
+  ├─ 建立初始模型：形变特征 → 力（线性/NN）
+  └─ 用任务数据fine-tune
+
+<b>方案4：少量人工标注（10%，辅助）</b>
+  专家标注<b>机器人</b>的视触视频（不是人手！）：
+  ├─ 观看机器人视触视频 → 标注slip发生时刻
+  ├─ 100-500 episodes足够冷启动
+  └─ 用于训练轻量Teacher模型
+
 
 <b>【步骤 4】Student学习（Deploy模态 → Teacher labels）</b>
 ┌─────────────────────────────────────────────────────────────────┐
@@ -2308,21 +2387,135 @@
           </tbody>
         </table>
 
-        <h5>为什么不需要"人戴手套训练Teacher"？</h5>
+        <h5>FAQ：常见困惑澄清</h5>
+
+        <h6>Q1: 遥操作要戴Meta Manus手套吗？</h6>
+        <p>
+          <b>A: 可以，但这是遥操作工具，不是Teacher训练数据！</b>
+        </p>
+        <table>
+          <thead>
+            <tr>
+              <th>阶段</th>
+              <th>Meta Manus的作用</th>
+              <th>数据流向</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><b>遥操作阶段</b></td>
+              <td>捕捉人手关节角度 → 控制机器人运动</td>
+              <td>Meta Manus → 机器人关节目标位置</td>
+            </tr>
+            <tr>
+              <td><b>Teacher训练阶段</b></td>
+              <td>❌ <b>不使用</b>Meta Manus数据</td>
+              <td>机器人视触 + 机器人wrist_FT → Teacher模型</td>
+            </tr>
+          </tbody>
+        </table>
+        <p>
+          <b>关键</b>：Meta Manus提供的是<b>运动指令</b>（关节角度），不是<b>力感知</b>。<br>
+          Teacher需要学习的是"<b>机器人</b>视触图像 → 力/接触状态"，ground truth必须来自<b>机器人</b>自己的传感器（wrist_FT）。
+        </p>
+
+        <h6>Q2: 为什么不能用人手套的触觉数据训练Teacher？</h6>
+        <p><b>A: 三个根本原因：</b></p>
         <ul>
           <li>
-            <b>Teacher的输入是机器人手指上的视触觉传感器</b>，不是人手的传感器<br>
-            → Teacher看到的是"机器人手指接触物体时的形变"，不是"人手接触物体的感觉"
+            <b>输入不匹配</b>：<br>
+            Teacher输入 = 机器人手指gel的形变图像<br>
+            人手套数据 = 人手皮肤的接触感受<br>
+            → 两者物理特性完全不同（gel vs 人皮肤）
           </li>
           <li>
-            <b>人类遥操作的目的是让机器人执行任务</b>，不是训练Teacher<br>
-            → 人类控制机器人去抓杯子，机器人手指上的视触觉传感器采集形变图像，Teacher算法分析图像生成labels
+            <b>任务不匹配</b>：<br>
+            Teacher要学：机器人gel形变 → 接触力<br>
+            人手套提供：人皮肤感受 → 人的力感知<br>
+            → 映射关系完全不同
           </li>
           <li>
-            <b>数据手套只是遥操作的一种方式</b>（而且不推荐）<br>
-            → 主从手更直接：操作员"戴"上主手（另一只机器人手），主手动作直接复制到从手
+            <b>已有更好的ground truth</b>：<br>
+            机器人wrist_FT直接测量力/力矩（精度±0.1N）<br>
+            → 不需要绕到人手上去
           </li>
         </ul>
+
+        <h6>Q3: 那Meta Manus在整个流程中到底有什么用？</h6>
+        <p><b>A: 只用于遥操作，让机器人执行多样化的任务</b></p>
+        <pre><code>完整流程（用Meta Manus遥操作的情况）：
+
+1. 【遥操作阶段】
+   人戴Meta Manus → 人手动作 → Meta Manus捕捉关节角度
+   → retargeting（人手20 DOF → 机器人16 DOF）
+   → 机器人手执行动作（抓取/拧瓶盖/插入...）
+
+2. 【数据采集阶段】
+   机器人执行任务时，机器人传感器记录：
+   ├─ RGB图像
+   ├─ 关节角度/速度（q/qdot）
+   ├─ wrist_FT（6D力/力矩）← Ground Truth!
+   ├─ current/effort
+   └─ 视触图像（Research Mode）
+
+   ⚠️ 注意：Meta Manus的数据<b>不记录</b>，只是控制机器人运动
+
+3. 【Teacher训练阶段】
+   训练数据：
+   X = 机器人视触图像
+   Y = 机器人wrist_FT（ground truth）
+
+   ⚠️ 注意：完全不使用Meta Manus数据！
+
+4. 【Student训练阶段】
+   X = Deploy模态（RGB + q/qdot + current/effort + wrist_FT）
+   Y = Teacher labels
+
+5. 【Policy训练阶段】
+   X = Deploy模态 + Student输出
+   Y = 任务成功/失败</code></pre>
+
+        <h6>Q4: 简单总结：两种"戴手套"的区别</h6>
+        <table>
+          <thead>
+            <tr>
+              <th>对比维度</th>
+              <th>遥操作手套（Meta Manus）</th>
+              <th>假想的"训练Teacher手套"</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><b>是否真实存在</b></td>
+              <td>✅ 存在，可以买</td>
+              <td>❌ 不存在，不需要</td>
+            </tr>
+            <tr>
+              <td><b>数据类型</b></td>
+              <td>人手关节角度</td>
+              <td>（假想的）人手触觉/力</td>
+            </tr>
+            <tr>
+              <td><b>作用</b></td>
+              <td>控制机器人运动轨迹</td>
+              <td>（误以为）提供Teacher训练GT</td>
+            </tr>
+            <tr>
+              <td><b>数据流向</b></td>
+              <td>人手套 → 机器人关节</td>
+              <td>（不存在）</td>
+            </tr>
+            <tr>
+              <td><b>Teacher训练是否使用</b></td>
+              <td>❌ <b>不使用</b></td>
+              <td>❌ <b>不使在/不需要</b></td>
+            </tr>
+            <tr>
+              <td><b>实际GT来源</b></td>
+              <td colspan="2" style="text-align:center;"><b>机器人wrist_FT + 规则 + 标定实验</b></td>
+            </tr>
+          </tbody>
+        </table>
 
         <h5>实际采集流程示例（阶段4 Research Mode）</h5>
         <ol>
@@ -2424,6 +2617,15 @@
 
         <h5>遥操作硬件接口方案（真人示范如何实现？）</h5>
         <p><b>核心问题</b>：是否需要真人戴数据手套？<b>答案：不是必须，取决于任务复杂度与预算</b>。</p>
+
+        <blockquote style="border-left: 4px solid #ff9800; background-color: rgba(255, 152, 0, 0.1); padding: 1em; margin: 1em 0;">
+          <p><b>⚠️ 重要澄清：遥操作手套 ≠ Teacher训练数据</b></p>
+          <p>
+            本节讨论的数据手套（Meta Manus/Cyberglove等）<b>只用于遥操作</b>（控制机器人运动），<br>
+            <b>不用于训练Teacher</b>（Teacher的ground truth来自机器人自己的wrist_FT传感器）。<br>
+            详见 <a href="#data-flow-clarification">7.4 核心概念澄清</a>。
+          </p>
+        </blockquote>
 
         <table>
           <thead>
@@ -2560,7 +2762,7 @@
         </ol>
 
         <h5>数据手套方案的陷阱（慎用）</h5>
-        <p><b>为什么不首选数据手套？</b></p>
+        <p><b>为什么不首选数据手套作为遥操作工具？</b></p>
         <ul>
           <li>
             <b>Retargeting 问题</b>：人手（5 指 × 4 DOF = 20 DOF）→ 机器人手（例如 Allegro：16 DOF）<br>
@@ -2574,6 +2776,9 @@
           </li>
           <li>
             <b>无力反馈</b>：操作员感受不到接触力，容易过力或脱手
+          </li>
+          <li>
+            <b>⚠️ 澄清：这些问题只针对遥操作</b>：数据手套<b>不用于</b>训练Teacher（Teacher用机器人wrist_FT训练）
           </li>
         </ul>
         <p>
