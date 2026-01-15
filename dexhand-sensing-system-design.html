@@ -2359,6 +2359,11 @@ Level-A（安全层）：保持本方案设计
           本节面向"买完系统回去要做什么"的实际工程问题：<b>谁来采、怎么采、采什么、如何质控、如何从 Research 过渡到 Deploy</b>。
           流程按照 <a href="#plan">9.2 迭代路线图</a> 的阶段划分，每个阶段给出可执行的操作清单。
         </p>
+        <p>
+          <b>验收门槛（数据覆盖）</b>：采集策略必须按“失败分布”来设计，而不是只追成功率。<br>
+          最少要刻意覆盖：<b>材料状态</b>（<code>gel_batch/temp_gel/pollution</code>）、<b>接触边界</b>（stick↔slip 临界）、<b>早期征兆</b>（misalignment/jam 的前兆）。
+          这决定了 Student 能不能学到“触发点”，而不是只学到“平均态”。
+        </p>
 
         <h4 id="data-flow-clarification">核心概念澄清：Teacher训练 vs 遥操作手套</h4>
         <p><b>关键误解澄清</b>：<b>"戴手套"有两个完全不同的含义，不要混淆！</b></p>
