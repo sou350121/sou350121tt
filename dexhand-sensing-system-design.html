@@ -2277,7 +2277,16 @@ Level-A（安全层）：保持本方案设计
           <li><code>failure_mode_logits</code>（多类）</li>
           <li><code>progress</code>（0–1）</li>
           <li><code>recoverability</code>（0–1）</li>
+          <li><code>failure_mode_confidence</code> / <code>slip_risk_calib</code>（置信/校准项，必选）</li>
         </ul>
+        <p>
+          <b>验收门槛（必须写死）</b>：Student 必须输出置信/校准（例如 <code>failure_mode_confidence</code> 或 <code>slip_risk_calib</code>），
+          否则 policy 会把噪声当信号，恢复触发会比“没触发”更致命。
+        </p>
+        <p>
+          <b>训练目标别贪（只蒸馏低维因果）</b>：Student 优先学 <code>phase/mode/risk/recoverability</code> 的“触发点”，
+          不强制追求连续高精度 <code>contact_wrench</code>；精细闭环仍由 <code>wrist_FT</code> 直接完成（与你的系统分工一致）。
+        </p>
         <p>
           <b>电传感的盲区：为什么“拉力（tension）”难直接感到？如何补齐？</b><br>
           多数电触觉/电手套对“压入/接触面积变化”（法向）很敏感，但对<strong>拉离/张力</strong>本身没有对称的直接通道（没有“负压力”这一物理量），
