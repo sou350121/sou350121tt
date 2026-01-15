@@ -306,7 +306,7 @@
             <li>
               <b>工程化：可训练 / 可复现 / 可追责</b>
               <ul>
-                <li><a href="#sync">时间同步与数据管线</a> / <a href="#maintain">标定与健康监测</a></li>
+                <li><a href="#sync">时间同步与数据管线</a> / <a href="#data-collection-workflow">数据采集实施流程</a> / <a href="#maintain">标定与健康监测</a></li>
               </ul>
             </li>
             <li>
@@ -2145,6 +2145,377 @@
   HardCases --> Train[Retrain]
   Train --> Student
   Train --> Policy</code></pre>
+
+        <h3 id="data-collection-workflow">7.4 数据采集实施流程（VLA公司落地操作指南）</h3>
+        <p>
+          本节面向"买完系统回去要做什么"的实际工程问题：<b>谁来采、怎么采、采什么、如何质控、如何从 Research 过渡到 Deploy</b>。
+          流程按照 <a href="#plan">9.2 迭代路线图</a> 的阶段划分，每个阶段给出可执行的操作清单。
+        </p>
+
+        <h4 id="day0">Day 0：系统初始设置（开箱到第一条数据）</h4>
+        <p><b>目标</b>：验证硬件、建立数据管线、完成首次标定，产出第一条可回放的 episode。</p>
+
+        <h5>硬件检查清单（MVS最小配置）</h5>
+        <table>
+          <thead>
+            <tr>
+              <th>检查项</th>
+              <th>验证方法</th>
+              <th>产出/记录</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>2 路 RGB 相机</td>
+              <td>采集 10 帧，检查分辨率、帧率、曝光一致性</td>
+              <td><code>camera_calib_v1.yaml</code>（内参/外参/畸变）</td>
+            </tr>
+            <tr>
+              <td>关节位置/速度</td>
+              <td>运动全行程，检查 <code>q/qdot</code> 连续性、无跳变</td>
+              <td><code>joint_limits.yaml</code>（软硬限位）</td>
+            </tr>
+            <tr>
+              <td>电流/力矩 proxy</td>
+              <td>空载/负载对比，建立 <code>current_baseline</code></td>
+              <td><code>current_calib_v1.json</code>（零点/增益）</td>
+            </tr>
+            <tr>
+              <td>时间同步</td>
+              <td>检查 PTP/NTP 状态，timestamp 对齐误差 &lt; 5ms</td>
+              <td><code>sync_status: ok</code> 写入 metadata</td>
+            </tr>
+            <tr>
+              <td>Level-A 安全反射</td>
+              <td>触发过流/过热/碰撞，验证 <code>backoff</code> 响应</td>
+              <td><code>safety_config_v1.yaml</code></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h5>Day 0 产出（必须完成才能进入阶段 1）</h5>
+        <ul>
+          <li><code>calib_version: v1.0.0</code>（标定文件版本化，写入 git/hash）</li>
+          <li>第一条可回放 episode（<code>replay_ok: true</code>）</li>
+          <li>数据 schema 定义（<code>episode_schema_v1.json</code>）</li>
+          <li>Replay Validation 脚本（自动化验证 <code>replay_ok</code>）</li>
+        </ul>
+
+        <h4 id="stage1-collection">阶段 1（2–4 周）：MVS 基础数据采集</h4>
+        <p>
+          <b>硬件配置</b>：2 路 RGB + q/qdot + current/effort<br>
+          <b>能力范围</b>：简单抓取、pick-and-place、粗防滑<br>
+          <b>数据目标</b>：1000–3000 episodes（成功率 60–80%），建立数据质量基线
+        </p>
+
+        <h5>采集流程（谁来采）</h5>
+        <table>
+          <thead>
+            <tr>
+              <th>采集方式</th>
+              <th>适用场景</th>
+              <th>数据量占比</th>
+              <th>质量特点</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><b>遥操作（teleoperation）</b></td>
+              <td>冷启动、复杂任务、hard cases</td>
+              <td>30–50%</td>
+              <td>高质量，但慢（5–10 episodes/小时）</td>
+            </tr>
+            <tr>
+              <td><b>规则策略（scripted policy）</b></td>
+              <td>简单抓取、标准场景</td>
+              <td>30–40%</td>
+              <td>一致性高，但泛化弱</td>
+            </tr>
+            <tr>
+              <td><b>自主探索（w/ RM 筛选）</b></td>
+              <td>阶段 2+ 解锁，用于数据飞轮</td>
+              <td>20–30%（阶段 1 占比低）</td>
+              <td>量大，需 RM QC</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h5>每条 episode 必须记录的字段（episode metadata）</h5>
+        <pre><code>{
+  "episode_id": "ep_20260115_001234",
+  "task": "pick_cup",
+  "collection_method": "teleoperation",  # teleoperation / scripted / autonomous
+  "calib_version": "v1.0.0",
+  "sync_status": "ok",                   # ok / degraded / failed
+  "replay_ok": true,                     # Replay Validation 结果
+  "success": true,                       # 任务是否成功
+  "failure_mode": null,                  # jam / slip / occlusion / timeout / ...
+  "duration_sec": 12.5,
+  "sensor_health": {"rgb_static": "ok", "rgb_wrist": "ok", "current": "ok"},
+  "timestamp_start": 1736899234.567,
+  "git_commit": "a1b2c3d"                # 代码版本
+}</code></pre>
+
+        <h5>阶段 1 数据质量控制（每天/每周执行）</h5>
+        <ol>
+          <li><b>Replay Validation</b>：抽查 10% episodes，<code>replay_ok</code> 通过率 &gt; 90%</li>
+          <li><b>失败分布统计</b>：<code>failure_mode</code> 统计（哪类失败最多？是否需要调整采集策略？）</li>
+          <li><b>成功率监控</b>：按任务类型分组，SR（Success Rate）&gt; 60%；若 SR 持续下降→检查标定漂移</li>
+          <li><b>传感器健康</b>：每天开机前检查 <code>sensor_health</code>，异常立即重新标定</li>
+        </ol>
+
+        <h5>阶段 1 产出（进入阶段 2 的前置条件）</h5>
+        <ul>
+          <li>1000+ 可复现 episodes（<code>replay_ok: true</code>）</li>
+          <li>规则 RM v1.0（基于 current/effort 阈值的 <code>contact_mode</code>/<code>slip_risk</code> 伪标签）</li>
+          <li>失败分布 baseline（后续用于 A/B 对比）</li>
+        </ul>
+
+        <h4 id="stage2-collection">阶段 2–2.5（6–10 周）：加入 wrist_FT，解锁精细力控</h4>
+        <p>
+          <b>硬件新增</b>：1 个手腕 6D F/T 传感器（≥200Hz）<br>
+          <b>新增能力</b>：<code>twist</code>（拧瓶盖）、<code>insertion</code>（精密插入）、<code>pry</code>（撬开）、<code>pull</code>（拉力闭环）<br>
+          <b>数据目标</b>：每类新任务 200–500 episodes
+        </p>
+
+        <h5>wrist_FT 标定流程（Day 1）</h5>
+        <ol>
+          <li><b>零点标定</b>：手空载静止，采集 1000 帧 → 计算 <code>wrist_FT_zero_offset</code></li>
+          <li><b>重力补偿标定</b>：手臂多姿态（6–10 个姿态），建立重力模型 → <code>gravity_comp_model_v1.json</code></li>
+          <li><b>已知负载验证</b>：抓取已知质量物体（100g, 500g, 1kg），验证 Fz 读数误差 &lt; 5%</li>
+          <li><b>扭矩标定</b>（可选）：用标准力矩扳手施加已知扭矩，验证 τz 读数</li>
+        </ol>
+
+        <h5>精细力控任务的采集要点</h5>
+        <table>
+          <thead>
+            <tr>
+              <th>任务原语</th>
+              <th>关键采集信号</th>
+              <th>成功判据（自动标注）</th>
+              <th>推荐采集方式</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>twist</code></td>
+              <td><code>wrist_FT.τz</code> + 角度变化</td>
+              <td>旋转达标 且 <code>slip_risk &lt; 0.3</code></td>
+              <td>遥操作（初期），脚本（标准瓶盖）</td>
+            </tr>
+            <tr>
+              <td><code>insertion</code></td>
+              <td><code>wrist_FT</code> (6D) + 深度</td>
+              <td>插入深度达标 且 无 <code>jam</code></td>
+              <td>遥操作 + RM 辅助对中</td>
+            </tr>
+            <tr>
+              <td><code>pry</code></td>
+              <td><code>wrist_FT</code> (6D) + 安全限位</td>
+              <td>约束解除 且 无 <code>safety_trip</code></td>
+              <td>遥操作（高风险，慢速采集）</td>
+            </tr>
+            <tr>
+              <td><code>pull</code></td>
+              <td><code>wrist_FT.Fz</code> + 位移</td>
+              <td>拉力达标 且 无脱手</td>
+              <td>脚本（简单）+ 遥操作（复杂）</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h5>阶段 2.5 数据质量升级</h5>
+        <ul>
+          <li><b>新增 teacher label</b>：<code>contact_wrench</code>（6D 力/力矩）、<code>twist_phase</code>、<code>insertion_phase</code></li>
+          <li><b>RM 升级</b>：从规则阈值 → 轻量学习模型（基于阶段 1 数据训练，替换硬编码阈值）</li>
+          <li><b>自动切段</b>：用 <code>progress</code>/<code>primitive</code> 做 subtask segmentation（一条 episode 切成多个 subtask）</li>
+        </ul>
+
+        <h5>阶段 2.5 产出</h5>
+        <ul>
+          <li>精细力控任务库：每类任务 200+ episodes</li>
+          <li><code>wrist_FT_calib_v2.json</code>（含重力补偿）</li>
+          <li>RM v2.0（轻量模型，替换规则阈值）</li>
+        </ul>
+
+        <h4 id="stage3-4-collection">阶段 3–4（2–6 月）：指尖力 + 视触觉 Teacher</h4>
+        <p>
+          <b>阶段 3 硬件新增</b>：2 个指尖 3 轴力传感器<br>
+          <b>阶段 4 硬件新增</b>：多点视触觉（指腹 + 侧边，Research Mode only）<br>
+          <b>目标</b>：形成完整 Teacher→Student 数据飞轮
+        </p>
+
+        <h5>Research Mode vs Deploy Mode 数据采集策略</h5>
+        <table>
+          <thead>
+            <tr>
+              <th>模式</th>
+              <th>传感器配置</th>
+              <th>采集目的</th>
+              <th>数据量</th>
+              <th>质量要求</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><b>Deploy Mode</b></td>
+              <td>RGB + q/qdot + current/effort + wrist_FT（+ 指尖力）</td>
+              <td>量产数据，训练 Policy + Student</td>
+              <td>大（5000+）</td>
+              <td><code>replay_ok</code> + SR 基线</td>
+            </tr>
+            <tr>
+              <td><b>Research Mode</b></td>
+              <td>Deploy 配置 + 多点视触（pad+side）</td>
+              <td>生成高质量 teacher labels</td>
+              <td>中（1000–2000）</td>
+              <td>Teacher label 置信度 + 覆盖 hard cases</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h5>视触觉 Teacher 标定与数据采集（阶段 4）</h5>
+        <ol>
+          <li>
+            <b>Teacher 标定（每次更换 gel 必做）</b>：
+            <ul style="margin: 0.3em 0 0 0; padding-left: 1.1em;">
+              <li>记录 <code>gel_id</code> / <code>gel_batch</code> / <code>gel_install_date</code></li>
+              <li>预调理（pre-conditioning）：运行标准压入/滑动脚本，验证 <code>precondition_ok</code></li>
+              <li>标定接触阈值：<code>A_min</code>（最小接触面积）、<code>v_slip</code>（滑移速度阈值）</li>
+              <li>版本化：<code>teacher_version: v2.1.0</code> + <code>teacher_config</code>（阈值参数）</li>
+            </ul>
+          </li>
+          <li>
+            <b>采集策略（Research Mode）</b>：
+            <ul style="margin: 0.3em 0 0 0; padding-left: 1.1em;">
+              <li>优先采集 Deploy Mode 中失败率高的任务（hard cases）</li>
+              <li>每条 episode 同时记录 Deploy 模态 + 视触觉图像</li>
+              <li>Teacher labeler 实时生成 <code>contact_mode</code> / <code>slip_risk</code> / <code>contact_patch</code> / <code>teacher_uncertainty</code></li>
+              <li>低置信样本（<code>teacher_uncertainty &gt; 0.3</code>）标记为待复核</li>
+            </ul>
+          </li>
+          <li>
+            <b>Teacher→Student 训练</b>：
+            <ul style="margin: 0.3em 0 0 0; padding-left: 1.1em;">
+              <li>输入：Deploy 模态（RGB + q/qdot + current/effort + wrist_FT）</li>
+              <li>监督信号：Teacher labels（带不确定度加权）</li>
+              <li>验证：在 Deploy Mode 数据上测试 Student 输出与 RM 规则的一致性</li>
+              <li>闭环验收：把 Student 输出接到 recovery primitives，测量 SR/IR 提升</li>
+            </ul>
+          </li>
+        </ol>
+
+        <h5>阶段 4 产出（完整数据飞轮）</h5>
+        <ul>
+          <li>Teacher labeler v1.0（可版本化、可复现）</li>
+          <li>Student estimator v1.0（Deploy Mode 可用）</li>
+          <li>Research Mode 数据集（1000–2000 episodes，带高质量 teacher labels）</li>
+          <li>Deploy Mode 数据集（5000+ episodes，用于训练 Policy）</li>
+          <li>RM v3.0（学习型 critic，用于 QC 与 hard case mining）</li>
+        </ul>
+
+        <h4 id="data-qa-protocol">跨阶段数据质量保障协议</h4>
+        <p><b>每日检查（自动化脚本）</b>：</p>
+        <ul>
+          <li><code>replay_ok</code> 通过率（目标 &gt; 90%）</li>
+          <li><code>sync_status</code> 异常率（目标 &lt; 5%）</li>
+          <li><code>sensor_health</code> 异常计数（任何异常立即触发重新标定）</li>
+        </ul>
+
+        <p><b>每周复盘（人工 + RM 辅助）</b>：</p>
+        <ul>
+          <li>失败分布变化（是否出现新 failure_mode？）</li>
+          <li>SR/IR/ER 趋势（是否下降？→ 检查标定漂移或环境变化）</li>
+          <li>Hard cases 挖掘（RM 排序后人工复核 top-20）</li>
+        </ul>
+
+        <p><b>阶段切换验收（A/B 对比）</b>：</p>
+        <ul>
+          <li>新硬件加入后，先在<b>交错模式</b>下采集 100 episodes（50 用新配置，50 用旧配置）</li>
+          <li>对比 SR/IR/ER + 失败分布，验证新硬件带来的能力提升</li>
+          <li>若新配置 SR 显著下降→检查标定或动力学变化（例如加 wrist_FT 后质量/惯量改变）</li>
+        </ul>
+
+        <h4 id="data-management">数据管理与版本控制</h4>
+        <h5>数据存储结构（推荐）</h5>
+        <pre><code>data/
+├── raw/                          # 原始采集数据（不可修改）
+│   ├── stage1_mvs/
+│   │   ├── ep_20260115_001234/   # 每个 episode 一个文件夹
+│   │   │   ├── metadata.json     # episode metadata
+│   │   │   ├── rgb_static.mp4    # 视频或图像序列
+│   │   │   ├── rgb_wrist.mp4
+│   │   │   ├── proprio.h5        # q/qdot/current/effort 时间序列
+│   │   │   └── commands.h5       # cmd_joint_target（命令流）
+│   │   └── ...
+│   ├── stage2_wrist_ft/
+│   └── stage4_research_mode/
+├── processed/                    # 处理后数据（对齐、标注）
+│   ├── aligned/                  # 时间对齐后
+│   ├── labeled/                  # Teacher labels
+│   └── filtered/                 # QC 筛选后（replay_ok=true）
+├── calibration/                  # 标定文件（版本化）
+│   ├── v1.0.0/
+│   │   ├── camera_calib_v1.yaml
+│   │   ├── current_calib_v1.json
+│   │   └── calib_hash.txt        # git commit hash
+│   └── v2.0.0/
+└── models/                       # RM / Student / Policy checkpoints
+    ├── rm_v1.0.ckpt
+    ├── student_v1.0.ckpt
+    └── policy_v1.0.ckpt</code></pre>
+
+        <h5>版本控制实践</h5>
+        <ul>
+          <li><b>标定文件</b>：每次重新标定 → 新版本号 + git commit</li>
+          <li><b>Episode metadata</b>：必须记录 <code>calib_version</code> / <code>teacher_version</code> / <code>git_commit</code></li>
+          <li><b>Teacher labeler</b>：代码版本化（git tag），配置文件版本化（semantic version）</li>
+          <li><b>数据集发布</b>：每个阶段结束后发布"冻结版本"（例如 <code>dataset_stage1_v1.0</code>），用于后续 A/B 对比</li>
+        </ul>
+
+        <h4 id="common-pitfalls">常见采集陷阱与对策</h4>
+        <table>
+          <thead>
+            <tr>
+              <th>陷阱</th>
+              <th>表现</th>
+              <th>根因</th>
+              <th>对策</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><b>标定漂移</b></td>
+              <td>SR 逐渐下降，<code>slip_risk</code> 误报增加</td>
+              <td>温度变化、gel 老化、零点漂移</td>
+              <td>每天开机预调理；每周重新标定零点；记录 <code>gel_batch</code> 与使用时长</td>
+            </tr>
+            <tr>
+              <td><b>Teacher 过拟合 gel</b></td>
+              <td>Student 在新批次 gel 上性能下降</td>
+              <td>Teacher labels 对材料特性敏感</td>
+              <td>输出 <code>teacher_uncertainty</code>；低置信样本降权；做"去材料化"特征（归一化/比值）</td>
+            </tr>
+            <tr>
+              <td><b>时间对齐失败</b></td>
+              <td><code>replay_ok: false</code> 比例高</td>
+              <td>传感器时钟不同步、Ring Buffer 溢出</td>
+              <td>验证 PTP 状态；减小 Ring Buffer 窗口；timestamp-at-source</td>
+            </tr>
+            <tr>
+              <td><b>RM 指标带偏</b></td>
+              <td>RM 分数高但 SR 不提升</td>
+              <td>RM 学到了"看起来好"而不是"真的好"</td>
+              <td>验收绑定部署 KPI（SR/IR/ER）；RM 只做排序/筛选，不做唯一判据</td>
+            </tr>
+            <tr>
+              <td><b>Hard cases 采集不足</b></td>
+              <td>Policy 在边缘情况失败</td>
+              <td>遥操作偏好简单任务，复杂情况数据少</td>
+              <td>RM hard case mining → 优先采集失败场景；专门安排"刁钻场景"采集日</td>
+            </tr>
+          </tbody>
+        </table>
 
         <h2 id="maintain">8) 标定、健康监测与可维护性</h2>
         <ul>
