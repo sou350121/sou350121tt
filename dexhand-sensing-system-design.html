@@ -408,6 +408,18 @@
           </tbody>
         </table>
 
+        <h4>前沿对照：GR-Dexter（ByteDance Seed, arXiv 2512.24210）</h4>
+        <p>
+          GR-Dexter 把 VLA 扩展到双手灵巧手的路径很工程化：<b>高 DoF 硬件 + 触觉阵列 + 遥操作数据采集 + 跨形态对齐</b>。
+          这些与本文的“分层闭环 + Teacher→Student + 数据飞轮”天然互补。
+        </p>
+        <ul>
+          <li><b>触觉阵列的定位</b>：GR-Dexter 在指尖/指腹/侧面布触觉阵列，用于补足遮挡下的接触状态；对应本文的 <b>多点视触 teacher（pad+side）</b> 与低维触觉状态蒸馏。</li>
+          <li><b>遥操作与 retargeting</b>：用约束优化保证示教质量；对应本文 <b>数据采集实施流程</b> 中“遥操作→可回放→可对齐”的工程约束。</li>
+          <li><b>数据配方（data pyramid）</b>：混合 Web-scale + cross-embodiment + human trajectories；对应本文 <b>Research/Deploy 分层采集 + RM-in-loop</b> 的数据分层与 hard-case 机制。</li>
+          <li><b>对齐的关键是接触语义</b>：GR-Dexter 强调指尖语义与接触几何对齐；对应本文 <b>因果状态空间（contact_mode/slip_risk/recoverability）</b> 的定义。</li>
+        </ul>
+
         <h4>关键洞察：相同的哲学，不同的角度</h4>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1em; margin: 1em 0;">
           <div style="border: 2px solid #4CAF50; padding: 1em; border-radius: 8px;">
@@ -3485,6 +3497,18 @@ Level-A（安全层）：保持本方案设计
           <li>
             前沿：Reward Discovery（奖励函数自主发现）：
             <a href="https://github.com/sou350121/vla-interview-handbook/blob/main/theory/frontier/reward_discovery_rl.md" target="_blank" rel="noopener noreferrer">theory/frontier/reward_discovery_rl.md</a>
+          </li>
+          <li>
+            前沿：GR-Dexter（handbook 速记）：
+            <a href="https://github.com/sou350121/vla-interview-handbook/blob/main/theory/frontier/gr_dexter_bimanual_dexterous_vla.md" target="_blank" rel="noopener noreferrer">theory/frontier/gr_dexter_bimanual_dexterous_vla.md</a>
+          </li>
+          <li>
+            前沿：GR-Dexter 技术报告（arXiv 2512.24210）：
+            <a href="https://arxiv.org/abs/2512.24210" target="_blank" rel="noopener noreferrer">https://arxiv.org/abs/2512.24210</a>
+          </li>
+          <li>
+            前沿：GR-Dexter 项目页：
+            <a href="https://byte-dexter.github.io/gr-dexter/" target="_blank" rel="noopener noreferrer">https://byte-dexter.github.io/gr-dexter/</a>
           </li>
         </ul>
       </div>
