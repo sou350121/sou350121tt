@@ -1,0 +1,383 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title>Friction Margin: From Climbing to DexHands - Sou Kit-Wa (Ken)</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=1000">
+
+    <link rel="stylesheet" href="css/style.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Asap:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
+
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Asap:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap');
+
+      .page-section {
+        margin-top: 3.5em;
+        margin-bottom: 3.5em;
+      }
+
+      .section-title {
+        font-size: 2em;
+        font-weight: 600;
+        margin-bottom: 1.2em;
+        color: #150c21;
+        border-bottom: 3px solid #146ebe;
+        padding-bottom: 0.5em;
+      }
+
+      .card {
+        margin-bottom: 1.5em;
+        padding: 1.5em 1.8em;
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        border-radius: 12px;
+        border-left: 4px solid #146ebe;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      }
+
+      .card h3 {
+        font-size: 1.25em;
+        margin-bottom: 0.6em;
+        color: #146ebe;
+      }
+
+      .card p, .card li {
+        color: #495057;
+        line-height: 1.8;
+      }
+
+      .ascii-diagram {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+        font-size: 0.92em;
+        line-height: 1.45;
+        background: #0b1220;
+        color: #e5e7eb;
+        border-radius: 10px;
+        padding: 1em 1.2em;
+        overflow: auto;
+        border: 1px solid rgba(20, 110, 190, 0.35);
+      }
+
+      .pill {
+        display: inline-block;
+        padding: 0.2em 0.7em;
+        border-radius: 999px;
+        background: rgba(20, 110, 190, 0.12);
+        color: #0d4a8a;
+        font-weight: 600;
+        font-size: 0.9em;
+        margin-right: 0.5em;
+        margin-bottom: 0.5em;
+      }
+
+      .back-link {
+        display: inline-block;
+        margin-top: 1.2em;
+        margin-bottom: 1.2em;
+        color: #146ebe;
+        font-size: 1.05em;
+        text-decoration: none;
+        padding: 0.5em 1em;
+        border: 2px solid #146ebe;
+        border-radius: 6px;
+        transition: all 0.3s ease;
+      }
+
+      .back-link:hover {
+        background-color: #146ebe;
+        color: white;
+        border-bottom: 2px solid #146ebe;
+      }
+
+      .lang-switcher {
+        display: inline-flex;
+        margin-left: 1.2em;
+        background: #f0f0f0;
+        border-radius: 25px;
+        padding: 4px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        position: relative;
+      }
+
+      .lang-toggle {
+        display: inline-block;
+        padding: 0.5em 1.2em;
+        border-radius: 20px;
+        cursor: pointer;
+        font-size: 0.9em;
+        font-weight: 500;
+        color: #666;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        z-index: 2;
+        white-space: nowrap;
+      }
+
+      .lang-toggle.active {
+        color: white;
+        background: linear-gradient(135deg, #146ebe 0%, #0d4a8a 100%);
+        box-shadow: 0 2px 8px rgba(20, 110, 190, 0.3);
+        transform: scale(1.05);
+      }
+
+      .lang-content { display: none; }
+      .lang-content.active { display: block; }
+
+      /* Dark theme overrides */
+      body.dark-theme .section-title { color: #ffffff; border-bottom-color: #4a9eff; }
+      body.dark-theme .card { background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%); border-left-color: #4a9eff; }
+      body.dark-theme .card h3 { color: #4a9eff; }
+      body.dark-theme .card p, body.dark-theme .card li { color: #e2e8f0; }
+      body.dark-theme .pill { background: rgba(74, 158, 255, 0.14); color: #cfe8ff; }
+      body.dark-theme .back-link { color: #4a9eff; border-color: #4a9eff; }
+      body.dark-theme .back-link:hover { background-color: #4a9eff; color: #1a1a1a; }
+      body.dark-theme .lang-switcher { background: #2d3748; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3); }
+      body.dark-theme .lang-toggle { color: #b0b0b0; }
+      body.dark-theme .lang-toggle.active { background: linear-gradient(135deg, #4a9eff 0%, #2d5aa0 100%); color: #ffffff; }
+    </style>
+  </head>
+
+  <body id="body">
+    <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">
+      <span id="theme-icon">🌙</span>
+    </button>
+
+    <div id="main">
+      <div id="intro" style="padding-top: 3em;">
+        <div id="intro-text">
+          <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 1em;">
+            <h1 style="margin: 0;">Friction Margin: From Climbing to DexHands</h1>
+            <div class="lang-switcher">
+              <span class="lang-toggle active" id="lang-en" onclick="switchLang('en')">EN</span>
+              <span class="lang-toggle" id="lang-zh" onclick="switchLang('zh')">中文</span>
+            </div>
+          </div>
+          <p style="margin-top: 0.9em;">
+            <a href="blog.html" class="back-link">← Back to Blog</a>
+            <a href="index.html" class="back-link" style="margin-left: 0.8em;">← Back to Home</a>
+          </p>
+        </div>
+      </div>
+
+      <!-- English -->
+      <div id="content-en" class="lang-content active">
+        <div class="page-section">
+          <h2 class="section-title">Why climbers care about friction (and why robots should too)</h2>
+
+          <div class="card">
+            <h3>Core idea: estimate the friction margin, not “the friction”</h3>
+            <p>
+              Watching Alex Honnold climb, the key mental model is simple: continuously estimate how much friction budget you have left.
+              In mechanics, the contact constraint is <b>‖F<sub>t</sub>‖ ≤ μN</b>. The actionable quantity is the <b>margin</b>:
+              <b>m = μ<sub>eff</sub>N − ‖F<sub>t</sub>‖</b>.
+            </p>
+            <p style="margin-top: 0.8em;">
+              For dexterous hands, “robust grasping” is mostly “keep m positive under uncertainty”.
+            </p>
+            <div style="margin-top: 0.8em;">
+              <span class="pill">Friction cone</span>
+              <span class="pill">Margin</span>
+              <span class="pill">Uncertainty</span>
+              <span class="pill">Pre-slip</span>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3>From rock to robot: what changes?</h3>
+            <ul>
+              <li><b>μ is not a constant</b>: surface films (dust/oil/water), temperature, speed, and material compliance all change μ<sub>eff</sub>.</li>
+              <li><b>Slip is not binary</b>: incipient slip starts locally (edges), then propagates. Early warnings matter.</li>
+              <li><b>Contact area and pressure distribution</b> change the effective constraint (smearing vs edging in climbing; soft pad vs hard edge in hands).</li>
+            </ul>
+          </div>
+
+          <div class="card">
+            <h3>What sensing should optimize for</h3>
+            <p>Design the sensing stack around three questions:</p>
+            <ul>
+              <li><b>Can we estimate N and F<sub>t</sub> (or their proxies) at the contact?</b></li>
+              <li><b>Can we detect incipient slip before macroscopic slip?</b></li>
+              <li><b>Can we update μ<sub>eff</sub> online (even roughly) to keep margin under control?</b></li>
+            </ul>
+            <pre class="ascii-diagram">Minimal friction-aware loop
+
+  Sensors:
+    N (normal) + Ft (shear proxy) + pre-slip cue (micro-slip/vibration)
+
+  Estimator:
+    mu_eff <- online update (filtered / Bayesian / probe)
+    margin m = mu_eff * N - |Ft|
+
+  Controller:
+    keep m >= m_min by adjusting:
+      - normal force (grip)
+      - contact area / pose (regrasp, roll)
+      - tangential load (trajectory / impedance)</pre>
+          </div>
+
+          <div class="card">
+            <h3>Sensing options that map to “climbing friction”</h3>
+            <ul>
+              <li><b>Force/torque</b>: fingertip normal + wrist 6D F/T (best if you can afford it).</li>
+              <li><b>Shear + micro-slip</b>: shear taxels, or infer shear from deformation field (visuotactile).</li>
+              <li><b>Vibration / stick-slip</b>: small IMU near fingertip, or vibro-acoustic pickup on the structure.</li>
+              <li><b>Contact patch</b>: contact area + pressure distribution to predict where slip will start.</li>
+              <li><b>Surface state proxies</b>: temperature / humidity / contamination class (even coarse helps explain μ drift).</li>
+            </ul>
+          </div>
+
+          <div class="card">
+            <h3>Rate-and-state friction as a useful mental model</h3>
+            <p>
+              In many real contacts, μ depends on sliding speed and “state” (aging / film / contact history).
+              You don’t need the full theory to benefit: treat μ<sub>eff</sub> as a latent variable with slow drift,
+              and update it when your pre-slip cues and force balance disagree.
+            </p>
+          </div>
+
+          <div class="card">
+            <h3>Practical evaluation: what to measure in experiments</h3>
+            <ul>
+              <li><b>Margin tracking</b>: how often m crosses below 0 before recovery?</li>
+              <li><b>Pre-slip lead time</b>: how early can you detect slip onset (ms) at given loads?</li>
+              <li><b>Robustness</b>: performance across surface changes (dry/wet/dusty), temperature, and object materials.</li>
+              <li><b>Data usefulness</b>: can logged signals support learning a reusable μ estimator?</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chinese (Simplified) -->
+      <div id="content-zh" class="lang-content">
+        <div class="page-section">
+          <h2 class="section-title">把攀岩的“摩擦估算”借给灵巧手</h2>
+
+          <div class="card">
+            <h3>核心不是“摩擦系数是多少”，而是“还剩多少摩擦裕度”</h3>
+            <p>
+              看 Alex Honnold 攀岩，最关键的能力其实是：在不确定接触面上实时估算“我还能靠摩擦撑多久”。
+              物理约束是 <strong>‖F<sub>t</sub>‖ ≤ μN</strong>。对机器人最有用的量是摩擦裕度：
+              <strong>m = μ<sub>eff</sub>N − ‖F<sub>t</sub>‖</strong>。
+            </p>
+            <p style="margin-top: 0.8em;">
+              灵巧手的稳定抓取，本质上就是：在 μ 不确定时，仍然让 m 保持为正，并且能够提前发现 m 在变小。
+            </p>
+            <div style="margin-top: 0.8em;">
+              <span class="pill">摩擦锥</span>
+              <span class="pill">摩擦裕度</span>
+              <span class="pill">不确定性</span>
+              <span class="pill">预滑</span>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3>攀岩摩擦学对灵巧手的三条迁移</h3>
+            <ul>
+              <li><strong>μ 不是常数</strong>：粉尘/油膜/水膜、温度、速度、材料粘弹性都会改变 μ<sub>eff</sub>。</li>
+              <li><strong>滑移不是二元事件</strong>：通常从局部（边缘微滑）开始，再扩展成宏观滑移。</li>
+              <li><strong>接触面积与压力分布很重要</strong>：攀岩的 smearing/edging，等价于机器人里“软指腹贴合 vs 硬边点接触”。</li>
+            </ul>
+          </div>
+
+          <div class="card">
+            <h3>传感方案应该围绕三个问题来设计</h3>
+            <ul>
+              <li><strong>能否测到 N 和 F<sub>t</sub></strong>（或可靠代理量）？</li>
+              <li><strong>能否在宏观滑移前发现预滑</strong>（微滑/振动/接触斑点变化）？</li>
+              <li><strong>能否在线更新 μ<sub>eff</sub></strong>（哪怕粗糙），从而直接控制摩擦裕度 m？</li>
+            </ul>
+            <pre class="ascii-diagram">最小“摩擦感知”闭环
+
+  传感：
+    N(法向) + Ft(切向代理) + 预滑线索(微滑/振动/接触斑点位移)
+
+  估计：
+    mu_eff <- 在线更新(滤波/贝叶斯/小幅主动探测)
+    m = mu_eff * N - |Ft|
+
+  控制：
+    让 m >= m_min，通过：
+      - 调整法向力(抓紧/放松)
+      - 调整接触面积/姿态(滚动/复抓)
+      - 调整切向载荷(轨迹/阻抗)</pre>
+          </div>
+
+          <div class="card">
+            <h3>对应到传感器：哪些东西最“像攀岩”</h3>
+            <ul>
+              <li><strong>法向 + 切向</strong>：指尖法向力 +（最好有）腕部 6D F/T。</li>
+              <li><strong>剪切/预滑</strong>：剪切 taxel，或用视触觉从形变场推断切向载荷与微滑。</li>
+              <li><strong>振动谱 / stick–slip</strong>：指尖附近 IMU，或结构声学拾音（对粘着-滑移很敏感）。</li>
+              <li><strong>接触斑点</strong>：接触面积与压力分布，预测“从哪里先滑”。</li>
+              <li><strong>表面状态代理</strong>：温度/湿度/污染等级（哪怕粗略，也能解释 μ 漂移）。</li>
+            </ul>
+          </div>
+
+          <div class="card">
+            <h3>可借用的理论：速率-状态摩擦（rate-and-state）</h3>
+            <p>
+              很多真实接触里，摩擦取决于速度与“状态”（接触老化/表面膜/历史）。
+              工程上不必完整复刻：把 μ<sub>eff</sub> 当作缓慢漂移的隐变量，用预滑线索与力平衡残差来校正它，
+              就能把“摩擦不确定”变成“可控的不确定”。
+            </p>
+          </div>
+
+          <div class="card">
+            <h3>怎么评测：不要只测“有没有滑”，要测“裕度控制得好不好”</h3>
+            <ul>
+              <li><strong>裕度穿越率</strong>：m 变成负之前，系统是否能触发恢复？频率多高？</li>
+              <li><strong>预滑提前量</strong>：在给定载荷下，能提前多少毫秒发现滑移趋势？</li>
+              <li><strong>跨表面鲁棒性</strong>：干/湿/粉尘、不同材料、温度变化下是否稳定？</li>
+              <li><strong>数据可学习性</strong>：记录的信号是否足以训练通用的 μ 估计器？</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function switchLang(lang) {
+        document.querySelectorAll('.lang-content').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.lang-toggle').forEach(el => el.classList.remove('active'));
+
+        if (lang === 'en') {
+          document.getElementById('content-en').classList.add('active');
+          document.getElementById('lang-en').classList.add('active');
+        } else {
+          document.getElementById('content-zh').classList.add('active');
+          document.getElementById('lang-zh').classList.add('active');
+        }
+      }
+
+      document.addEventListener('DOMContentLoaded', () => {
+        const themeToggle = document.getElementById('theme-toggle');
+        const themeIcon = document.getElementById('theme-icon');
+        const body = document.body;
+
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        if (savedTheme === 'dark') {
+          body.classList.add('dark-theme');
+          themeIcon.textContent = '☀️';
+        } else {
+          body.classList.remove('dark-theme');
+          themeIcon.textContent = '🌙';
+        }
+
+        themeToggle.addEventListener('click', () => {
+          const newTheme = body.classList.contains('dark-theme') ? 'light' : 'dark';
+          if (newTheme === 'dark') {
+            body.classList.add('dark-theme');
+            themeIcon.textContent = '☀️';
+          } else {
+            body.classList.remove('dark-theme');
+            themeIcon.textContent = '🌙';
+          }
+          localStorage.setItem('theme', newTheme);
+        });
+      });
+    </script>
+  </body>
+</html>
+
