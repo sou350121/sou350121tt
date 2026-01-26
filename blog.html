@@ -183,6 +183,102 @@
       body.dark-theme .post-read {
         color: #4a9eff;
       }
+
+      /* Search & filter */
+      .search-panel {
+        margin-top: 1.2em;
+        padding: 1.2em 1.4em;
+        border-radius: 14px;
+        border: 1px solid rgba(17, 24, 39, 0.10);
+        background: rgba(255, 255, 255, 0.85);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+      }
+
+      .search-row {
+        display: flex;
+        gap: 0.8em;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+
+      .search-input {
+        flex: 1 1 320px;
+        padding: 0.75em 0.9em;
+        border-radius: 10px;
+        border: 1px solid rgba(17, 24, 39, 0.14);
+        font-family: inherit;
+        font-size: 1em;
+        background: rgba(255,255,255,0.9);
+      }
+
+      .search-select {
+        flex: 0 0 auto;
+        padding: 0.72em 0.9em;
+        border-radius: 10px;
+        border: 1px solid rgba(17, 24, 39, 0.14);
+        font-family: inherit;
+        font-size: 1em;
+        background: rgba(255,255,255,0.9);
+      }
+
+      .search-btn {
+        flex: 0 0 auto;
+        padding: 0.72em 1.0em;
+        border-radius: 10px;
+        border: 2px solid #146ebe;
+        background: #146ebe;
+        color: #fff;
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      .search-btn.secondary {
+        background: transparent;
+        color: #146ebe;
+      }
+
+      .search-meta {
+        margin-top: 0.9em;
+        display: flex;
+        gap: 0.8em;
+        align-items: center;
+        flex-wrap: wrap;
+        color: #6b7280;
+        font-size: 0.95em;
+      }
+
+      .tag-filter {
+        margin-top: 0.9em;
+        display: flex;
+        gap: 0.5em;
+        flex-wrap: wrap;
+      }
+
+      .tag-filter .tag {
+        cursor: pointer;
+        user-select: none;
+      }
+
+      .tag.is-active {
+        border-color: rgba(20, 110, 190, 0.45);
+        background: rgba(20, 110, 190, 0.18);
+      }
+
+      body.dark-theme .search-panel {
+        background: rgba(17, 24, 39, 0.45);
+        border-color: rgba(148, 163, 184, 0.18);
+      }
+
+      body.dark-theme .search-input,
+      body.dark-theme .search-select {
+        background: rgba(17, 24, 39, 0.55);
+        border-color: rgba(148, 163, 184, 0.25);
+        color: #e5e7eb;
+      }
+
+      body.dark-theme .search-meta { color: #cbd5e1; }
+      body.dark-theme .search-btn.secondary { color: #4a9eff; border-color: #4a9eff; }
+      body.dark-theme .search-btn { background: #4a9eff; border-color: #4a9eff; }
     </style>
   </head>
 
@@ -192,6 +288,21 @@
         <div class="page-title">Blog</div>
         <div class="page-subtitle">
           A lightweight space for publishing my ideas. Add a new HTML page, then add a new post card below.
+        </div>
+        <div class="search-panel" aria-label="Blog search and filters">
+          <div class="search-row">
+            <input id="blog-search" class="search-input" type="text" placeholder="Search title, excerpt, tags…" />
+            <select id="blog-sort" class="search-select" aria-label="Sort posts">
+              <option value="desc" selected>Newest first</option>
+              <option value="asc">Oldest first</option>
+            </select>
+            <button id="blog-clear" class="search-btn secondary" type="button">Clear</button>
+          </div>
+          <div class="search-meta">
+            <div id="blog-result-count">Showing all posts.</div>
+            <div id="blog-active-filter" style="display:none;"></div>
+          </div>
+          <div id="blog-tag-filter" class="tag-filter" aria-label="Tag filters"></div>
         </div>
         <a class="back-link" href="index.html">← Back to Home</a>
       </div>
@@ -285,6 +396,147 @@
         </div>
       </div>
     </div>
+    <script>
+      function parseDate(card) {
+        const t = card.querySelector('time.post-date');
+        const raw = (t && (t.getAttribute('datetime') || t.textContent)) || '';
+        const d = new Date(raw);
+        return isNaN(d.getTime()) ? new Date(0) : d;
+      }
+
+      function getTags(card) {
+        return Array.from(card.querySelectorAll('.post-tags .tag'))
+          .map(el => (el.textContent || '').trim())
+          .filter(Boolean);
+      }
+
+      function getHaystack(card) {
+        const title = (card.querySelector('.post-title')?.textContent || '').trim();
+        const excerpt = (card.querySelector('.post-excerpt')?.textContent || '').trim();
+        const tags = getTags(card).join(' ');
+        return (title + ' ' + excerpt + ' ' + tags).toLowerCase();
+      }
+
+      function setActiveTag(el, active) {
+        if (!el) return;
+        if (active) el.classList.add('is-active');
+        else el.classList.remove('is-active');
+      }
+
+      function initBlogSearch() {
+        const list = document.querySelector('.post-list');
+        const cards = Array.from(document.querySelectorAll('.post-card'));
+        const searchEl = document.getElementById('blog-search');
+        const sortEl = document.getElementById('blog-sort');
+        const clearEl = document.getElementById('blog-clear');
+        const countEl = document.getElementById('blog-result-count');
+        const activeEl = document.getElementById('blog-active-filter');
+        const tagWrap = document.getElementById('blog-tag-filter');
+
+        if (!list || cards.length === 0) return;
+
+        // Build tag index
+        const tagSet = new Set();
+        for (const c of cards) for (const t of getTags(c)) tagSet.add(t);
+        const tags = Array.from(tagSet).sort((a, b) => a.localeCompare(b));
+
+        // Render tag filters
+        const tagButtons = new Map();
+        tagWrap.innerHTML = '';
+        for (const t of tags) {
+          const span = document.createElement('span');
+          span.className = 'tag';
+          span.textContent = t;
+          span.setAttribute('role', 'button');
+          span.setAttribute('tabindex', '0');
+          tagWrap.appendChild(span);
+          tagButtons.set(t, span);
+        }
+
+        let activeTag = null;
+
+        function applySort() {
+          const dir = (sortEl && sortEl.value) || 'desc';
+          const sorted = cards.slice().sort((a, b) => {
+            const da = parseDate(a).getTime();
+            const db = parseDate(b).getTime();
+            return dir === 'asc' ? da - db : db - da;
+          });
+          for (const c of sorted) list.appendChild(c);
+        }
+
+        function applyFilter() {
+          const q = (searchEl && searchEl.value ? searchEl.value.trim().toLowerCase() : '');
+          let shown = 0;
+
+          for (const c of cards) {
+            const tagsOfCard = getTags(c);
+            const matchTag = !activeTag || tagsOfCard.includes(activeTag);
+            const matchQ = !q || getHaystack(c).includes(q);
+            const ok = matchTag && matchQ;
+            c.style.display = ok ? '' : 'none';
+            if (ok) shown += 1;
+          }
+
+          const total = cards.length;
+          if (shown === total && !q && !activeTag) {
+            countEl.textContent = 'Showing all posts.';
+          } else {
+            countEl.textContent = `Showing ${shown} of ${total} posts.`;
+          }
+
+          if (activeTag) {
+            activeEl.style.display = '';
+            activeEl.textContent = `Filter: tag = ${activeTag}${q ? `; search = "${q}"` : ''}`;
+          } else if (q) {
+            activeEl.style.display = '';
+            activeEl.textContent = `Filter: search = "${q}"`;
+          } else {
+            activeEl.style.display = 'none';
+            activeEl.textContent = '';
+          }
+        }
+
+        function setTag(t) {
+          // toggle
+          const next = (activeTag === t) ? null : t;
+          if (activeTag && tagButtons.get(activeTag)) setActiveTag(tagButtons.get(activeTag), false);
+          activeTag = next;
+          if (activeTag && tagButtons.get(activeTag)) setActiveTag(tagButtons.get(activeTag), true);
+          applyFilter();
+        }
+
+        function clearAll() {
+          if (searchEl) searchEl.value = '';
+          if (activeTag && tagButtons.get(activeTag)) setActiveTag(tagButtons.get(activeTag), false);
+          activeTag = null;
+          if (sortEl) sortEl.value = 'desc';
+          applySort();
+          applyFilter();
+        }
+
+        // Wire events
+        if (searchEl) searchEl.addEventListener('input', applyFilter);
+        if (sortEl) sortEl.addEventListener('change', () => { applySort(); applyFilter(); });
+        if (clearEl) clearEl.addEventListener('click', clearAll);
+
+        for (const [t, el] of tagButtons.entries()) {
+          el.addEventListener('click', () => setTag(t));
+          el.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              setTag(t);
+            }
+          });
+        }
+
+        // Default: newest first
+        applySort();
+        applyFilter();
+      }
+
+      document.addEventListener('DOMContentLoaded', initBlogSearch);
+    </script>
   </body>
 </html>
 
