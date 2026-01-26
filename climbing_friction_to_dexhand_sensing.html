@@ -329,31 +329,7 @@
       </div>
     </div>
 
-    <script>
-      function switchLang(lang) {
-        document.querySelectorAll('.lang-content').forEach(el => el.classList.remove('active'));
-        document.querySelectorAll('.lang-toggle').forEach(el => el.classList.remove('active'));
-
-        if (lang === 'en') {
-          document.getElementById('content-en').classList.add('active');
-          const en = document.getElementById('lang-en');
-          if (en) en.classList.add('active');
-        } else {
-          document.getElementById('content-zh').classList.add('active');
-          const zh = document.getElementById('lang-zh');
-          if (zh) zh.classList.add('active');
-        }
-      }
-
-      document.addEventListener('DOMContentLoaded', () => {
-        // Theme and language are configured in blog.html (global settings)
-        const savedTheme = localStorage.getItem('theme') || 'light';
-        if (savedTheme === 'dark') document.body.classList.add('dark-theme');
-
-        const savedLang = localStorage.getItem('lang') || 'en';
-        switchLang(savedLang === 'zh' ? 'zh' : 'en');
-      });
-    </script>
+    <script src="js/blog_prefs.js"></script>
   </body>
 </html>
 
