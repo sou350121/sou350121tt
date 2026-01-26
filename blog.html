@@ -19,6 +19,14 @@
         margin-bottom: 1.2em;
       }
 
+      .header-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1em;
+        flex-wrap: wrap;
+      }
+
       .page-title {
         font-size: 2.4em;
         line-height: 1.2em;
@@ -29,6 +37,32 @@
       .page-subtitle {
         color: #a0a8b0;
         line-height: 1.6em;
+      }
+
+      /* Language switcher */
+      .lang-switcher {
+        display: inline-flex;
+        background: #f0f0f0;
+        border-radius: 25px;
+        padding: 4px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      }
+      .lang-toggle {
+        display: inline-block;
+        padding: 0.45em 1.05em;
+        border-radius: 20px;
+        cursor: pointer;
+        font-size: 0.9em;
+        font-weight: 600;
+        color: #666;
+        transition: all 0.25s ease;
+        user-select: none;
+        white-space: nowrap;
+      }
+      .lang-toggle.active {
+        color: white;
+        background: linear-gradient(135deg, #146ebe 0%, #0d4a8a 100%);
+        box-shadow: 0 2px 8px rgba(20, 110, 190, 0.25);
       }
 
       /* Blog list */
@@ -184,6 +218,16 @@
         color: #4a9eff;
       }
 
+      body.dark-theme .lang-switcher {
+        background: #2d3748;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+      }
+      body.dark-theme .lang-toggle { color: #b0b0b0; }
+      body.dark-theme .lang-toggle.active {
+        background: linear-gradient(135deg, #4a9eff 0%, #2d5aa0 100%);
+        color: #ffffff;
+      }
+
       /* Search & filter */
       .search-panel {
         margin-top: 1.2em;
@@ -283,10 +327,19 @@
   </head>
 
   <body id="body">
+    <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">
+      <span id="theme-icon">🌙</span>
+    </button>
     <div id="main">
       <div id="header">
-        <div class="page-title">Blog</div>
-        <div class="page-subtitle">
+        <div class="header-row">
+          <div class="page-title" id="page-title">Blog</div>
+          <div class="lang-switcher" aria-label="Language">
+            <span class="lang-toggle active" id="lang-en" role="button" tabindex="0">EN</span>
+            <span class="lang-toggle" id="lang-zh" role="button" tabindex="0">中文</span>
+          </div>
+        </div>
+        <div class="page-subtitle" id="page-subtitle">
           A lightweight space for publishing my ideas. Add a new HTML page, then add a new post card below.
         </div>
         <div class="search-panel" aria-label="Blog search and filters">
@@ -310,7 +363,11 @@
       <div class="post-list">
         <!-- Posts: duplicate an <article class="post-card"> block below to add a new entry -->
 
-        <article class="post-card">
+        <article class="post-card"
+                 data-title-en="🤖 DexHand Sensing System"
+                 data-title-zh="🤖 灵巧手传感系统（DexHand Sensing）"
+                 data-excerpt-en="Sensor stack, multi-rate loops, time sync, calibration, and a learning-ready data schema for dexterous hands."
+                 data-excerpt-zh="灵巧手传感栈、多速率闭环、时间同步、标定，以及面向学习的数据记录方案。">
           <div class="post-meta">
             <time class="post-date" datetime="2026-01-13">2026-01-13</time>
             <div class="post-tags">
@@ -328,7 +385,11 @@
           </div>
         </article>
 
-        <article class="post-card">
+        <article class="post-card"
+                 data-title-en="🧩 DexHand Sensing System Design (Deployment × Data × Self-Recovery)"
+                 data-title-zh="🧩 灵巧手传感系统设计（部署 × 数据 × 自恢复）"
+                 data-excerpt-en="A deployable sensing design for dexterous hands: multi-rate loops + time sync + two-mode data (Deploy vs Research), using A (Teacher→Student distillation) + C (RM/QC flywheel) to get stable deployment and high-resolution research value."
+                 data-excerpt-zh="面向部署的灵巧手传感设计：多速率闭环 + 时间同步 + 双模式数据（Deploy/Research），用 A（Teacher→Student 蒸馏）+ C（RM/QC 飞轮）兼顾稳定部署与研究分辨率。">
           <div class="post-meta">
             <time class="post-date" datetime="2026-01-13">2026-01-13</time>
             <div class="post-tags">
@@ -350,7 +411,11 @@
           </div>
         </article>
 
-        <article class="post-card">
+        <article class="post-card"
+                 data-title-en="🧠 Thinking Board"
+                 data-title-zh="🧠 思考板"
+                 data-excerpt-en="A simple local board for collecting thoughts; great for drafts before turning them into publishable posts. (Notes are stored in your browser’s local storage.)"
+                 data-excerpt-zh="一个轻量的本地思考板：适合把想法先写成草稿再整理成文章。（内容保存在浏览器 localStorage）">
           <div class="post-meta">
             <time class="post-date" datetime="2026-01-13">2026-01-13</time>
             <div class="post-tags">
@@ -369,7 +434,11 @@
           </div>
         </article>
 
-        <article class="post-card">
+        <article class="post-card"
+                 data-title-en="🧗 Friction Margin: From Climbing to DexHands"
+                 data-title-zh="🧗 摩擦裕度：从攀岩到灵巧手"
+                 data-excerpt-en="Climbing is mostly “estimate friction margin under uncertainty”. This post borrows the friction-cone / pre-slip mindset to design tactile sensing and control loops for dexterous hands."
+                 data-excerpt-zh="攀岩的本质是“在不确定摩擦下估算摩擦裕度”。本文借用摩擦锥/预滑/裕度控制思路，推导灵巧手的触觉传感与闭环设计。">
           <div class="post-meta">
             <time class="post-date" datetime="2026-01-25">2026-01-25</time>
             <div class="post-tags">
@@ -397,6 +466,104 @@
       </div>
     </div>
     <script>
+      const THEME_KEY = 'theme';
+      const LANG_KEY = 'lang';
+
+      let CURRENT_LANG = 'en';
+
+      function initTheme() {
+        const themeToggle = document.getElementById('theme-toggle');
+        const themeIcon = document.getElementById('theme-icon');
+        const body = document.body;
+
+        const savedTheme = localStorage.getItem(THEME_KEY) || 'light';
+        if (savedTheme === 'dark') {
+          body.classList.add('dark-theme');
+          if (themeIcon) themeIcon.textContent = '☀️';
+        } else {
+          body.classList.remove('dark-theme');
+          if (themeIcon) themeIcon.textContent = '🌙';
+        }
+
+        if (!themeToggle) return;
+        themeToggle.addEventListener('click', () => {
+          const newTheme = body.classList.contains('dark-theme') ? 'light' : 'dark';
+          if (newTheme === 'dark') {
+            body.classList.add('dark-theme');
+            if (themeIcon) themeIcon.textContent = '☀️';
+          } else {
+            body.classList.remove('dark-theme');
+            if (themeIcon) themeIcon.textContent = '🌙';
+          }
+          localStorage.setItem(THEME_KEY, newTheme);
+        });
+      }
+
+      function setLang(lang) {
+        CURRENT_LANG = lang === 'zh' ? 'zh' : 'en';
+        localStorage.setItem(LANG_KEY, CURRENT_LANG);
+
+        const enBtn = document.getElementById('lang-en');
+        const zhBtn = document.getElementById('lang-zh');
+        if (enBtn) enBtn.classList.toggle('active', CURRENT_LANG === 'en');
+        if (zhBtn) zhBtn.classList.toggle('active', CURRENT_LANG === 'zh');
+
+        // Update header text
+        const titleEl = document.getElementById('page-title');
+        const subEl = document.getElementById('page-subtitle');
+        if (titleEl) titleEl.textContent = CURRENT_LANG === 'zh' ? '博客' : 'Blog';
+        if (subEl) subEl.textContent = CURRENT_LANG === 'zh'
+          ? '一个轻量空间，用来发布想法。新增一篇 HTML 页面，然后在下方添加一张文章卡片。'
+          : 'A lightweight space for publishing my ideas. Add a new HTML page, then add a new post card below.';
+
+        // Update search UI
+        const searchEl = document.getElementById('blog-search');
+        const sortEl = document.getElementById('blog-sort');
+        const clearEl = document.getElementById('blog-clear');
+        const countEl = document.getElementById('blog-result-count');
+        if (searchEl) searchEl.placeholder = CURRENT_LANG === 'zh' ? '搜索标题、摘要、标签…' : 'Search title, excerpt, tags…';
+        if (clearEl) clearEl.textContent = CURRENT_LANG === 'zh' ? '清空' : 'Clear';
+        if (sortEl) {
+          const optDesc = sortEl.querySelector('option[value="desc"]');
+          const optAsc = sortEl.querySelector('option[value="asc"]');
+          if (optDesc) optDesc.textContent = CURRENT_LANG === 'zh' ? '最新优先' : 'Newest first';
+          if (optAsc) optAsc.textContent = CURRENT_LANG === 'zh' ? '最旧优先' : 'Oldest first';
+        }
+        if (countEl && countEl.textContent === 'Showing all posts.') {
+          countEl.textContent = CURRENT_LANG === 'zh' ? '显示全部文章。' : 'Showing all posts.';
+        }
+
+        // Update cards (title/excerpt) from dataset
+        const cards = Array.from(document.querySelectorAll('.post-card'));
+        for (const c of cards) {
+          const a = c.querySelector('.post-title a');
+          const p = c.querySelector('.post-excerpt');
+          const title = CURRENT_LANG === 'zh' ? c.dataset.titleZh : c.dataset.titleEn;
+          const excerpt = CURRENT_LANG === 'zh' ? c.dataset.excerptZh : c.dataset.excerptEn;
+          if (a && title) a.textContent = title;
+          if (p && excerpt) p.textContent = excerpt;
+        }
+
+        // Refresh the filter summary/count with the new language
+        if (searchEl) searchEl.dispatchEvent(new Event('input'));
+      }
+
+      function initLang() {
+        const saved = localStorage.getItem(LANG_KEY) || 'en';
+        setLang(saved);
+
+        const enBtn = document.getElementById('lang-en');
+        const zhBtn = document.getElementById('lang-zh');
+        if (enBtn) {
+          enBtn.addEventListener('click', () => setLang('en'));
+          enBtn.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setLang('en'); } });
+        }
+        if (zhBtn) {
+          zhBtn.addEventListener('click', () => setLang('zh'));
+          zhBtn.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setLang('zh'); } });
+        }
+      }
+
       function parseDate(card) {
         const t = card.querySelector('time.post-date');
         const raw = (t && (t.getAttribute('datetime') || t.textContent)) || '';
@@ -480,17 +647,23 @@
 
           const total = cards.length;
           if (shown === total && !q && !activeTag) {
-            countEl.textContent = 'Showing all posts.';
+            countEl.textContent = (CURRENT_LANG === 'zh') ? '显示全部文章。' : 'Showing all posts.';
           } else {
-            countEl.textContent = `Showing ${shown} of ${total} posts.`;
+            countEl.textContent = (CURRENT_LANG === 'zh')
+              ? `显示 ${shown} / ${total} 篇文章。`
+              : `Showing ${shown} of ${total} posts.`;
           }
 
           if (activeTag) {
             activeEl.style.display = '';
-            activeEl.textContent = `Filter: tag = ${activeTag}${q ? `; search = "${q}"` : ''}`;
+            activeEl.textContent = (CURRENT_LANG === 'zh')
+              ? `筛选：标签 = ${activeTag}${q ? `；搜索 = "${q}"` : ''}`
+              : `Filter: tag = ${activeTag}${q ? `; search = "${q}"` : ''}`;
           } else if (q) {
             activeEl.style.display = '';
-            activeEl.textContent = `Filter: search = "${q}"`;
+            activeEl.textContent = (CURRENT_LANG === 'zh')
+              ? `筛选：搜索 = "${q}"`
+              : `Filter: search = "${q}"`;
           } else {
             activeEl.style.display = 'none';
             activeEl.textContent = '';
@@ -535,7 +708,11 @@
         applyFilter();
       }
 
-      document.addEventListener('DOMContentLoaded', initBlogSearch);
+      document.addEventListener('DOMContentLoaded', () => {
+        initTheme();
+        initLang();
+        initBlogSearch();
+      });
     </script>
   </body>
 </html>

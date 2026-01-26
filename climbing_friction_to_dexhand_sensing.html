@@ -140,19 +140,11 @@
   </head>
 
   <body id="body">
-    <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">
-      <span id="theme-icon">🌙</span>
-    </button>
-
     <div id="main">
       <div id="intro" style="padding-top: 3em;">
         <div id="intro-text">
           <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 1em;">
             <h1 style="margin: 0;">Friction Margin: From Climbing to DexHands</h1>
-            <div class="lang-switcher">
-              <span class="lang-toggle active" id="lang-en" onclick="switchLang('en')">EN</span>
-              <span class="lang-toggle" id="lang-zh" onclick="switchLang('zh')">中文</span>
-            </div>
           </div>
           <p style="margin-top: 0.9em;">
             <a href="blog.html" class="back-link">← Back to Blog</a>
@@ -344,38 +336,22 @@
 
         if (lang === 'en') {
           document.getElementById('content-en').classList.add('active');
-          document.getElementById('lang-en').classList.add('active');
+          const en = document.getElementById('lang-en');
+          if (en) en.classList.add('active');
         } else {
           document.getElementById('content-zh').classList.add('active');
-          document.getElementById('lang-zh').classList.add('active');
+          const zh = document.getElementById('lang-zh');
+          if (zh) zh.classList.add('active');
         }
       }
 
       document.addEventListener('DOMContentLoaded', () => {
-        const themeToggle = document.getElementById('theme-toggle');
-        const themeIcon = document.getElementById('theme-icon');
-        const body = document.body;
-
+        // Theme and language are configured in blog.html (global settings)
         const savedTheme = localStorage.getItem('theme') || 'light';
-        if (savedTheme === 'dark') {
-          body.classList.add('dark-theme');
-          themeIcon.textContent = '☀️';
-        } else {
-          body.classList.remove('dark-theme');
-          themeIcon.textContent = '🌙';
-        }
+        if (savedTheme === 'dark') document.body.classList.add('dark-theme');
 
-        themeToggle.addEventListener('click', () => {
-          const newTheme = body.classList.contains('dark-theme') ? 'light' : 'dark';
-          if (newTheme === 'dark') {
-            body.classList.add('dark-theme');
-            themeIcon.textContent = '☀️';
-          } else {
-            body.classList.remove('dark-theme');
-            themeIcon.textContent = '🌙';
-          }
-          localStorage.setItem('theme', newTheme);
-        });
+        const savedLang = localStorage.getItem('lang') || 'en';
+        switchLang(savedLang === 'zh' ? 'zh' : 'en');
       });
     </script>
   </body>
