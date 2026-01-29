@@ -476,6 +476,33 @@
           </li>
         </ul>
 
+        <h4 id="frontier-vt-pretrain-2026">前沿补充：视触预训练 + 在线多任务学习（Science Robotics, 2026-01-28）</h4>
+        <p>
+          另一条独立的前沿路线验证了相同的核心哲学：<b>先解决遮挡/接触相位的“表征问题”（Observation），再学统一多任务策略（Practice）</b>。
+          它的特点是把触觉降到<b>单目RGB + 二值触觉</b>，依然能提升遮挡鲁棒性与 Sim2Real 稳定性（摘要级结论）。
+        </p>
+        <ul>
+          <li>
+            <b>概念对齐</b>：Observation ≈ 本文的 Research/Teacher “资产化”（高信息模态先把接触讲清楚）；Practice ≈ Deploy 侧的大规模策略学习（但部署侧必须可降级、可追责）。
+          </li>
+          <li>
+            <b>与本文的互补点</b>：论文偏“学习范式 + 指标证明”；本文偏“系统交付”——多频闭环（A/B/C）、统一数据骨架、Replay/QC、RM-in-loop，把训练与部署的因果链条写死。
+          </li>
+          <li>
+            <b>你下一步最值钱的可交付方向</b>：把“二值触觉也能用”的关键风险——<b>阈值口径与漂移</b>——做成系统标准件，而不是留给论文级假设：
+            <ul style="margin: 0.3em 0 0 0; padding-left: 1.1em;">
+              <li><b>版本化</b>：记录 <code>tactile_binary_threshold_version</code> / <code>tactile_binary_config</code>（阈值、窗口、滤波）并随 episode 写入 metadata。</li>
+              <li><b>快速校准脚本</b>：开机/换指套/温漂后跑 30–60s 的 pre-conditioning + auto-calib，产出 <code>tactile_calib_ok</code> 与校准残差。</li>
+              <li><b>漂移监测与触发</b>：用 <code>replay_ok</code>、失败分布漂移、以及 <code>slip_risk</code>/<code>contact_mode</code> 的统计突变做报警，触发重校准或降级策略。</li>
+              <li><b>对齐到因果状态</b>：二值触觉不追“力”，而是服务于 <code>contact_mode</code>/<code>progress</code>/<code>recoverability</code> 的触发点学习（与你的 state taxonomy 一致）。</li>
+            </ul>
+          </li>
+        </ul>
+        <p>
+          手册速记（摘要可验证 + 可复用抽象）：
+          <a href="https://github.com/sou350121/vla-interview-handbook/blob/main/theory/frontier/visual_tactile_pretraining_online_multitask_learning_2026.md" target="_blank" rel="noopener noreferrer">theory/frontier/visual_tactile_pretraining_online_multitask_learning_2026.md</a>
+        </p>
+
         <h4>对VLA公司的价值</h4>
         <blockquote style="border-left: 4px solid #ff9800; background-color: rgba(255, 152, 0, 0.1); padding: 1em;">
           <p><b>为什么这个验证重要？</b></p>
