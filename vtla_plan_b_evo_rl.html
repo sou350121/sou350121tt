@@ -1,0 +1,384 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title>VTLA Plan B: Why Evo-RL Should Not Be the Main Framework - Sou Kit-Wa (Ken)</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=1000">
+
+    <link rel="stylesheet" href="css/style.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Asap:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
+
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Asap:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap');
+
+      .page-section {
+        margin-top: 3.5em;
+        margin-bottom: 3.5em;
+      }
+
+      .section-title {
+        font-size: 2em;
+        font-weight: 600;
+        margin-bottom: 1.2em;
+        color: #150c21;
+        border-bottom: 3px solid #146ebe;
+        padding-bottom: 0.5em;
+      }
+
+      .card {
+        margin-bottom: 1.5em;
+        padding: 1.5em 1.8em;
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        border-radius: 12px;
+        border-left: 4px solid #146ebe;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      }
+
+      .card h3 {
+        font-size: 1.25em;
+        margin-bottom: 0.6em;
+        color: #146ebe;
+      }
+
+      .card p, .card li {
+        color: #495057;
+        line-height: 1.8;
+      }
+
+      .ascii-diagram {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+        font-size: 0.92em;
+        line-height: 1.45;
+        background: #0b1220;
+        color: #e5e7eb;
+        border-radius: 10px;
+        padding: 1em 1.2em;
+        overflow: auto;
+        border: 1px solid rgba(20, 110, 190, 0.35);
+      }
+
+      .pill {
+        display: inline-block;
+        padding: 0.2em 0.7em;
+        border-radius: 999px;
+        background: rgba(20, 110, 190, 0.12);
+        color: #0d4a8a;
+        font-weight: 600;
+        font-size: 0.9em;
+        margin-right: 0.5em;
+        margin-bottom: 0.5em;
+      }
+
+      .back-link {
+        display: inline-block;
+        margin-top: 1.2em;
+        margin-bottom: 1.2em;
+        color: #146ebe;
+        font-size: 1.05em;
+        text-decoration: none;
+        padding: 0.5em 1em;
+        border: 2px solid #146ebe;
+        border-radius: 6px;
+        transition: all 0.3s ease;
+      }
+
+      .back-link:hover {
+        background-color: #146ebe;
+        color: white;
+        border-bottom: 2px solid #146ebe;
+      }
+
+      .lang-switcher {
+        display: inline-flex;
+        margin-left: 1.2em;
+        background: #f0f0f0;
+        border-radius: 25px;
+        padding: 4px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        position: relative;
+      }
+
+      .lang-toggle {
+        display: inline-block;
+        padding: 0.5em 1.2em;
+        border-radius: 20px;
+        cursor: pointer;
+        font-size: 0.9em;
+        font-weight: 500;
+        color: #666;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        z-index: 2;
+        white-space: nowrap;
+      }
+
+      .lang-toggle.active {
+        color: white;
+        background: linear-gradient(135deg, #146ebe 0%, #0d4a8a 100%);
+        box-shadow: 0 2px 8px rgba(20, 110, 190, 0.3);
+        transform: scale(1.05);
+      }
+
+      .lang-content { display: none; }
+      .lang-content.active { display: block; }
+
+      body.dark-theme .section-title { color: #ffffff; border-bottom-color: #4a9eff; }
+      body.dark-theme .card { background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%); border-left-color: #4a9eff; }
+      body.dark-theme .card h3 { color: #4a9eff; }
+      body.dark-theme .card p, body.dark-theme .card li { color: #e2e8f0; }
+      body.dark-theme .pill { background: rgba(74, 158, 255, 0.14); color: #cfe8ff; }
+      body.dark-theme .back-link { color: #4a9eff; border-color: #4a9eff; }
+      body.dark-theme .back-link:hover { background-color: #4a9eff; color: #1a1a1a; }
+      body.dark-theme .lang-switcher { background: #2d3748; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3); }
+      body.dark-theme .lang-toggle { color: #b0b0b0; }
+      body.dark-theme .lang-toggle.active { background: linear-gradient(135deg, #4a9eff 0%, #2d5aa0 100%); color: #ffffff; }
+    </style>
+  </head>
+
+  <body id="body">
+    <div id="main">
+      <div id="intro" style="padding-top: 3em;">
+        <div id="intro-text">
+          <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 1em;">
+            <h1 style="margin: 0;">VTLA Plan B: Why Evo-RL Should Not Be the Main Framework</h1>
+            <div class="lang-switcher" id="lang-switcher">
+              <span class="lang-toggle active" id="lang-en">EN</span>
+              <span class="lang-toggle" id="lang-zh">中文</span>
+            </div>
+          </div>
+          <p style="margin-top: 0.9em;">
+            <a href="blog.html" class="back-link">← Back to Blog</a>
+            <a href="index.html" class="back-link" style="margin-left: 0.8em;">← Back to Home</a>
+          </p>
+        </div>
+      </div>
+
+      <div id="content-en" class="lang-content active">
+        <div class="page-section">
+          <h2 class="section-title">The short answer</h2>
+
+          <div class="card">
+            <h3>Evo-RL is valuable, but it belongs late in the stack</h3>
+            <p>
+              After looking through <a href="https://github.com/MINT-SJTU/Evo-RL" target="_blank" rel="noopener noreferrer">Evo-RL</a>,
+              my conclusion is simple: it is useful for <b>real-robot post-training and correction loops</b>, but it should not be the
+              main framework if the end goal is <b>VTLA</b> (Vision-Tactile-Language-Action).
+            </p>
+            <div style="margin-top: 0.8em;">
+              <span class="pill">VTLA</span>
+              <span class="pill">Tactile</span>
+              <span class="pill">Real robot</span>
+              <span class="pill">Post-training</span>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3>Where Evo-RL should sit</h3>
+            <pre class="ascii-diagram">L1  Simulation & data generation
+L2  Visuo-tactile policy learning
+L3  Sim2Real
+L4  Real-robot deployment & continual improvement
+
+Best place for Evo-RL: L4</pre>
+            <p style="margin-top: 0.9em;">
+              Evo-RL is strongest when you already have a working policy and want rollout, human intervention, correction, value/advantage
+              estimation, and retraining on real hardware.
+            </p>
+          </div>
+
+          <div class="card">
+            <h3>Recommended Plan B</h3>
+            <p>
+              Use <b>UniVTAC or TacSL</b> as the visuo-tactile simulation base, <b>Diffusion Policy</b> as the main policy backbone,
+              and keep <b>Evo-RL</b> for the later real-robot continual-learning stage.
+            </p>
+            <ul>
+              <li><b>UniVTAC / TacSL</b>: build the visuo-tactile world and contact-rich task data.</li>
+              <li><b>Diffusion Policy</b>: stable baseline for continuous control and multimodal policy learning.</li>
+              <li><b>Evo-RL</b>: add rollout, intervention, correction, and post-training after deployment.</li>
+            </ul>
+          </div>
+
+          <div class="card">
+            <h3>The first task I would choose</h3>
+            <p>
+              I would start with <b>single-arm + two-finger tactile gripper + blind insertion</b>, such as peg insertion or USB-C dummy insertion.
+              It is small enough to finish, but tactile sensing actually matters after initial visual alignment.
+            </p>
+            <ul>
+              <li><b>Simulation goal</b>: success rate ≥ 85% under pose perturbation.</li>
+              <li><b>Real-robot goal</b>: success rate ≥ 70% over 30 consecutive trials.</li>
+              <li><b>Key comparison</b>: VTLA should beat vision-only by a meaningful margin.</li>
+            </ul>
+          </div>
+
+          <div class="card">
+            <h3>Why not start from Evo-RL directly?</h3>
+            <p>
+              Because that mixes every hard problem together at the same time: tactile sensing, contact simulation, policy design,
+              calibration, deployment, and RL loops. If something fails, you will not know whether the issue is the tactile model,
+              the simulation, the backbone, or the post-training loop.
+            </p>
+            <p style="margin-top: 0.8em;">
+              A safer sequence is:
+            </p>
+            <pre class="ascii-diagram">Prove VTLA in simulation
+-> deploy a minimal real-robot version
+-> then add Evo-RL for continual improvement</pre>
+          </div>
+
+          <div class="card">
+            <h3>A practical 3-month path</h3>
+            <ul>
+              <li><b>Month 1</b>: one task, one tactile representation, one policy, one simulator.</li>
+              <li><b>Month 2</b>: robustness and ablations; prove tactile actually helps.</li>
+              <li><b>Month 3</b>: minimal real deployment first, then connect Evo-RL for correction and retraining.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div id="content-zh" class="lang-content">
+        <div class="page-section">
+          <h2 class="section-title">先说结论</h2>
+
+          <div class="card">
+            <h3>Evo-RL 有价值，但不该做 VTLA 的主框架</h3>
+            <p>
+              我认真看完 <a href="https://github.com/MINT-SJTU/Evo-RL" target="_blank" rel="noopener noreferrer">Evo-RL</a> 之后的判断是：
+              它更适合做<b>真机后的持续学习与纠错闭环</b>，而不适合在项目一开始就承担 <b>VTLA</b>
+              （Vision-Tactile-Language-Action）的主研发任务。
+            </p>
+            <div style="margin-top: 0.8em;">
+              <span class="pill">VTLA</span>
+              <span class="pill">触觉</span>
+              <span class="pill">真机</span>
+              <span class="pill">后训练</span>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3>Evo-RL 应该放在哪一层</h3>
+            <pre class="ascii-diagram">L1  仿真与数据生成
+L2  视触觉策略学习
+L3  Sim2Real
+L4  真机部署与持续优化
+
+Evo-RL 最适合放在 L4</pre>
+            <p style="margin-top: 0.9em;">
+              也就是：当你已经有一个能工作的策略，再用它做 rollout、人在环接管、纠错回流、
+              value / advantage 估计和再训练闭环。
+            </p>
+          </div>
+
+          <div class="card">
+            <h3>我会给的 Plan B</h3>
+            <p>
+              用 <b>UniVTAC 或 TacSL</b> 做视触觉仿真底座，用 <b>Diffusion Policy</b> 做主策略骨架，
+              把 <b>Evo-RL</b> 放到后面的真机持续学习阶段。
+            </p>
+            <ul>
+              <li><b>UniVTAC / TacSL</b>：负责视触觉世界、接触任务和数据。</li>
+              <li><b>Diffusion Policy</b>：负责先把多模态连续控制做稳。</li>
+              <li><b>Evo-RL</b>：负责上线后的 rollout、接管、纠错和后训练。</li>
+            </ul>
+          </div>
+
+          <div class="card">
+            <h3>第一个任务我会怎么选</h3>
+            <p>
+              我会选 <b>单臂 + 双指触觉夹爪 + 盲插</b>，例如 peg insertion 或 USB-C dummy insertion。
+              这个任务足够小，能做完；同时它又真的需要触觉，因为视觉只能解决全局定位，
+              接触后的微调主要靠触觉。
+            </p>
+            <ul>
+              <li><b>仿真目标</b>：有位姿扰动时成功率 ≥ 85%。</li>
+              <li><b>真机目标</b>：连续 30 次测试成功率 ≥ 70%。</li>
+              <li><b>关键对比</b>：VTLA 必须显著优于 vision-only。</li>
+            </ul>
+          </div>
+
+          <div class="card">
+            <h3>为什么不建议直接从 Evo-RL 开始</h3>
+            <p>
+              因为这样会把所有难题同时绑在一起：触觉建模、接触仿真、策略设计、标定部署、
+              以及 RL 闭环。最后一旦失败，你很难判断问题到底出在触觉、仿真、骨架还是后训练。
+            </p>
+            <p style="margin-top: 0.8em;">
+              更稳的顺序是：
+            </p>
+            <pre class="ascii-diagram">先在仿真里证明 VTLA 值得做
+-> 再做一个最小真机版本
+-> 最后接 Evo-RL 做持续优化</pre>
+          </div>
+
+          <div class="card">
+            <h3>一个更现实的 3 个月路线</h3>
+            <ul>
+              <li><b>第 1 个月</b>：一个任务、一个触觉表示、一个策略、一个仿真器。</li>
+              <li><b>第 2 个月</b>：做鲁棒性和消融，证明触觉确实有增益。</li>
+              <li><b>第 3 个月</b>：先上最小真机，再接 Evo-RL 做纠错回流与再训练。</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div id="footer" style="display:flex; justify-content:flex-start; align-items:center; gap: 1em; flex-wrap: wrap; padding: 1em 0;">
+        <div>
+          &copy; 2025 Sou Kit-Wa (Ken). All rights reserved.
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const THEME_KEY = 'theme';
+      const LANG_KEY = 'lang';
+
+      function initTheme() {
+        const body = document.body;
+        const savedTheme = localStorage.getItem(THEME_KEY) || 'light';
+        if (savedTheme === 'dark') {
+          body.classList.add('dark-theme');
+        } else {
+          body.classList.remove('dark-theme');
+        }
+      }
+
+      function setLanguage(lang) {
+        const en = document.getElementById('content-en');
+        const zh = document.getElementById('content-zh');
+        const enBtn = document.getElementById('lang-en');
+        const zhBtn = document.getElementById('lang-zh');
+
+        if (lang === 'zh') {
+          en.classList.remove('active');
+          zh.classList.add('active');
+          enBtn.classList.remove('active');
+          zhBtn.classList.add('active');
+          document.documentElement.lang = 'zh';
+        } else {
+          zh.classList.remove('active');
+          en.classList.add('active');
+          zhBtn.classList.remove('active');
+          enBtn.classList.add('active');
+          document.documentElement.lang = 'en';
+        }
+
+        localStorage.setItem(LANG_KEY, lang);
+      }
+
+      document.addEventListener('DOMContentLoaded', () => {
+        initTheme();
+
+        const savedLang = localStorage.getItem(LANG_KEY) || 'en';
+        setLanguage(savedLang);
+
+        document.getElementById('lang-en').addEventListener('click', () => setLanguage('en'));
+        document.getElementById('lang-zh').addEventListener('click', () => setLanguage('zh'));
+      });
+    </script>
+  </body>
+</html>
