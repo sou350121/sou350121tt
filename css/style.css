@@ -692,6 +692,32 @@ h3 a:hover {
   color: #01579b;
 }
 
+.repo-highlights {
+  margin-top: 0.9em;
+}
+
+.repo-highlights li {
+  position: relative;
+  padding-left: 1.1em;
+  margin-bottom: 0.55em;
+  line-height: 1.6;
+  color: #01579b;
+}
+
+.repo-highlights li::before {
+  content: '-';
+  position: absolute;
+  left: 0;
+  color: #0277bd;
+  font-weight: 700;
+}
+
+.repo-metric {
+  color: #014f86;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
 /**************************************************/
 /* Dark Theme Styles */
 
@@ -915,6 +941,18 @@ body.dark-theme .list-item.projects .project-description h3 {
 
 body.dark-theme .projects p {
   color: #81d4fa;
+}
+
+body.dark-theme .repo-highlights li {
+  color: #81d4fa;
+}
+
+body.dark-theme .repo-highlights li::before {
+  color: #4fc3f7;
+}
+
+body.dark-theme .repo-metric {
+  color: #b3e5fc;
 }
 
 /* Dark theme for enhanced Awards section */
