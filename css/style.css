@@ -44,6 +44,10 @@ table {
   border-spacing: 0;
 }
 
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
 /**************************************************/
 
 #body{
@@ -54,7 +58,7 @@ table {
 }
 
 #main {
-  width: 54em;
+  width: min(54em, calc(100% - 2rem));
   margin: 0px auto;
   position: relative;
   min-height: 100vh;
@@ -93,7 +97,7 @@ h1 {
 }
 
 #intro-text {
-  width: 40em;
+  width: min(40em, 100%);
   float: left;
 }
 
@@ -1141,4 +1145,45 @@ body.dark-theme .edu-item > div > div:hover {
 
 .gallery-photo-item:hover .gallery-caption {
   transform: translateY(0);
+}
+
+@media (max-width: 700px) {
+  #intro {
+    flex-direction: column;
+    padding-top: 4em;
+  }
+
+  #intro-text,
+  .project-description {
+    width: 100%;
+    float: none;
+  }
+
+  #intro-image {
+    margin: 1.5em 0 0 0;
+    float: none;
+  }
+
+  .thumbnail {
+    width: 100%;
+    float: none;
+    margin-right: 0;
+    display: block;
+  }
+
+  .thumbnail img,
+  .thumbnail video {
+    height: auto;
+    max-height: 220px;
+  }
+
+  .button,
+  .nav-extra-link {
+    font-size: 1.25em;
+    line-height: 2em;
+  }
+
+  #footer {
+    position: static;
+  }
 }

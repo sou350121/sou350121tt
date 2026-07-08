@@ -3,7 +3,7 @@
   <head>
     <title>VTLA Plan B: Why Evo-RL Should Not Be the Main Framework - Sou Kit-Wa (Ken)</title>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=1000">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <link rel="stylesheet" href="css/style.css">
 
@@ -125,11 +125,18 @@
       .lang-content { display: none; }
       .lang-content.active { display: block; }
 
+      .post-meta-line {
+        margin-top: 0.7em;
+        color: #5f6b7a;
+        font-size: 0.98em;
+      }
+
       body.dark-theme .section-title { color: #ffffff; border-bottom-color: #4a9eff; }
       body.dark-theme .card { background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%); border-left-color: #4a9eff; }
       body.dark-theme .card h3 { color: #4a9eff; }
       body.dark-theme .card p, body.dark-theme .card li { color: #e2e8f0; }
       body.dark-theme .pill { background: rgba(74, 158, 255, 0.14); color: #cfe8ff; }
+      body.dark-theme .post-meta-line { color: #b7c2d3; }
       body.dark-theme .back-link { color: #4a9eff; border-color: #4a9eff; }
       body.dark-theme .back-link:hover { background-color: #4a9eff; color: #1a1a1a; }
       body.dark-theme .lang-switcher { background: #2d3748; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3); }
@@ -148,6 +155,10 @@
               <span class="lang-toggle active" id="lang-en">EN</span>
               <span class="lang-toggle" id="lang-zh">中文</span>
             </div>
+          </div>
+          <div class="post-meta-line">
+            <span id="meta-en">Published: 2026-01-25 · Updated: 2026-03-09</span>
+            <span id="meta-zh" style="display:none;">发布：2026-01-25 · 更新：2026-03-09</span>
           </div>
           <p style="margin-top: 0.9em;">
             <a href="blog.html" class="back-link">← Back to Blog</a>
@@ -192,26 +203,86 @@ Best place for Evo-RL: L4</pre>
           <div class="card">
             <h3>Recommended Plan B</h3>
             <p>
-              Use <b>UniVTAC or TacSL</b> as the visuo-tactile simulation base, <b>Diffusion Policy</b> as the main policy backbone,
-              and keep <b>Evo-RL</b> for the later real-robot continual-learning stage.
+              My more concrete answer is:
             </p>
+            <pre class="ascii-diagram">L1  Visuo-tactile simulation + benchmark
+    -> UniVTAC first
+    -> TacSL if you need Isaac-Lab-native, GPU-heavy tactile simulation
+
+L2  Policy backbone
+    -> Diffusion Policy
+    -> vision + tactile + proprio fusion
+    -> action chunking in continuous space
+
+L3  Contact-aware upgrade
+    -> tactile-force alignment / force-aware adapter
+    -> use when insertion fails because of force misuse, not because of perception
+
+L4  Real-robot continual learning
+    -> Evo-RL after deployment
+    -> rollout -> intervention -> value/advantage -> retraining</pre>
             <ul>
-              <li><b>UniVTAC / TacSL</b>: build the visuo-tactile world and contact-rich task data.</li>
-              <li><b>Diffusion Policy</b>: stable baseline for continuous control and multimodal policy learning.</li>
-              <li><b>Evo-RL</b>: add rollout, intervention, correction, and post-training after deployment.</li>
+              <li><b>UniVTAC first</b>: it already unifies data generation, encoder pretraining, and benchmark tasks such as Insert Hole and Insert HDMI.</li>
+              <li><b>TacSL as an alternative</b>: choose it when your team is already standardized on Isaac Lab and you care more about tactile simulation throughput than unified benchmark design.</li>
+              <li><b>Diffusion Policy first</b>: it handles multimodal continuous control and action chunking better than simple MSE regression, which matters a lot for insertion-style correction.</li>
+              <li><b>Force-aware upgrade second</b>: once the robot can reach and touch reliably, add a tactile-force alignment module inspired by force-aware VTLA work, because tactile is most valuable when it becomes a force/control signal rather than just “another image”.</li>
+              <li><b>Evo-RL last</b>: only after a working policy exists, use rollout, intervention, value, advantage, and retraining on real hardware.</li>
             </ul>
+          </div>
+
+          <div class="card">
+            <h3>Why this stack is safer than “Evo-RL first”</h3>
+            <p>
+              The key systems insight is that tactile should not enter the stack at the same place as language and high-level semantics.
+            </p>
+            <pre class="ascii-diagram">Language / task
+   -> high-level goal and stage selection
+
+Vision
+   -> global localization, approach, coarse alignment
+
+Tactile / force
+   -> contact onset, slip, over-force, peg-hole micro-correction
+
+Evo-RL
+   -> post-deployment data flywheel
+   -> not the first source of competence</pre>
+            <ul>
+              <li><b>Vision solves “where”</b>, tactile solves <b>“what is happening after contact”</b>.</li>
+              <li><b>Diffusion Policy solves “how to output a smooth corrective action chunk”</b>.</li>
+              <li><b>Evo-RL solves “how to keep getting better after deployment”</b>.</li>
+            </ul>
+            <p style="margin-top: 0.8em;">
+              If you start from Evo-RL directly, you mix together perception errors, contact-model errors, action-generation errors, calibration errors,
+              and online learning instability. That makes debugging too expensive for a first VTLA system.
+            </p>
           </div>
 
           <div class="card">
             <h3>The first task I would choose</h3>
             <p>
-              I would start with <b>single-arm + two-finger tactile gripper + blind insertion</b>, such as peg insertion or USB-C dummy insertion.
-              It is small enough to finish, but tactile sensing actually matters after initial visual alignment.
+              I would still start with <b>single-arm + two-finger tactile gripper + blind insertion</b>, but I would define it more tightly:
             </p>
             <ul>
-              <li><b>Simulation goal</b>: success rate ≥ 85% under pose perturbation.</li>
-              <li><b>Real-robot goal</b>: success rate ≥ 70% over 30 consecutive trials.</li>
-              <li><b>Key comparison</b>: VTLA should beat vision-only by a meaningful margin.</li>
+              <li><b>Task</b>: peg insertion / HDMI-style insertion / USB-C dummy insertion.</li>
+              <li><b>Robot</b>: one arm, no dexterous hand yet.</li>
+              <li><b>Tactile</b>: start with contact depth / contact area / binary contact or coarse tactile, not maximum sensor complexity on day one.</li>
+              <li><b>Observations</b>: fixed camera + wrist camera + proprio + tactile stream.</li>
+              <li><b>Action space</b>: delta end-effector pose + gripper command, chunked over a short horizon.</li>
+            </ul>
+            <p style="margin-top: 0.8em;">
+              This task is small enough to finish, but rich enough to reveal whether your tactile signal is actually useful after vision reaches its limit.
+            </p>
+          </div>
+
+          <div class="card">
+            <h3>Concrete acceptance criteria</h3>
+            <ul>
+              <li><b>Simulation success</b>: ≥ 85% under random pose perturbation.</li>
+              <li><b>Vision-only gap</b>: VTLA should beat a vision-only policy by at least 10 to 15 points on insertion success.</li>
+              <li><b>Contact quality</b>: fewer penetration-like failures, fewer jam events, fewer unstable retries.</li>
+              <li><b>Real-robot success</b>: ≥ 70% over 30 consecutive trials with small pose mismatch and mild occlusion.</li>
+              <li><b>Ablation requirement</b>: if removing tactile barely changes results, your “VTLA” stack is not really using tactile yet.</li>
             </ul>
           </div>
 
@@ -233,9 +304,28 @@ Best place for Evo-RL: L4</pre>
           <div class="card">
             <h3>A practical 3-month path</h3>
             <ul>
-              <li><b>Month 1</b>: one task, one tactile representation, one policy, one simulator.</li>
-              <li><b>Month 2</b>: robustness and ablations; prove tactile actually helps.</li>
-              <li><b>Month 3</b>: minimal real deployment first, then connect Evo-RL for correction and retraining.</li>
+              <li><b>Month 1</b>: build the minimum stack. One task, one simulator, one policy, one tactile representation. Finish the benchmark and prove the policy can close the loop after contact.</li>
+              <li><b>Month 2</b>: harden the stack. Run robustness tests on pose error, occlusion, slip, and contact-force failure. Add a force-aware adapter only if contact misuse is now the bottleneck.</li>
+              <li><b>Month 3</b>: move to the smallest real setup. Keep the task identical, preserve logging, then connect Evo-RL only after the base policy can already complete the task sometimes without online learning.</li>
+            </ul>
+          </div>
+
+          <div class="card">
+            <h3>The exact Plan B I would defend to a research lead</h3>
+            <p>
+              <b>Phase 1</b>: UniVTAC-style visuo-tactile simulation and benchmark.<br>
+              <b>Phase 2</b>: Diffusion Policy baseline with vision + tactile + proprio fusion.<br>
+              <b>Phase 3</b>: force-aware tactile upgrade if insertion failure is mostly about force misuse.<br>
+              <b>Phase 4</b>: Evo-RL-style real-robot continual improvement loop.
+            </p>
+            <p style="margin-top: 0.8em;">
+              That is the lowest-risk route because each layer answers a different question:
+            </p>
+            <ul>
+              <li><b>UniVTAC / TacSL</b>: can we generate and evaluate contact-rich data properly?</li>
+              <li><b>Diffusion Policy</b>: can we turn multimodal state into stable corrective actions?</li>
+              <li><b>Tactile-force alignment</b>: can we make contact signals physically meaningful?</li>
+              <li><b>Evo-RL</b>: can the deployed robot learn from failure and human correction?</li>
             </ul>
           </div>
         </div>
@@ -277,27 +367,87 @@ Evo-RL 最适合放在 L4</pre>
           <div class="card">
             <h3>我会给的 Plan B</h3>
             <p>
-              用 <b>UniVTAC 或 TacSL</b> 做视触觉仿真底座，用 <b>Diffusion Policy</b> 做主策略骨架，
-              把 <b>Evo-RL</b> 放到后面的真机持续学习阶段。
+              我更具体的版本是：
             </p>
+            <pre class="ascii-diagram">L1  视触觉仿真与 benchmark
+    -> 先用 UniVTAC
+    -> 如果团队深度绑定 Isaac Lab，再考虑 TacSL
+
+L2  策略主干
+    -> Diffusion Policy
+    -> 融合 vision + tactile + proprio
+    -> 连续动作 chunk 输出
+
+L3  接触感知升级
+    -> 触觉-力对齐 / force-aware adapter
+    -> 当失败主要来自“用力不对”时再加
+
+L4  真机持续学习
+    -> Evo-RL 在部署后接入
+    -> rollout -> intervention -> value/advantage -> retrain</pre>
             <ul>
-              <li><b>UniVTAC / TacSL</b>：负责视触觉世界、接触任务和数据。</li>
-              <li><b>Diffusion Policy</b>：负责先把多模态连续控制做稳。</li>
-              <li><b>Evo-RL</b>：负责上线后的 rollout、接管、纠错和后训练。</li>
+              <li><b>先选 UniVTAC</b>：因为它把数据生成、编码器预训练和 benchmark 做成了一套闭环，而且任务里已经包含 Insert Hole、Insert HDMI 这类和盲插高度相关的问题。</li>
+              <li><b>TacSL 是备选</b>：如果你们更在意 Isaac Lab 体系和 GPU 触觉仿真吞吐，而不是统一 benchmark 设计，就可以考虑它。</li>
+              <li><b>先上 Diffusion Policy</b>：它比简单回归更适合多模态连续控制，尤其适合“接触后要不断微调”的动作块生成。</li>
+              <li><b>再补 force-aware 触觉层</b>：当系统已经能碰到、对准、但总是因为“力用错了”失败时，再加触觉-力对齐模块。触觉真正的价值不是多一张图，而是把接触变成可控的力语义。</li>
+              <li><b>最后才接 Evo-RL</b>：只有当你已经有一个能做成任务的基础策略时，rollout、接管、value、advantage、再训练闭环才真正有意义。</li>
             </ul>
           </div>
 
           <div class="card">
-            <h3>第一个任务我会怎么选</h3>
+            <h3>为什么这套分层比“先 Evo-RL”更安全</h3>
             <p>
-              我会选 <b>单臂 + 双指触觉夹爪 + 盲插</b>，例如 peg insertion 或 USB-C dummy insertion。
-              这个任务足够小，能做完；同时它又真的需要触觉，因为视觉只能解决全局定位，
-              接触后的微调主要靠触觉。
+              关键不是“触觉要不要加”，而是<b>触觉应该加在哪一层</b>。
+            </p>
+            <pre class="ascii-diagram">Language / task
+   -> 高层目标与阶段切换
+
+Vision
+   -> 全局定位、接近、粗对准
+
+Tactile / force
+   -> 接触开始、滑移、过力、孔口微修正
+
+Evo-RL
+   -> 部署后的数据飞轮
+   -> 不是第一性能力来源</pre>
+            <ul>
+              <li><b>视觉解决“去哪”</b>，触觉解决<b>“接触后到底发生了什么”</b>。</li>
+              <li><b>Diffusion Policy 解决“怎样输出平滑、连续、可纠错的动作块”</b>。</li>
+              <li><b>Evo-RL 解决“上线以后怎么继续变强”</b>。</li>
+            </ul>
+            <p style="margin-top: 0.8em;">
+              如果一开始就从 Evo-RL 入手，你会把感知错误、接触建模错误、动作生成错误、标定错误和在线学习不稳定性全部混在一起，
+              这对第一个 VTLA 系统来说调试成本太高。
+            </p>
+          </div>
+
+          <div class="card">
+            <h3>第一个任务我会怎么定义</h3>
+            <p>
+              我还是会选 <b>单臂 + 双指触觉夹爪 + 盲插</b>，但会把定义再收紧：
             </p>
             <ul>
-              <li><b>仿真目标</b>：有位姿扰动时成功率 ≥ 85%。</li>
-              <li><b>真机目标</b>：连续 30 次测试成功率 ≥ 70%。</li>
-              <li><b>关键对比</b>：VTLA 必须显著优于 vision-only。</li>
+              <li><b>任务</b>：peg insertion / HDMI-style insertion / USB-C dummy insertion。</li>
+              <li><b>机器人</b>：先不用灵巧手，只用单臂 + 双指夹爪。</li>
+              <li><b>触觉</b>：先从 contact depth / contact area / binary contact 或 coarse tactile 开始，不要第一天就上最复杂高分辨率方案。</li>
+              <li><b>观测</b>：固定相机 + 腕部相机 + proprio + tactile。</li>
+              <li><b>动作空间</b>：末端 delta pose + gripper command，按短时域 chunk 输出。</li>
+            </ul>
+            <p style="margin-top: 0.8em;">
+              这个任务足够小，能做完；同时它又真的需要触觉，因为视觉只能解决全局对准，
+              接触后的微调、纠偏和防卡死主要靠触觉/力信息。
+            </p>
+          </div>
+
+          <div class="card">
+            <h3>更具体的验收标准</h3>
+            <ul>
+              <li><b>仿真成功率</b>：随机位姿扰动下 ≥ 85%。</li>
+              <li><b>相对 vision-only 提升</b>：插入成功率至少高 10 到 15 个百分点。</li>
+              <li><b>接触质量</b>：穿透式失败、卡死、无效重试显著减少。</li>
+              <li><b>真机成功率</b>：轻度遮挡、轻微初始偏差下，连续 30 次测试成功率 ≥ 70%。</li>
+              <li><b>必要消融</b>：如果去掉触觉后结果几乎不变，那说明这套系统还不是真正的 VTLA。</li>
             </ul>
           </div>
 
@@ -318,9 +468,28 @@ Evo-RL 最适合放在 L4</pre>
           <div class="card">
             <h3>一个更现实的 3 个月路线</h3>
             <ul>
-              <li><b>第 1 个月</b>：一个任务、一个触觉表示、一个策略、一个仿真器。</li>
-              <li><b>第 2 个月</b>：做鲁棒性和消融，证明触觉确实有增益。</li>
-              <li><b>第 3 个月</b>：先上最小真机，再接 Evo-RL 做纠错回流与再训练。</li>
+              <li><b>第 1 个月</b>：搭最小栈。一个任务、一个仿真器、一个策略、一个触觉表示。先把“接触后闭环纠错”跑通。</li>
+              <li><b>第 2 个月</b>：做稳健性。系统测试位姿误差、遮挡、滑移、过力失败；只有当主要瓶颈变成“力用错了”，才加 force-aware adapter。</li>
+              <li><b>第 3 个月</b>：上最小真机。任务不变，日志结构不变；只有当基础策略已经能在真机上偶尔独立完成任务时，再接 Evo-RL 的持续学习闭环。</li>
+            </ul>
+          </div>
+
+          <div class="card">
+            <h3>如果要向老师或团队负责人 defend 这套 Plan B</h3>
+            <p>
+              <b>阶段 1</b>：UniVTAC 风格的视触觉仿真与 benchmark。<br>
+              <b>阶段 2</b>：Diffusion Policy 基线，融合 vision + tactile + proprio。<br>
+              <b>阶段 3</b>：如果主要失败来自接触用力错误，再补触觉-力对齐层。<br>
+              <b>阶段 4</b>：Evo-RL 风格的真机持续优化闭环。
+            </p>
+            <p style="margin-top: 0.8em;">
+              这条路线风险最低，因为每一层都在回答一个不同的问题：
+            </p>
+            <ul>
+              <li><b>UniVTAC / TacSL</b>：我们能不能正确生成和评估接触密集数据？</li>
+              <li><b>Diffusion Policy</b>：我们能不能把多模态状态变成稳定的纠错动作？</li>
+              <li><b>触觉-力对齐</b>：我们能不能让触觉信号真正带上物理意义？</li>
+              <li><b>Evo-RL</b>：机器人上线后能不能从失败和人工纠错中继续变强？</li>
             </ul>
           </div>
         </div>
@@ -328,7 +497,7 @@ Evo-RL 最适合放在 L4</pre>
 
       <div id="footer" style="display:flex; justify-content:flex-start; align-items:center; gap: 1em; flex-wrap: wrap; padding: 1em 0;">
         <div>
-          &copy; 2025 Sou Kit-Wa (Ken). All rights reserved.
+          &copy; 2026 Sou Kit-Wa (Ken). All rights reserved.
         </div>
       </div>
     </div>
@@ -352,18 +521,24 @@ Evo-RL 最适合放在 L4</pre>
         const zh = document.getElementById('content-zh');
         const enBtn = document.getElementById('lang-en');
         const zhBtn = document.getElementById('lang-zh');
+        const metaEn = document.getElementById('meta-en');
+        const metaZh = document.getElementById('meta-zh');
 
         if (lang === 'zh') {
           en.classList.remove('active');
           zh.classList.add('active');
           enBtn.classList.remove('active');
           zhBtn.classList.add('active');
+          if (metaEn) metaEn.style.display = 'none';
+          if (metaZh) metaZh.style.display = '';
           document.documentElement.lang = 'zh';
         } else {
           zh.classList.remove('active');
           en.classList.add('active');
           zhBtn.classList.remove('active');
           enBtn.classList.add('active');
+          if (metaZh) metaZh.style.display = 'none';
+          if (metaEn) metaEn.style.display = '';
           document.documentElement.lang = 'en';
         }
 

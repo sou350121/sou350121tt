@@ -1,0 +1,5 @@
+.playwright-cli/
+.superpowers/
+.preview-server.pid
+tmp/
+private/
